@@ -1,0 +1,178 @@
+services:
+  # ==========================================
+  # 1. INFRASTRUCTURE (DATABASES AND QUEUE)
+  # ==========================================
+
+  # Primary relational database
+  postgres_db:
+    image: postgres:18-alpine
+    container_name: pizza_postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432" # Host access for local development only
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - pizza_network
+
+  # Database for error and info logs
+  mongodb:
+    image: mongo:8.0
+    container_name: pizza_mongo
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    ports:
+      - "27017:27017" # Host access for local development only
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - pizza_network
+
+  # Message broker between microservices
+  rabbitmq:
+    image: rabbitmq:4.3-management-alpine
+    container_name: pizza_rabbitmq
+    hostname: pizza-rabbit
+    restart: always
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    ports:
+      # AMQP (5672) stays inside pizza_network; only the management UI is published
+      - "15672:15672" # RabbitMQ panel
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - pizza_network
+
+  # ==========================================
+  # 2. APPLICATION MICROSERVICES
+  # ==========================================
+
+  # Single HTTP entry point (API Gateway)
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    container_name: pizza_api_gateway
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3000:3000" # The only public application port
+    environment:
+      NODE_ENV: production
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - pizza_network
+
+  # Auth and user management (internal; talks via RabbitMQ)
+  auth-service:
+    build:
+      context: .
+      dockerfile: apps/auth-service/Dockerfile
+    container_name: pizza_auth_service
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres_db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+    depends_on:
+      - postgres_db
+      - rabbitmq
+    networks:
+      - pizza_network
+
+  # Pizza, cart, orders, and analytics (internal; talks via RabbitMQ)
+  pizza-service:
+    build:
+      context: .
+      dockerfile: apps/pizza-service/Dockerfile
+    container_name: pizza_pizza_service
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres_db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+    volumes:
+      - pizza_uploads:/usr/src/app/apps/pizza-service/uploads # Images storage
+    depends_on:
+      - postgres_db
+      - rabbitmq
+    networks:
+      - pizza_network
+
+  # Email notifications (internal; talks via RabbitMQ)
+  notification-service:
+    build:
+      context: .
+      dockerfile: apps/notification-service/Dockerfile
+    container_name: pizza_notification_service
+    restart: always
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+    depends_on:
+      - rabbitmq
+    networks:
+      - pizza_network
+
+  # Logging into MongoDB (internal; talks via RabbitMQ)
+  logger-service:
+    build:
+      context: .
+      dockerfile: apps/logger-service/Dockerfile
+    container_name: pizza_logger_service
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - pizza_network
+
+# Named volumes (so data survives when container restarts)
+volumes:
+  postgres_data:
+  mongo_data:
+  rabbitmq_data:
+  pizza_uploads:
+
+# Isolated Docker network: services talk to each other by name, not via the host
+networks:
+  pizza_network:
+    driver: bridge
