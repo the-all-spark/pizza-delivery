@@ -1,11 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  Index,
+} from 'typeorm';
 
 export enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
 }
 
-// Имя таблицы в PostgreSQL будет именно users (не User).
 @Entity('users')
 @Index('idx_users_names', ['firstName', 'lastName']) // Быстрый поиск по имени и фамилии
 export class User {

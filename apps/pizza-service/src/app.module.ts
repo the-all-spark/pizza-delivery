@@ -1,11 +1,4 @@
-// Главный модуль сервиса (подключение к БД и RabbitMQ)
-
-/*
-Теперь соберём все локальные бизнес-модули и сущности вместе в корневом модуле 
-приложения. Как и в случае с auth-service, мы используем асинхронную конфигурацию
- для чтения переменных среды окружения и безопасную инициализацию через 
- initialDatabase: 'postgres'.
-*/
+// Главный модуль микросервиса pizza-service
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,18 +7,8 @@ import { createDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
 
 // Импорт сущностей для генерации таблиц
-// import { Pizza } from './modules/pizzas/pizza.entity';
-// import { Ingredient } from './modules/ingredients/ingredient.entity';
-// import { CartItem } from './modules/cart/cart-item.entity';
-// import { PromoCode } from './modules/promo-codes/promo-code.entity';
-// import { Order } from './modules/orders/order.entity';
-// import { OrderItem } from './modules/orders/order-item.entity';
-
-// СНАЧАЛА импортируем ингредиенты (у них нет OneToMany к пиццам, только ManyToMany)
 import { Ingredient } from './modules/ingredients/ingredient.entity';
-// ЗАТЕМ импортируем пиццу
 import { Pizza } from './modules/pizzas/pizza.entity';
-// ЗАТЕМ все остальные
 import { CartItem } from './modules/cart/cart-item.entity';
 import { PromoCode } from './modules/promo-codes/promo-code.entity';
 import { Order } from './modules/orders/order.entity';
@@ -40,12 +23,12 @@ import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
   imports: [
-    // 1. Конфигурация окружения (.env)
+    // Конфигурация окружения (.env)
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
-    // 2. Настройка подключения к СУБД PostgreSQL
+    // Настройка подключения к СУБД PostgreSQL
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -58,7 +41,6 @@ import { OrdersModule } from './modules/orders/orders.module';
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
           // Перечисляем все сущности этого микросервиса
-          // entities: [Pizza, Ingredient, CartItem, PromoCode, Order, OrderItem],
           entities: [Ingredient, Pizza, CartItem, PromoCode, Order, OrderItem],
           // Автоматическая генерация и обновление структуры таблиц
           synchronize: true,
@@ -76,7 +58,7 @@ import { OrdersModule } from './modules/orders/orders.module';
       },
     }),
 
-    // 3. Подключение логических модулей приложения
+    // Подключение логических модулей приложения
     PizzasModule,
     IngredientsModule,
     CartModule,

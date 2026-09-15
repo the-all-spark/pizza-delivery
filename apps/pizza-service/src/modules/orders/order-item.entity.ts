@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Order } from './order.entity';
 import { Pizza } from '../pizzas/pizza.entity';
 
@@ -22,21 +28,11 @@ export class OrderItem {
   @Column({ type: 'int' })
   quantity: number;
 
-  // Связи
-  // @ManyToOne(() => Order, (order) => order.items, { onDelete: 'CASCADE' })
-  // @JoinColumn({ name: 'order_id' })
-  // order: Order;
-
-  // ИСПРАВЛЕНИЕ: Убрали обратную ссылку (order) => order.items
-  @ManyToOne(() => Order, { onDelete: 'CASCADE' }) 
+  @ManyToOne(() => Order, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'order_id' })
   order: Order;
 
-  @ManyToOne(() => Pizza, { onDelete: 'SET NULL' }) // Убрали второй аргумент (pizza) => pizza.orderItems
+  @ManyToOne(() => Pizza, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'pizza_item_id' })
   pizza: Pizza | null;
-
-//   @ManyToOne(() => Pizza, (pizza) => pizza.orderItems, { onDelete: 'SET NULL' })
-//   @JoinColumn({ name: 'pizza_item_id' })
-//   pizza: Pizza | null;
 }

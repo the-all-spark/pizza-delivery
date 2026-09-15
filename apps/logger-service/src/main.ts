@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { LoggerServiceModule } from './logger-service.module'; // ИМЕННО ЭТОТ КЛАСС
+import { LoggerServiceModule } from './logger.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(LoggerServiceModule);

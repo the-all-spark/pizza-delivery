@@ -1,8 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { PromoCode } from '../promo-codes/promo-code.entity';
-import { OrderItem } from './order-item.entity';
 
-// ... (оставляем Enums OrderStatus, DeliveryMethod, PaymentMethod без изменений)
 export enum OrderStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
@@ -27,7 +32,6 @@ export class Order {
   @PrimaryGeneratedColumn({ name: 'order_id' })
   orderId: number;
 
-  // Просто числовое поле для ID пользователя
   @Column({ name: 'user_id', type: 'int', nullable: true })
   userId: number | null;
 
@@ -55,14 +59,7 @@ export class Order {
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  // Связь с User удалена. Связи внутри сервиса остаются:
-  // @ManyToOne(() => PromoCode, (promoCode) => promoCode.orders, { onDelete: 'SET NULL' })
   @ManyToOne(() => PromoCode, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'promo_code_id' })
   promoCode: PromoCode | null;
-
-  // @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
-  // items: OrderItem[];
-
-  // Поле @OneToMany(() => OrderItem...) ПОЛНОСТЬЮ УДАЛЕНО!
 }

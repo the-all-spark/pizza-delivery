@@ -12,7 +12,6 @@ export class Ingredient {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
-  // Обязательно передаем тип через стрелочную функцию () => Pizza
   @ManyToMany(() => Pizza, (pizza) => pizza.ingredients)
   pizzas: Pizza[];
 }

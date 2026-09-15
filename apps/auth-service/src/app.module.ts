@@ -26,20 +26,16 @@ import { AuthModule } from './modules/auth/auth.module';
           port: Number(configService.get('DB_PORT', 5432)),
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
-          // database: configService.get<string>('DB_NAME'),
-          database: dbName || 'pizza_delivery', 
+          database: dbName || 'pizza_delivery',
           entities: [User],
-          // По классу User TypeORM создаёт/обновляет таблицу users. 
-          synchronize: true,
-          // В логах будут SQL-команды CREATE TABLE — так проще понять, что схема применилась.
+          synchronize: true, // По классу User TypeORM создаёт/обновляет таблицу users.
           logging: ['error', 'schema', 'warn'],
         };
 
-        // Для typeorm-extension критически важно указать первоначальное подключение 
-        // к системной базе 'postgres', чтобы иметь права создать вашу кастомную базу!
+        // Для typeorm-extension
         await createDatabase({
           options,
-          initialDatabase: 'postgres', // <--- ТЕПЕРЬ ОН ПОДКЛЮЧИТСЯ К СИСТЕМНОЙ БД И НЕ УПАДЕТ
+          initialDatabase: 'postgres', // первоначальное подключение к системной базе 'postgres'
           ifNotExist: true,
         });
 

@@ -3,10 +3,10 @@ import { UsersService } from './users.service';
 
 @Controller()
 export class UsersController {
-  constructor(private readonly usersServiceService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   getHello(): string {
-    return this.usersServiceService.getHelloNew();
+    return this.usersService.getHello();
   }
 }

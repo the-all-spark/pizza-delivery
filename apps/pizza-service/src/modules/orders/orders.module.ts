@@ -1,4 +1,3 @@
-// Нам нужно зарегистрировать сразу две сущности: сам заказ и его элементы-снимки.
 import { Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';

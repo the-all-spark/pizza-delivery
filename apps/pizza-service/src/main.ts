@@ -12,7 +12,9 @@ async function bootstrap() {
   // Слушаем порт 3001 (внутри контейнера)
   const port = process.env.PIZZA_SERVICE_PORT || 3001;
   await app.listen(port);
-  // console.log(`[Pizza-Service] Временный HTTP-сервер успешно запущен на порту ${port}`);
+  // console.log(
+  //   `[Pizza-Service] Временный HTTP-сервер успешно запущен на порту ${port}`,
+  // );
 }
 
 void bootstrap();

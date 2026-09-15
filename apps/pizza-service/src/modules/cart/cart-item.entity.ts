@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Unique,
+} from 'typeorm';
 import { Pizza } from '../pizzas/pizza.entity';
 
 @Entity('cart_items')
@@ -17,10 +24,7 @@ export class CartItem {
   @Column({ type: 'int' })
   quantity: number;
 
-  // @ManyToOne(() => Pizza, (pizza) => pizza.cartItems, { onDelete: 'CASCADE' })
-  // @JoinColumn({ name: 'pizza_id' })
-  // pizza: Pizza;
-  @ManyToOne(() => Pizza, { onDelete: 'CASCADE' }) // Убрали второй аргумент
+  @ManyToOne(() => Pizza, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'pizza_id' })
   pizza: Pizza;
 }

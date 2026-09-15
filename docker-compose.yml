@@ -15,7 +15,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432" # Host access for local development only
+      - '5432:5432' # Host access for local development only
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
@@ -33,7 +33,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DB}
     ports:
-      - "27017:27017" # Host access for local development only
+      - '27017:27017' # Host access for local development only
     volumes:
       - mongo_data:/data/db
     networks:
@@ -52,7 +52,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
     ports:
       # AMQP (5672) stays inside pizza_network; only the management UI is published
-      - "15672:15672" # RabbitMQ panel
+      - '15672:15672' # RabbitMQ panel
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
@@ -72,7 +72,7 @@ services:
     env_file:
       - .env
     ports:
-      - "3000:3000" # The only public application port
+      - '3000:3000' # The only public application port
     environment:
       NODE_ENV: production
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672

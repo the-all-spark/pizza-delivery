@@ -1,16 +1,24 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
-import { LoggerServiceService } from './logger-service.service';
+import {
+  MessagePattern,
+  Payload,
+  Ctx,
+  RmqContext,
+} from '@nestjs/microservices';
+import { LoggerService } from './logger.service';
 
 @Controller()
-export class LoggerServiceConsumer {
-  constructor(private readonly loggerService: LoggerServiceService) {}
+export class LoggerConsumer {
+  constructor(private readonly loggerService: LoggerService) {}
 
-  // Заглушка под обработку логов из RabbitMQ (Часть 2 - логи в MongoDB)
+  // Заглушка под обработку логов из RabbitMQ (ТЗ: логи в MongoDB)
   @MessagePattern('log_event')
   async handleLogEvent(@Payload() data: any, @Ctx() context: RmqContext) {
-    console.log('[Logger-Service] Получено новое событие для логирования:', data);
-    
+    console.log(
+      '[Logger-Service] Получено новое событие для логирования:',
+      data,
+    );
+
     // Здесь в будущем будет вызов сервиса для записи в MongoDB:
     // await this.loggerService.saveLog(data);
 

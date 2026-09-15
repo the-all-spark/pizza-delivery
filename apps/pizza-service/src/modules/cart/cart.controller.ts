@@ -3,10 +3,10 @@ import { CartService } from './cart.service';
 
 @Controller()
 export class CartController {
-  constructor(private readonly pizzaServiceService: CartService) {}
+  constructor(private readonly cartService: CartService) {}
 
   @Get()
   getHello(): string {
-    return this.pizzaServiceService.getHello();
+    return this.cartService.getHello();
   }
 }
