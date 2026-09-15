@@ -1,0 +1,1 @@
+// Схема логов для MongoDB (Mongoose)

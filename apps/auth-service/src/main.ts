@@ -1,8 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { AuthServiceModule } from './auth-service.module';
+// Важно: поднимаем AppModule, а не AuthModule.
+// TypeORM (и создание таблицы users) живёт только в AppModule.
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuthServiceModule);
-  await app.listen(process.env.port ?? 3000);
+  const app = await NestFactory.create(AppModule);
+  await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+
+void bootstrap();

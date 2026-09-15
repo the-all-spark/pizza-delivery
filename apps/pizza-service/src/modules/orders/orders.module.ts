@@ -1,0 +1,16 @@
+// Нам нужно зарегистрировать сразу две сущности: сам заказ и его элементы-снимки.
+import { Module } from '@nestjs/common';
+
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Order } from './order.entity';
+import { OrderItem } from './order-item.entity';
+import { OrdersService } from './orders.service';
+import { OrdersController } from './orders.controller';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Order, OrderItem])],
+  controllers: [OrdersController],
+  providers: [OrdersService],
+  exports: [TypeOrmModule],
+})
+export class OrdersModule {}

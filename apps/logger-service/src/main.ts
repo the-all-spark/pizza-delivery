@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { LoggerServiceModule } from './logger-service.module';
+import { LoggerServiceModule } from './logger-service.module'; // ИМЕННО ЭТОТ КЛАСС
 
 async function bootstrap() {
   const app = await NestFactory.create(LoggerServiceModule);
-  await app.listen(process.env.port ?? 3000);
+  // ... логика запуска микросервиса RabbitMQ
+  await app.listen(3001); // или запуск как микросервис через connectMicroservice
 }
-bootstrap();
+void bootstrap();

@@ -25,9 +25,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/pizza-delivery/tsconfig.app.json"
-    },
-    {
       "path": "./apps/api-gateway/tsconfig.app.json"
     },
     {
