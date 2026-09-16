@@ -5,45 +5,34 @@
  * Шлюз будет использовать две разные очереди:
  * auth_queue (для работы с пользователями) и pizza_queue (для меню, корзины и заказов).
  * Также здесь регистрируется JwtModule.
- */
-
-//!
-// import { Module } from '@nestjs/common';
-// import { ApiGatewayController } from './api-gateway.controller';
-// import { ApiGatewayService } from './api-gateway.service';
-
-// @Module({
-//   imports: [],
-//   controllers: [ApiGatewayController],
-//   providers: [ApiGatewayService],
-// })
-// export class ApiGatewayModule {}
+*/
 
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { APP_GUARD, Reflector } from '@nestjs/core';
-import { ApiGatewayController } from './api-gateway.controller';
-import { ApiGatewayService } from './api-gateway.service';
+import { APP_GUARD } from '@nestjs/core';
 import { GatewayJwtGuard } from './guards/gateway-jwt.guard';
+
+// Импортируем раздельные контроллеры
+import { AuthGatewayController } from './controllers/auth-gateway.controller';
+import { UsersGatewayController } from './controllers/users-gateway.controller';
+import { PizzasGatewayController } from './controllers/pizzas-gateway.controller';
+import { CartGatewayController } from './controllers/cart-gateway.controller';
+import { OrdersGatewayController } from './controllers/orders-gateway.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
     // Настраиваем JWT модуль для проверки подписей токенов на шлюзе
-    // JwtModule.registerAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: (configService: ConfigService) => ({
-    //     secret: configService.get<string>('JWT_SECRET', 'super-secret-key'),
-    //   }),
-    // }),
-
-    // Настраиваем JWT модуль жестко на один ключ для тестов
-    JwtModule.register({
-      secret: 'super-secret-key', // ТЕПЕРЬ ОН СТРОГО ИСПОЛЬЗУЕТ ЭТУ СТРОКУ
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        // Считываем секрет из .env, а 'super-secret-key' оставляем как запасной дефолтный вариант
+        secret: configService.get<string>('JWT_SECRET', 'super-secret-key'),
+      }),
     }),
 
     // Регистрируем RabbitMQ клиенты для отправки команд в микросервисы
@@ -86,10 +75,15 @@ import { GatewayJwtGuard } from './guards/gateway-jwt.guard';
       },
     ]),
   ],
-  controllers: [ApiGatewayController],
+  controllers: [
+    AuthGatewayController,
+    UsersGatewayController,
+    PizzasGatewayController,
+    CartGatewayController,
+    OrdersGatewayController,
+  ],
   providers: [
-    ApiGatewayService,
-    // Делаем наш созданный GatewayJwtGuard ГЛОБАЛЬНЫМ для всего шлюза
+    // Делаем созданный GatewayJwtGuard ГЛОБАЛЬНЫМ для всего шлюза
     {
       provide: APP_GUARD,
       useClass: GatewayJwtGuard,

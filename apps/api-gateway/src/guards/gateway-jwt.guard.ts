@@ -65,7 +65,7 @@ export class GatewayJwtGuard implements CanActivate {
         role: payload.role,
       };
 
-      // 4. Проверяем роли пользователей (Авторизация по ролям из ТЗ)
+      // 4. Проверяем роли пользователей (Авторизация по ролям)
       const requiredRoles = this.reflector.getAllAndOverride<string[]>(
         ROLES_KEY,
         [context.getHandler(), context.getClass()],
