@@ -5,11 +5,7 @@ import {
   CreateDateColumn,
   Index,
 } from 'typeorm';
-
-export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { UserRole } from '@shared/enums';
 
 @Entity('users')
 @Index('idx_users_names', ['firstName', 'lastName']) // Быстрый поиск по имени и фамилии

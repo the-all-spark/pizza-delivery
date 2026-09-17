@@ -6,11 +6,7 @@
 */
 
 import { ApiProperty } from '@nestjs/swagger';
-
-enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { UserRole } from '@shared/enums';
 
 export class RegisterResponseDto {
   @ApiProperty({
