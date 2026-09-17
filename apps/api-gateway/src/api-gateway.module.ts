@@ -20,6 +20,7 @@ import { UsersGatewayController } from './controllers/users-gateway.controller';
 import { IngredientsGatewayController } from './controllers/ingredients-gateway.controller'
 import { PizzasGatewayController } from './controllers/pizzas-gateway.controller';
 import { CartGatewayController } from './controllers/cart-gateway.controller';
+import { PromoCodesGatewayController } from './controllers/promo-codes-gateway.controller';
 import { OrdersGatewayController } from './controllers/orders-gateway.controller';
 
 @Module({
@@ -82,7 +83,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
     IngredientsGatewayController,
     PizzasGatewayController,
     CartGatewayController,
-    // Promo-codes
+    PromoCodesGatewayController,
     OrdersGatewayController,
   ],
   providers: [
