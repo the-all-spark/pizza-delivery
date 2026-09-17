@@ -1,3 +1,5 @@
+// «Шапка» заказа (общая информация)
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,25 +9,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { PromoCode } from '../promo-codes/promo-code.entity';
-
-export enum OrderStatus {
-  PENDING = 'pending',
-  PROCESSING = 'processing',
-  DELIVERING = 'delivering',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-}
-
-export enum DeliveryMethod {
-  COURIER = 'courier',
-  PICKUP = 'pickup',
-}
-
-export enum PaymentMethod {
-  CASH = 'cash',
-  CARD_ONLINE = 'card_online',
-  CARD_COURIER = 'card_courier',
-}
+import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
 @Entity('orders')
 export class Order {
@@ -36,7 +20,7 @@ export class Order {
   userId: number | null;
 
   @Column({ name: 'promo_code_id', type: 'int', nullable: true })
-  promoCodeId: number | null;
+  promoCodeId: number | null; // ID примененного купона
 
   @Column({ type: 'text' })
   address: string;
@@ -59,6 +43,7 @@ export class Order {
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
+  // Много разных заказов могут использовать один и тот же промокод
   @ManyToOne(() => PromoCode, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'promo_code_id' })
   promoCode: PromoCode | null;
