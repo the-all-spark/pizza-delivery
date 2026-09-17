@@ -1,40 +1,106 @@
-// Контроллер корзины
+// * Контроллер корзины
+// Пользователь может менять только собственную корзину, админ доступа не имеет.
 
-import { Controller, Post, Get, Put, Delete, Body, Param, Inject, UseFilters, Req, Query } from '@nestjs/common';
+import { 
+  Controller, 
+  Post, 
+  Get, 
+  Put, 
+  Delete, 
+  Body, 
+  Param, 
+  Inject, 
+  UseFilters, 
+  Req,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
 
-@ApiTags('Cart') // тег
-@ApiBearerAuth('bearerAuth') 
+// Импорт DTO и интерфейса запроса
+import { AddToCartDto } from '../dto/cart/add-to-cart.dto';
+import { UpdateCartItemDto } from '../dto/cart/update-cart-item.dto';
+import { CartItemResponseDto } from '../dto/cart/cart-response.dto';
+import type { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
+
+@ApiTags('Cart')
+@ApiBearerAuth('bearerAuth')
 @Controller('cart')
 @UseFilters(RpcExceptionFilter)
+@Roles('user')
 export class CartGatewayController {
-  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
+  constructor(
+    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy
+  ) {}
 
+  // * Просмотр содержимого собственной корзины (GET /cart)
   @Get()
-  @Roles('user', 'admin')
-  getCart(@Req() req: any) {
+  @ApiOperation({ 
+    summary: 'Просмотр содержимого корзины', 
+    description: 'Возвращает список всех пицц, добавленных текущим авторизованным пользователем.' 
+  })
+  @ApiOkResponse({ description: 'Содержимое корзины успешно получено.', type: [CartItemResponseDto] })
+  @ApiResponse({ status: 401, description: 'Не авторизован.' })
+  getCart(@Req() req: AuthenticatedRequest) {
     return this.pizzaClient.send('get_user_cart', { userId: req.user.userId });
   }
 
-  @Post()
-  @Roles('user', 'admin')
-  addToCart(@Req() req: any, @Body() body: any) {
-    // Прикрепляем userId из токена к телу запроса, чтобы микросервис знал, чья это корзина
+  // * Добавить пиццу в собственную корзину (POST /cart/add)
+  @Post('add')
+  @ApiOperation({ 
+    summary: 'Добавить пиццу в корзину', 
+    description: 'Добавляет пиццу в корзину. Если пицца уже есть, увеличивает её количество.' 
+  })
+  @ApiCreatedResponse({ description: 'Пицца успешно добавлена в корзину.', type: CartItemResponseDto })
+  @ApiResponse({ status: 400, description: 'Невалидные входные данные.' })
+  @ApiResponse({ status: 404, description: 'Указанная пицца не найдена в каталоге.' })
+  addToCart(@Req() req: AuthenticatedRequest, @Body() body: AddToCartDto) {
     return this.pizzaClient.send('add_to_cart', { userId: req.user.userId, ...body });
   }
 
-  @Put(':cartItemId')
-  @Roles('user', 'admin')
-  updateCart(@Req() req: any, @Param('cartItemId') cartItemId: number, @Body() body: any) {
-    return this.pizzaClient.send('update_cart_item', { userId: req.user.userId, cartItemId, ...body });
+  // * Редактирование количества пиццы в собственной корзине (PUT /cart/:cartItemId/edit)
+  @Put(':cartItemId/edit')
+  @ApiOperation({ 
+    summary: 'Изменить количество пиццы в корзине', 
+    description: 'Позволяет изменить количество (`quantity`) конкретной позиции в корзине.' 
+  })
+  @ApiOkResponse({ description: 'Количество успешно изменено.', type: CartItemResponseDto })
+  @ApiResponse({ status: 400, description: 'Невалидный ID или некорректное количество.' })
+  @ApiResponse({ status: 404, description: 'Элемент корзины не найден.' })
+  updateCart(
+    @Req() req: AuthenticatedRequest, 
+    @Param('cartItemId', ParseIntPipe) cartItemId: number,
+    @Body() body: UpdateCartItemDto
+  ) {
+    return this.pizzaClient.send('update_cart_item', { 
+      userId: req.user.userId, 
+      cartItemId, 
+      quantity: body.quantity 
+    });
   }
 
-  @Delete(':cartItemId')
-  @Roles('user', 'admin')
-  removeFromCart(@Req() req: any, @Param('cartItemId') cartItemId: number) {
+  // * Удалить пиццу из собственной корзины (DELETE /cart/:cartItemId/delete)
+  @Delete(':cartItemId/delete')
+  @HttpCode(HttpStatus.NO_CONTENT) // Возвращаем 204 No Content
+  @ApiOperation({ 
+    summary: 'Удалить позицию из корзины', 
+    description: 'Полностью удаляет конкретную пиццу из корзины текущего пользователя.' 
+  })
+  @ApiResponse({ status: 204, description: 'Позиция успешно удалена из корзины. Ничего не возвращает.' })
+  @ApiResponse({ status: 400, description: 'Неверный формат ID элемента корзины.' })
+  @ApiResponse({ status: 404, description: 'Элемент в корзине пользователя не найден.' })
+  removeFromCart(
+    @Req() req: AuthenticatedRequest, 
+    @Param('cartItemId', ParseIntPipe) cartItemId: number
+  ) {
     return this.pizzaClient.send('remove_from_cart', { userId: req.user.userId, cartItemId });
   }
 }
+
+
+
+

@@ -82,6 +82,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
     IngredientsGatewayController,
     PizzasGatewayController,
     CartGatewayController,
+    // Promo-codes
     OrdersGatewayController,
   ],
   providers: [
