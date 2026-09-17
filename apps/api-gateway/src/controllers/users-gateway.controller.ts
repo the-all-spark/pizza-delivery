@@ -42,7 +42,7 @@ export class UsersGatewayController {
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {}
 
-  // * поиск пользователя по имени и фамилии
+  // * Поиск пользователя по имени и фамилии
   // Маршрут 'search' должен быть выше метода 'admin/users'
   // чтобы NestJS не принял слово 'search' за значение пагинации и не выдал  ошибку
   @Get('admin/users/search')
@@ -75,7 +75,7 @@ export class UsersGatewayController {
     });
   }
 
-  // * Запрос списка пользователей с пагинацией
+  // * Список пользователей с пагинацией
   @Get('admin/users')
   @Roles('admin')
   @ApiOperation({
@@ -114,7 +114,7 @@ export class UsersGatewayController {
     return this.authClient.send('admin_get_users', { page, limit });
   }
 
-  // * Редактирование профиля пользователя (First Name, Last Name) и смены пароля
+  // * Редактирование профиля пользователя (First Name, Last Name) и смена пароля
   @Put('users/profile/edit')
   @Roles('user', 'admin')
   @ApiOperation({

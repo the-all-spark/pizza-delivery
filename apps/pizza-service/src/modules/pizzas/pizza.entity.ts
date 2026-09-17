@@ -34,11 +34,13 @@ export class Pizza {
   @ManyToMany(() => Ingredient, (ingredient) => ingredient.pizzas, {
     onDelete: 'CASCADE',
   })
+  
+  // создание таблицы в БД
   @JoinTable({
-    name: 'pizza_ingredients',
-    joinColumn: { name: 'pizza_id', referencedColumnName: 'pId' },
+    name: 'pizza_ingredients', // Имя промежуточной таблицы
+    joinColumn: { name: 'pizza_id', referencedColumnName: 'pId' },   // Связь с текущей сущностью (Pizza)
     inverseJoinColumn: {
-      name: 'ingredient_id',
+      name: 'ingredient_id', // Связь с противоположной сущностью (Ingredient)
       referencedColumnName: 'ingrId',
     },
   })

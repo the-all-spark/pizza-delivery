@@ -17,6 +17,7 @@ import { GatewayJwtGuard } from './guards/gateway-jwt.guard';
 // Импортируем раздельные контроллеры
 import { AuthGatewayController } from './controllers/auth-gateway.controller';
 import { UsersGatewayController } from './controllers/users-gateway.controller';
+import { IngredientsGatewayController } from './controllers/ingredients-gateway.controller'
 import { PizzasGatewayController } from './controllers/pizzas-gateway.controller';
 import { CartGatewayController } from './controllers/cart-gateway.controller';
 import { OrdersGatewayController } from './controllers/orders-gateway.controller';
@@ -78,6 +79,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
   controllers: [
     AuthGatewayController,
     UsersGatewayController,
+    IngredientsGatewayController,
     PizzasGatewayController,
     CartGatewayController,
     OrdersGatewayController,

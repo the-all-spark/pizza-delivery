@@ -41,7 +41,7 @@ export class AuthGatewayController {
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {}
 
-  // * /auth/register
+  // * Регистрация (/auth/register)
   @Public() // Маршрут открыт для всех
   @Post('register')
   @ApiOperation({
@@ -76,7 +76,7 @@ export class AuthGatewayController {
     return this.authClient.send('user_register', body);
   }
 
-  // * /auth/login
+  // * Авторизация (/auth/login)
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK) // Явно задаем 200 OK вместо дефолтного 201 для POST запросов
