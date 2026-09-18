@@ -13,6 +13,7 @@ import { CartItem } from './modules/cart/cart-item.entity';
 import { PromoCode } from './modules/promo-codes/promo-code.entity';
 import { Order } from './modules/orders/order.entity';
 import { OrderItem } from './modules/orders/order-item.entity';
+import { User } from '../../auth-service/src/modules/users/user.entity';
 
 // Импорт модулей
 import { PizzasModule } from './modules/pizzas/pizzas.module';
@@ -20,6 +21,7 @@ import { IngredientsModule } from './modules/ingredients/ingredients.module';
 import { CartModule } from './modules/cart/cart.module';
 import { PromoCodesModule } from './modules/promo-codes/promo-codes.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -41,7 +43,7 @@ import { OrdersModule } from './modules/orders/orders.module';
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
           // Перечисляем все сущности этого микросервиса
-          entities: [Ingredient, Pizza, CartItem, PromoCode, Order, OrderItem],
+          entities: [User, Ingredient, Pizza, CartItem, PromoCode, Order, OrderItem],
           // Автоматическая генерация и обновление структуры таблиц
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
@@ -64,6 +66,7 @@ import { OrdersModule } from './modules/orders/orders.module';
     CartModule,
     PromoCodesModule,
     OrdersModule,
+    SeedModule
   ],
 })
 export class AppModule {}

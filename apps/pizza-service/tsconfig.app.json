@@ -7,6 +7,7 @@
     "outDir": "../../dist/apps/pizza-service",
     "types": ["node", "jest"] 
   },
-  "include": ["src/**/*", "../../shared/**/*"],
+  // добавили маску "../**/*", чтобы разрешить выход в общую папку apps
+  "include": ["src/**/*", "../**/*", "../../shared/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }
