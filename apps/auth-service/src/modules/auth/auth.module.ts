@@ -1,10 +1,32 @@
+// * Модуль авторизации микросервиса auth-service
+
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { User } from '../users/user.entity';
 
 @Module({
-  imports: [],
-  controllers: [AuthController],
-  providers: [AuthService],
+  imports: [
+    // 1. Регистрируем сущность User в TypeORM для этого модуля
+    TypeOrmModule.forFeature([User]),
+
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN', '24h') as any,
+        },
+      }),
+    }),
+  ],
+  controllers: [AuthController], // Подключаем контроллер, слушающий RabbitMQ
+  providers: [AuthService],       // Подключаем сервис с бизнес-логикой
+  exports: [AuthService],         // Экспортируем сервис на случай, если он понадобится другим модулям
 })
 export class AuthModule {}
