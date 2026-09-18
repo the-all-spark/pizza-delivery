@@ -16,7 +16,16 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { 
+  ApiTags, 
+  ApiBearerAuth, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiOkResponse, 
+  ApiCreatedResponse,
+  ApiNoContentResponse, // документирование 204 статуса
+  ApiParam,            // документирование ID в путях
+} from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
 
@@ -27,7 +36,7 @@ import { IngredientResponseDto } from '../dto/ingredients/ingredient-response.dt
 @ApiTags('Ingredients')
 @ApiBearerAuth('bearerAuth') // Требует JWT токен (иконка замочка)
 @Roles('admin')
-@Controller('admin/ingredients') // Базовый префикс для всех эндпоинтов управления
+@Controller('ingredients')
 @UseFilters(RpcExceptionFilter)
 export class IngredientsGatewayController {
   constructor(
@@ -35,7 +44,7 @@ export class IngredientsGatewayController {
     @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy,
   ) {}
 
-  // * Получить все ингредиенты пиццы (GET /admin/ingredients)
+  // * Получить все ингредиенты пиццы (GET /ingredients)
   @Get()
   @ApiOperation({ 
     summary: 'Получить все ингредиенты пиццы', 
@@ -51,8 +60,8 @@ export class IngredientsGatewayController {
     return this.pizzaClient.send('get_all_ingredients', {});
   }
 
-  // * Добавить ингредиент пиццы (создать ингредиент) (POST admin/ingredients/add)
-  @Post('add')
+  // * Добавить ингредиент пиццы (создать ингредиент) (POST /ingredients)
+  @Post()
   @ApiOperation({ 
     summary: 'Добавить новый ингредиент пиццы', 
     description: 'Создает новый ингредиент каталога. Доступно только админу.' 
@@ -68,11 +77,18 @@ export class IngredientsGatewayController {
     return this.pizzaClient.send('create_ingredient', body);
   }
 
-  // * Изменить ингредиент пиццы по его id (PUT admin/ingredients/:id)
+  // * Изменить ингредиент пиццы по его id (PUT /ingredients/:id)
   @Put(':id')
   @ApiOperation({ 
     summary: 'Изменить ингредиент пиццы по ID', 
     description: 'Обновляет данные существующего ингредиента по его уникальному идентификатору.' 
+  })
+  // Документируем параметр пути для Swagger
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'Уникальный идентификатор ингредиента',
+    example: 1,
   })
   @ApiOkResponse({ 
     description: 'Ингредиент успешно изменен. Возвращает обновленный объект.', 
@@ -88,14 +104,22 @@ export class IngredientsGatewayController {
     return this.pizzaClient.send('update_ingredient', { id, ...body });
   }
 
-  // * Удалить ингредиент пиццы по его id (DELETE admin/ingredients/:id)
+  // * Удалить ингредиент пиццы по его id (DELETE /ingredients/:id)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT) // При успешном удалении возвращаем 204 No Content
   @ApiOperation({ 
     summary: 'Удалить ингредиент пиццы по ID', 
     description: 'Удаляет ингредиент из системы. Автоматически очищает связи в промежуточных таблицах благодаря CASCADE.' 
   })
-  @ApiResponse({ status: 204, description: 'Ингредиент успешно удален. Ничего не возвращает.' })
+  // Документируем параметр пути для Swagger
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'Уникальный идентификатор ингредиента',
+    example: 1,
+  })
+  // Используем специализированный декоратор вместо ApiResponse({ status: 204 })
+  @ApiNoContentResponse({ description: 'Ингредиент успешно удален. Ничего не возвращает.' })
   @ApiResponse({ status: 400, description: 'Неверный формат ID.' })
   @ApiResponse({ status: 404, description: 'Ингредиент с указанным ID не найден.' })
   @ApiResponse({ status: 401, description: 'Не авторизован.' })
@@ -103,3 +127,4 @@ export class IngredientsGatewayController {
     return this.pizzaClient.send('delete_ingredient', { id });
   }
 }
+

@@ -21,7 +21,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiOkResponse,
-  ApiQuery,
+  ApiQuery
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -35,87 +35,79 @@ import { RegisterResponseDto } from '../dto/auth/register-response.dto'; // DTO 
 
 @ApiTags('Users')
 @ApiBearerAuth('bearerAuth')
-@Controller()
+@Controller('users')
 @UseFilters(RpcExceptionFilter)
 export class UsersGatewayController {
   constructor(
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {}
 
-  // * Поиск пользователя по имени и фамилии
-  // Маршрут 'search' должен быть выше метода 'admin/users'
-  // чтобы NestJS не принял слово 'search' за значение пагинации и не выдал  ошибку
-  @Get('admin/users/search')
+  // * Получение списка пользователей / Поиск по имени и фамилии
+  // один эндпоинт GET /users, где все параметры опциональны или имеют дефолтные значения.
+  @Get()
   @Roles('admin')
   @ApiOperation({
-    summary: 'Поиск пользователя по имени и фамилии',
+    summary: 'Получение списка пользователей с фильтрацией и пагинацией',
     description:
-      'Доступно только администраторам. Ищет пользователей по точному или частичному совпадению.',
+      'Доступно только администраторам. Позволяет искать пользователей по имени/фамилии, а также получать постраничный список.',
   })
-  @ApiOkResponse({
-    description: 'Пользователи успешно найдены.',
-    type: [RegisterResponseDto], // Оборачиваем в массив [], так как поиск возвращает список
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Ошибка валидации (firstName или lastName не переданы).',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Не авторизован (JWT-токен отсутствует или невалидный).',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Доступ запрещен (требуется роль admin).',
-  })
-  searchUser(@Query() query: SearchUserQueryDto) {
-    return this.authClient.send('user_search', {
-      firstName: query.firstName,
-      lastName: query.lastName,
-    });
-  }
-
-  // * Список пользователей с пагинацией
-  @Get('admin/users')
-  @Roles('admin')
-  @ApiOperation({
-    summary: 'Получение списка всех пользователей',
-    description:
-      'Доступно только администраторам. Возвращает постраничный список зарегистрированных пользователей.',
-  })
-  // Документируем query-параметры пагинации вручную, так как они передаются через примитивные типы (ParseIntPipe)
   @ApiQuery({
     name: 'page',
     description: 'Номер страницы (начиная с 1)',
     example: 1,
-    required: true,
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
     description: 'Количество элементов на странице',
     example: 10,
-    required: true,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'firstName',
+    description: 'Имя пользователя для поиска',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'lastName',
+    description: 'Фамилия пользователя для поиска',
+    required: false,
   })
   @ApiOkResponse({
     description: 'Список пользователей успешно получен.',
-    type: [RegisterResponseDto], // Показывает массив объектов пользователей
+    type: [RegisterResponseDto],
   })
   @ApiResponse({ status: 401, description: 'Не авторизован.' })
-  @ApiResponse({
-    status: 403,
-    description: 'Доступ запрещен (требуется роль admin).',
-  })
-  getAllUsers(
-    // Добавлен ParseIntPipe (без него page и limit придут как string)
-    // что вызовет падение базы данных при передаче этих данных в микросервис.
-    @Query('page', ParseIntPipe) page: number,
-    @Query('limit', ParseIntPipe) limit: number,
+  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
+  getUsers(
+    // флаг { optional: true }, чтобы при поиске по имени параметры пагинации не падали с ошибкой, если они не переданы
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+    @Query() searchDto?: SearchUserQueryDto,
   ) {
-    return this.authClient.send('admin_get_users', { page, limit });
+    // Если переданы параметры поиска, вызываем микросервис поиска
+    // GET /users?firstName=John&lastName=Smith
+    // GET /users?firstName=John
+    // GET /users?lastName=Smith
+    if (searchDto?.firstName || searchDto?.lastName) {
+      return this.authClient.send('user_search', {
+        firstName: searchDto.firstName,
+        lastName: searchDto.lastName,
+      });
+    }
+    
+    // Иначе отдаем список с пагинацией (задаем дефолтные значения, если они не пришли)
+    // GET /users?page=2&limit=20
+    // GET /users
+    return this.authClient.send('admin_get_users', { 
+      page: page ?? 1, 
+      limit: limit ?? 10 
+    });
   }
 
   // * Редактирование профиля пользователя (First Name, Last Name) и смена пароля
-  @Put('users/profile/edit')
+  // PUT /users/profile
+  @Put('profile')
   @Roles('user', 'admin')
   @ApiOperation({
     summary: 'Редактирование личного профиля',
@@ -144,9 +136,10 @@ export class UsersGatewayController {
   }
 
   // * Удаление аккаунта пользователя
-  @Delete('users/profile/delete')
+  //  DELETE /users/profile
+  @Delete('profile')
   @Roles('user', 'admin')
-  @HttpCode(HttpStatus.NO_CONTENT) // Задаем статус 204 No Content, так как при удалении тело ответа обычно пустое при удалении
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Удаление собственного аккаунта',
     description:

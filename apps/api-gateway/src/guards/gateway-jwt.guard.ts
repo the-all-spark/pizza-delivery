@@ -1,4 +1,5 @@
-// Проверяет токен ОДИН раз для всех запросов
+// * Чтение (валидация): Проверяет уже готовый токен ОДИН раз для всех запросов
+// Шлюз никогда не создает новые токены
 
 /**
  * комплексный Guard, который последовательно:
@@ -50,13 +51,14 @@ export class GatewayJwtGuard implements CanActivate {
 
     try {
       // 3. Расшифровываем и проверяем токен
-      // const payload = await this.jwtService.verifyAsync(token);
+      // «Не подделан ли токен? Настоящая ли на нем подпись? Какая внутри роль?»
+      const payload = await this.jwtService.verifyAsync(token);
 
       // Добавляем игнорирование срока действия для локальных тестов в Thunder Client
       // Игнорируем срок действия для тестирования токенов без полей iat/exp
-      const payload = await this.jwtService.verifyAsync(token, {
-        ignoreExpiration: true,
-      });
+      // const payload = await this.jwtService.verifyAsync(token, {
+      //   ignoreExpiration: true,
+      // });
 
       // Сохраняем данные пользователя в объект запроса, чтобы контроллер мог их прочитать
       request['user'] = {

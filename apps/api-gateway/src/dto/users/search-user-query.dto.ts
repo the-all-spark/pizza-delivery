@@ -1,15 +1,15 @@
 //Валидация поиска
 
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class SearchUserQueryDto {
+  @IsOptional() // Если параметра нет в URL, валидация пропустит его
   @IsString({ message: 'Имя должно быть строкой' })
-  @IsNotEmpty({ message: 'Имя не может быть пустым' })
   @MaxLength(100, { message: 'Имя не должно превышать 100 символов' })
-  firstName: string;
+  firstName?: string;
 
+  @IsOptional()
   @IsString({ message: 'Фамилия должна быть строкой' })
-  @IsNotEmpty({ message: 'Фамилия не может быть пустой' })
   @MaxLength(100, { message: 'Фамилия не должна превышать 100 символов' })
-  lastName: string;
+  lastName?: string;
 }

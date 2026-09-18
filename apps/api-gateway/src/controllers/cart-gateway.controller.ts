@@ -17,7 +17,16 @@ import {
   HttpStatus
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { 
+  ApiTags, 
+  ApiBearerAuth, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiOkResponse, 
+  ApiCreatedResponse,
+  ApiParam,            
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
 
@@ -49,8 +58,8 @@ export class CartGatewayController {
     return this.pizzaClient.send('get_user_cart', { userId: req.user.userId });
   }
 
-  // * Добавить пиццу в собственную корзину (POST /cart/add)
-  @Post('add')
+  // * Добавить пиццу в собственную корзину (POST /cart)
+  @Post()
   @ApiOperation({ 
     summary: 'Добавить пиццу в корзину', 
     description: 'Добавляет пиццу в корзину. Если пицца уже есть, увеличивает её количество.' 
@@ -62,11 +71,17 @@ export class CartGatewayController {
     return this.pizzaClient.send('add_to_cart', { userId: req.user.userId, ...body });
   }
 
-  // * Редактирование количества пиццы в собственной корзине (PUT /cart/:cartItemId/edit)
-  @Put(':cartItemId/edit')
+  // * Редактирование количества пиццы в собственной корзине (PUT /cart/:cartItemId)
+  @Put(':cartItemId')
   @ApiOperation({ 
     summary: 'Изменить количество пиццы в корзине', 
     description: 'Позволяет изменить количество (`quantity`) конкретной позиции в корзине.' 
+  })
+  @ApiParam({
+    name: 'cartItemId',
+    type: Number,
+    description: 'Уникальный идентификатор элемента корзины',
+    example: 12,
   })
   @ApiOkResponse({ description: 'Количество успешно изменено.', type: CartItemResponseDto })
   @ApiResponse({ status: 400, description: 'Невалидный ID или некорректное количество.' })
@@ -83,14 +98,20 @@ export class CartGatewayController {
     });
   }
 
-  // * Удалить пиццу из собственной корзины (DELETE /cart/:cartItemId/delete)
-  @Delete(':cartItemId/delete')
+  // * Удалить пиццу из собственной корзины (DELETE /cart/:cartItemId)
+  @Delete(':cartItemId')
   @HttpCode(HttpStatus.NO_CONTENT) // Возвращаем 204 No Content
   @ApiOperation({ 
     summary: 'Удалить позицию из корзины', 
     description: 'Полностью удаляет конкретную пиццу из корзины текущего пользователя.' 
   })
-  @ApiResponse({ status: 204, description: 'Позиция успешно удалена из корзины. Ничего не возвращает.' })
+  @ApiParam({
+    name: 'cartItemId',
+    type: Number,
+    description: 'Уникальный идентификатор элемента корзины',
+    example: 12,
+  })
+  @ApiNoContentResponse({ description: 'Позиция успешно удалена из корзины. Ничего не возвращает.' })
   @ApiResponse({ status: 400, description: 'Неверный формат ID элемента корзины.' })
   @ApiResponse({ status: 404, description: 'Элемент в корзине пользователя не найден.' })
   removeFromCart(
@@ -100,7 +121,3 @@ export class CartGatewayController {
     return this.pizzaClient.send('remove_from_cart', { userId: req.user.userId, cartItemId });
   }
 }
-
-
-
-

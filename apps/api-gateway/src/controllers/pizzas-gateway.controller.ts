@@ -1,7 +1,7 @@
 // * Контроллер меню пицц
 
 import { 
-  Controller, Post, Get, Put, Delete, Body, Param, Inject, UseFilters, Query,ParseIntPipe,HttpCode,HttpStatus
+  Controller, Post, Get, Put, Delete, Body, Param, Inject, UseFilters, Query, ParseIntPipe, HttpCode, HttpStatus
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { 
@@ -11,12 +11,13 @@ import {
   ApiResponse, 
   ApiOkResponse, 
   ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiParam,
   ApiQuery
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
 
-// Импорт всех созданных DTO
 import { CreatePizzaDto } from '../dto/pizzas/create-pizza.dto';
 import { UpdatePizzaDto } from '../dto/pizzas/update-pizza.dto.';
 import { AddIngredientToPizzaDto } from '../dto/pizzas/add-ingredient-to-pizza.dto';
@@ -24,7 +25,7 @@ import { PizzaResponseDto } from '../dto/pizzas/pizza-response.dto';
 
 @ApiTags('Pizzas') 
 @ApiBearerAuth('bearerAuth')
-@Controller()
+@Controller('pizzas') // Базовый префикс для всех эндпоинтов
 @UseFilters(RpcExceptionFilter)
 export class PizzasGatewayController {
   constructor(
@@ -32,81 +33,11 @@ export class PizzasGatewayController {
   ) {}
 
   // ==========================================
-  // МАРШРУТЫ АДМИНИСТРАТОРА
+  // ОБЩИЕ МАРШРУТЫ И МАРШРУТЫ АДМИНИСТРАТОРА (КОЛЛЕКЦИИ)
   // ==========================================
 
-  // * Создать пиццу
-  @Post('admin/pizzas/add')
-  @Roles('admin')
-  @ApiOperation({ 
-    summary: 'Создать новую пиццу в меню', 
-    description: 'Доступно только администратору. Позволяет создать пиццу с обязательным указанием массива ID ингредиентов.' 
-  })
-  @ApiCreatedResponse({ description: 'Пицца успешно добавлена в меню.', type: PizzaResponseDto })
-  @ApiResponse({ status: 400, description: 'Ошибка валидации входящих полей.' })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
-  createPizza(@Body() body: CreatePizzaDto) {
-    return this.pizzaClient.send('admin_create_pizza', body);
-  }
-
-  // * Изменить параметры пиццы по ее id (доступно только админу)
-  @Put('admin/pizzas/:id/edit')
-  @Roles('admin')
-  @ApiOperation({ 
-    summary: 'Редактировать параметры пиццы по ее ID', 
-    description: 'Доступно только администратору. Позволяет частично или полностью обновить данные пиццы (название, описание, цену, картинку).' 
-  })
-  @ApiOkResponse({ description: 'Данные пиццы успешно обновлены.', type: PizzaResponseDto })
-  @ApiResponse({ status: 400, description: 'Невалидный ID или ошибка валидации переданных полей.' })
-  @ApiResponse({ status: 404, description: 'Пицца с таким ID не найдена.' })
-  @ApiResponse({ status: 409, description: 'Пицца с таким названием (title) уже существует.' }) // Добавлена возможная ошибка уникальности названия
-  editPizza(
-    @Param('id', ParseIntPipe) id: number, 
-    @Body() body: UpdatePizzaDto
-  ) {
-    // Передаем id и все распакованные из body измененные параметры в микросервис
-    return this.pizzaClient.send('admin_edit_pizza', { pizzaId: id, ...body });
-  }
-
-  // * Добавить конкретный ингредиент к пицце
-  @Post('admin/pizzas/:id/ingredients/add')
-  @Roles('admin')
-  @ApiOperation({ 
-    summary: 'Добавить конкретный ингредиент к пицце', 
-    description: 'Доступно только администратору. Позволяет привязать новый ингредиент к существующей пицце.' 
-  })
-  @ApiOkResponse({ description: 'Ингредиент успешно добавлен к пицце.', type: PizzaResponseDto })
-  @ApiResponse({ status: 400, description: 'Невалидный ID пиццы или ID ингредиента.' })
-  @ApiResponse({ status: 404, description: 'Пицца или ингредиент не найдены.' })
-  addIngredientToPizza(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: AddIngredientToPizzaDto
-  ) {
-    return this.pizzaClient.send('admin_add_ingredient_to_pizza', { pizzaId: id, ingredientId: body.ingredientId });
-  }
-
-  // * Удалить пиццу по id
-  @Delete('admin/pizzas/:id/delete')
-  @Roles('admin')
-  @HttpCode(HttpStatus.NO_CONTENT) // Устанавливаем 204 статус
-  @ApiOperation({ 
-    summary: 'Удалить пиццу из меню по ID', 
-    description: 'Доступно только администратору. Полностью удаляет пиццу и очищает её связи в промежуточной таблице.' 
-  })
-  @ApiResponse({ status: 204, description: 'Пицца успешно удалена из меню. Ничего не возвращает.' })
-  @ApiResponse({ status: 400, description: 'Неверный формат ID пиццы.' })
-  @ApiResponse({ status: 404, description: 'Пицца с указанным ID не найдена.' })
-  deletePizza(@Param('id', ParseIntPipe) id: number) {
-    return this.pizzaClient.send('admin_delete_pizza', { pizzaId: id });
-  }
-
-  // ==========================================
-  // ПОЛЬЗОВАТЕЛЬСКИЕ МАРШРУТЫ
-  // ==========================================
-
-  // * Получить список всех пицц (доступно пользователю и админу)
-  @Get('pizzas')
+  // * Получить список всех пицц (GET /pizzas)
+  @Get()
   @Roles('user', 'admin')
   @ApiOperation({ 
     summary: 'Получить постраничный список всех пицц', 
@@ -123,17 +54,90 @@ export class PizzasGatewayController {
     return this.pizzaClient.send('get_pizzas_list', { page, limit });
   }
 
-  // * Получить детали конкретной пиццы по ее id (доступно пользователю и админу)
-  @Get('pizzas/:id')
+  // * Создать пиццу (POST /pizzas)
+  @Post()
+  @Roles('admin')
+  @ApiOperation({ 
+    summary: 'Создать новую пиццу в меню', 
+    description: 'Доступно только администратору. Позволяет создать пиццу с обязательным указанием массива ID ингредиентов.' 
+  })
+  @ApiCreatedResponse({ description: 'Пицца успешно добавлена в меню.', type: PizzaResponseDto })
+  @ApiResponse({ status: 400, description: 'Ошибка валидации входящих полей.' })
+  @ApiResponse({ status: 401, description: 'Не авторизован.' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
+  createPizza(@Body() body: CreatePizzaDto) {
+    return this.pizzaClient.send('admin_create_pizza', body);
+  }
+
+  // ==========================================
+  // МАРШРУТЫ ДЛЯ КОНКРЕТНЫХ СУЩНОСТЕЙ ПО ID
+  // ==========================================
+
+  // * Получить детали конкретной пиццы по ее id (GET /pizzas/:id)
+  @Get(':id')
   @Roles('user', 'admin')
   @ApiOperation({ 
     summary: 'Получить детальную информацию о пицце по ID', 
     description: 'Доступно всем авторизованным пользователям. Возвращает описание, картинку и полный массив сущностей вложенных ингредиентов.' 
   })
+  @ApiParam({ name: 'id', type: Number, description: 'Уникальный ID пиццы', example: 1 })
   @ApiOkResponse({ description: 'Детали пиццы успешно получены.', type: PizzaResponseDto })
   @ApiResponse({ status: 400, description: 'Неверный формат ID.' })
   @ApiResponse({ status: 404, description: 'Пицца с указанным ID не найдена.' })
   getPizzaDetail(@Param('id', ParseIntPipe) id: number) {
     return this.pizzaClient.send('get_pizza_detail', { pizzaId: id });
+  }
+
+  // * Изменить параметры пиццы по ее id (PUT /pizzas/:id)
+  @Put(':id')
+  @Roles('admin')
+  @ApiOperation({ 
+    summary: 'Редактировать параметры пиццы по ее ID', 
+    description: 'Доступно только администратору. Позволяет частично или полностью обновить данные пиццы (название, описание, цену, картинку).' 
+  })
+  @ApiParam({ name: 'id', type: Number, description: 'Уникальный ID пиццы', example: 1 })
+  @ApiOkResponse({ description: 'Данные пиццы успешно обновлены.', type: PizzaResponseDto })
+  @ApiResponse({ status: 400, description: 'Невалидный ID или ошибка валидации переданных полей.' })
+  @ApiResponse({ status: 404, description: 'Пицца с таким ID не найдена.' })
+  @ApiResponse({ status: 409, description: 'Пицца с таким названием (title) уже существует.' })
+  editPizza(
+    @Param('id', ParseIntPipe) id: number, 
+    @Body() body: UpdatePizzaDto
+  ) {
+    return this.pizzaClient.send('admin_edit_pizza', { pizzaId: id, ...body });
+  }
+
+  // * Добавить конкретный ингредиент к пицце (POST /pizzas/:id/ingredients)
+  @Post(':id/ingredients')
+  @Roles('admin')
+  @ApiOperation({ 
+    summary: 'Добавить конкретный ингредиент к пицце', 
+    description: 'Доступно только администратору. Позволяет привязать новый ингредиент к существующей пицце.' 
+  })
+  @ApiParam({ name: 'id', type: Number, description: 'Уникальный ID пиццы', example: 1 })
+  @ApiOkResponse({ description: 'Ингредиент успешно добавлен к пицце.', type: PizzaResponseDto })
+  @ApiResponse({ status: 400, description: 'Невалидный ID пиццы или ID ингредиента.' })
+  @ApiResponse({ status: 404, description: 'Пицца или ингредиент не найдены.' })
+  addIngredientToPizza(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: AddIngredientToPizzaDto
+  ) {
+    return this.pizzaClient.send('admin_add_ingredient_to_pizza', { pizzaId: id, ingredientId: body.ingredientId });
+  }
+
+  // * Удалить пиццу по id (DELETE /pizzas/:id)
+  @Delete(':id')
+  @Roles('admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ 
+    summary: 'Удалить пиццу из меню по ID', 
+    description: 'Доступно только администратору. Полностью удаляет пиццу и очищает её связи в промежуточной таблице.' 
+  })
+  @ApiParam({ name: 'id', type: Number, description: 'Уникальный ID пиццы', example: 1 })
+  @ApiNoContentResponse({ description: 'Пицца успешно удалена из меню. Ничего не возвращает.' })
+  @ApiResponse({ status: 400, description: 'Неверный формат ID пиццы.' })
+  @ApiResponse({ status: 404, description: 'Пицца с указанным ID не найдена.' })
+  deletePizza(@Param('id', ParseIntPipe) id: number) {
+    return this.pizzaClient.send('admin_delete_pizza', { pizzaId: id });
   }
 }

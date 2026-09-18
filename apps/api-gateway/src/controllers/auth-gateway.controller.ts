@@ -23,6 +23,7 @@ import {
   ApiResponse,
   ApiTags,
   ApiOkResponse,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { Public } from '../decorators/public.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -50,8 +51,7 @@ export class AuthGatewayController {
       'Создает новый аккаунт пользователя в системе. Отправляет данные в микросервис пользователей.',
   })
   // Описание успешного ответа
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Пользователь успешно зарегистрирован.',
     type: RegisterResponseDto,
   })
@@ -69,8 +69,6 @@ export class AuthGatewayController {
     description:
       'Внутренняя ошибка сервера при обработке запроса микросервисом.',
   })
-
-  // с DTO: Swagger отобразит интерактивную форму с примерами ('example' из RegisterDto)
   register(@Body() body: RegisterDto) {
     // Отправляем команду в auth_queue и ждем результат
     return this.authClient.send('user_register', body);
@@ -85,7 +83,6 @@ export class AuthGatewayController {
     description:
       'Проверяет учетные данные (email/password) и возвращает JWT-токен.',
   })
-  // Используем специализированный декоратор для 200 OK
   @ApiOkResponse({
     description: 'Успешная авторизация. Возвращает JWT токен.',
     type: LoginResponseDto,
@@ -102,3 +99,4 @@ export class AuthGatewayController {
     return this.authClient.send('user_login', body);
   }
 }
+
