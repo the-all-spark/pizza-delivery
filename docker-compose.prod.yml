@@ -51,7 +51,6 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
     ports:
-      # AMQP (5672) stays inside pizza_network; only the management UI is published
       - '15672:15672' # RabbitMQ panel
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
@@ -67,9 +66,6 @@ services:
     build:
       context: .
       dockerfile: apps/api-gateway/Dockerfile
-      target: builder # останавливаем сборку на этапе builder, где есть Nest CLI
-      args:
-        BUILD_DIST: 'false' # Говорим Dockerfile: "Не собирай dist на диске F"
     container_name: pizza_api_gateway
     restart: always
     env_file:
@@ -77,14 +73,8 @@ services:
     ports:
       - '3000:3000' # The only public application port
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
-      WATCHPACK_POLLING: 'true' # Альтернативный триггер для Webpack/Rspack систем для hot-reload
-    volumes:
-      - .:/usr/src/app # 1. Пробрасываем ВЕСЬ корень
-      - /usr/src/app/node_modules # 2. Изолируем корневые node_modules
-      - /usr/src/app/apps/api-gateway/node_modules # 3. Изолируем node_modules самого сервиса
-    command: npm run start:dev -- api-gateway
     depends_on:
       - rabbitmq
     networks:
@@ -95,15 +85,12 @@ services:
     build:
       context: .
       dockerfile: apps/auth-service/Dockerfile
-      target: builder
-      args:
-        BUILD_DIST: 'false'
     container_name: pizza_auth_service
     restart: always
     env_file:
       - .env
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       DB_HOST: postgres_db
       DB_PORT: 5432
       DB_USERNAME: ${DB_USERNAME}
@@ -111,12 +98,6 @@ services:
       DB_NAME: ${DB_NAME}
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
       # MONGO_URI_AUTH: ${MONGO_URI_AUTH}
-      WATCHPACK_POLLING: 'true'
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/apps/auth-service/node_modules
-    command: npm run start:dev -- auth-service
     depends_on:
       - postgres_db
       # - mongodb
@@ -129,27 +110,20 @@ services:
     build:
       context: .
       dockerfile: apps/pizza-service/Dockerfile
-      target: builder
-      args:
-        BUILD_DIST: 'false'
     container_name: pizza_pizza_service
     restart: always
     env_file:
       - .env
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       DB_HOST: postgres_db
       DB_PORT: 5432
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
-      WATCHPACK_POLLING: 'true'
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/apps/pizza-service/node_modules
-      - pizza_uploads:/usr/src/app/apps/pizza-service/uploads
+      - pizza_uploads:/usr/src/app/apps/pizza-service/uploads # Images storage
     command: npm run start:dev -- pizza-service
     depends_on:
       - postgres_db
@@ -162,26 +136,17 @@ services:
     build:
       context: .
       dockerfile: apps/notification-service/Dockerfile
-      target: builder
-      args:
-        BUILD_DIST: 'false'
     container_name: pizza_notification_service
     restart: always
     env_file:
       - .env
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
-      WATCHPACK_POLLING: 'true'
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/apps/notification-service/node_modules
-    command: npm run start:dev -- notification-service
     depends_on:
       - rabbitmq
     networks:
@@ -192,23 +157,14 @@ services:
     build:
       context: .
       dockerfile: apps/logger-service/Dockerfile
-      target: builder
-      args:
-        BUILD_DIST: 'false'
     container_name: pizza_logger_service
     restart: always
     env_file:
       - .env
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
-      WATCHPACK_POLLING: 'true'
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/apps/logger-service/node_modules
-    command: npm run start:dev -- logger-service
     depends_on:
       - mongodb
       - rabbitmq

@@ -3,10 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    // "rootDir": "./src",
     "rootDir": "../../",
     "outDir": "../../dist/apps/api-gateway",
-    "types": ["node", "jest"] 
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*", "../../shared/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]

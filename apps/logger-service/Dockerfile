@@ -11,7 +11,11 @@ RUN npm ci
 
 COPY . .
 
-RUN npx nest build logger-service
+# Принимаем аргумент. По умолчанию он равен true (для продакшна)
+ARG BUILD_DIST=true
+
+# Запускаем сборку ТОЛЬКО если аргумент равен true. 
+RUN if [ "$BUILD_DIST" = "true" ]; then npx nest build logger-service; else echo "Skipping build for dev"; fi
 
 # ==========================================
 # 2: Production stage
