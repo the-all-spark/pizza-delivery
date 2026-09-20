@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createDatabase } from 'typeorm-extension';
 import type { DataSourceOptions } from 'typeorm';
+// import { MongooseModule } from '@nestjs/mongoose';
 import { User } from './modules/users/user.entity';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -42,6 +43,15 @@ import { AuthModule } from './modules/auth/auth.module';
         return options;
       },
     }),
+
+    // Для перехода на MongoDB - активируем подключение к MongoDB
+    // MongooseModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     uri: configService.get<string>('MONGO_URI_AUTH'),
+    //   }),
+    // }),
 
     UsersModule,
     AuthModule,
