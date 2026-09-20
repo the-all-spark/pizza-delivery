@@ -29,6 +29,8 @@ export class AuthService {
   // ЛОГИКА РЕГИСТРАЦИИ ПОЛЬЗОВАТЕЛЯ
   // ==========================================
   async register(payload: RegisterPayload): Promise<RegisterResponse> {
+    // ! Проверка отправки email админу при критической ошибке
+    // throw new Error('FATAL: Database connection lost on tables users');
     const { email, password, firstName, lastName } = payload;
 
     // 1. Проверяем, существует ли уже пользователь с таким email

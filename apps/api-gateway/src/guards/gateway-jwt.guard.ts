@@ -43,7 +43,7 @@ export class GatewayJwtGuard implements CanActivate {
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException(
-        'Токен авторизации отсутствует или неверный',
+        'Authorization token is missing or invalid.',
       );
     }
 
@@ -82,7 +82,7 @@ export class GatewayJwtGuard implements CanActivate {
       const hasRole = requiredRoles.includes(payload.role);
       if (!hasRole) {
         throw new ForbiddenException(
-          'У вас недостаточно прав для доступа к этому ресурсу',
+          'You do not have sufficient permissions to access this resource.',
         );
       }
 
@@ -91,9 +91,7 @@ export class GatewayJwtGuard implements CanActivate {
       if (error instanceof ForbiddenException) {
         throw error;
       }
-      throw new UnauthorizedException(
-        'Срок действия токена истек или он поврежден',
-      );
+      throw new UnauthorizedException('The token has expired or is corrupted.');
     }
   }
 }
