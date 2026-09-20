@@ -21,7 +21,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiOkResponse,
-  ApiQuery
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -47,38 +47,41 @@ export class UsersGatewayController {
   @Get()
   @Roles('admin')
   @ApiOperation({
-    summary: 'Получение списка пользователей с фильтрацией и пагинацией',
+    summary: 'Get a list of users with filtering and pagination',
     description:
-      'Доступно только администраторам. Позволяет искать пользователей по имени/фамилии, а также получать постраничный список.',
+      'Available only to administrators. Allows searching for users by first name/last name, as well as retrieving a paginated list.',
   })
   @ApiQuery({
     name: 'page',
-    description: 'Номер страницы (начиная с 1)',
+    description: 'Page number (starting from 1)',
     example: 1,
     required: false,
   })
   @ApiQuery({
     name: 'limit',
-    description: 'Количество элементов на странице',
+    description: 'Number of items per page',
     example: 10,
     required: false,
   })
   @ApiQuery({
     name: 'firstName',
-    description: 'Имя пользователя для поиска',
+    description: 'User first name for search',
     required: false,
   })
   @ApiQuery({
     name: 'lastName',
-    description: 'Фамилия пользователя для поиска',
+    description: 'User last name for search',
     required: false,
   })
   @ApiOkResponse({
-    description: 'Список пользователей успешно получен.',
+    description: 'User list successfully retrieved.',
     type: [RegisterResponseDto],
   })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied (admin role required).',
+  })
   getUsers(
     // флаг { optional: true }, чтобы при поиске по имени параметры пагинации не падали с ошибкой, если они не переданы
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
@@ -95,13 +98,13 @@ export class UsersGatewayController {
         lastName: searchDto.lastName,
       });
     }
-    
+
     // Иначе отдаем список с пагинацией (задаем дефолтные значения, если они не пришли)
     // GET /users?page=2&limit=20
     // GET /users
-    return this.authClient.send('admin_get_users', { 
-      page: page ?? 1, 
-      limit: limit ?? 10 
+    return this.authClient.send('admin_get_users', {
+      page: page ?? 1,
+      limit: limit ?? 10,
     });
   }
 
@@ -110,19 +113,19 @@ export class UsersGatewayController {
   @Put('profile')
   @Roles('user', 'admin')
   @ApiOperation({
-    summary: 'Редактирование личного профиля',
+    summary: 'Update personal profile',
     description:
-      'Доступно авторизованным пользователям. Позволяет обновить имя, фамилию или пароль.',
+      'Available to authorized users. Allows updating first name, last name, or password.',
   })
   @ApiOkResponse({
-    description: 'Профиль успешно обновлен. Возвращает обновленные данные.',
+    description: 'Profile successfully updated. Returns updated data.',
     type: RegisterResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: 'Ошибка валидации переданных полей.',
+    description: 'Validation error of the submitted fields.',
   })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   editProfile(
     @Req() req: AuthenticatedRequest,
     @Body() body: UpdateProfileDto,
@@ -141,15 +144,15 @@ export class UsersGatewayController {
   @Roles('user', 'admin')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Удаление собственного аккаунта',
+    summary: 'Delete your own account',
     description:
-      'Доступно авторизованным пользователям. Полностью удаляет профиль текущего пользователя из системы.',
+      'Available to authorized users. Completely removes the profile of the current user from the system.',
   })
   @ApiResponse({
     status: 204,
-    description: 'Аккаунт успешно удален. Ничего не возвращает.',
+    description: 'Account successfully deleted. Returns no content.',
   })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   deleteAccount(@Req() req: AuthenticatedRequest) {
     return this.authClient.send('user_delete_account', {
       userId: req.user.userId,

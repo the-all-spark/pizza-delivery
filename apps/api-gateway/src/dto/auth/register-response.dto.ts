@@ -11,38 +11,38 @@ import { UserRole } from '@shared/enums';
 export class RegisterResponseDto {
   @ApiProperty({
     example: 1,
-    description: 'Уникальный идентификатор пользователя (ID)',
+    description: 'Unique user identifier (ID)',
   })
   uId: number;
 
   @ApiProperty({
     example: 'user@example.com',
-    description: 'Электронная почта пользователя',
+    description: 'User email address',
   })
   email: string;
 
   @ApiProperty({
-    example: 'Иван',
-    description: 'Имя пользователя',
+    example: 'John',
+    description: 'User first name',
   })
   firstName: string;
 
   @ApiProperty({
-    example: 'Иванов',
-    description: 'Фамилия пользователя',
+    example: 'Doe',
+    description: 'User last name',
   })
   lastName: string;
 
   @ApiProperty({
     example: 'user',
     enum: UserRole,
-    description: 'Роль пользователя в системе',
+    description: 'User role in the system',
   })
   role: UserRole;
 
   @ApiProperty({
     example: '2026-03-31T12:34:56.789Z',
-    description: 'Дата и время создания аккаунта',
+    description: 'Account creation date and time',
   })
   createdAt: Date;
 }

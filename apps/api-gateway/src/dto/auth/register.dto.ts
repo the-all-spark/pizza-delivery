@@ -1,7 +1,12 @@
 // * DTO для валидации входящих данных при регистрации (/auth/register)
-
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 
 /*
 Исключаем из DTO:
@@ -15,44 +20,44 @@ export class RegisterDto {
   // декораторы @ApiProperty для автоматической генерации документации в Swagger
   @ApiProperty({
     example: 'user@example.com',
-    description: 'Электронная почта пользователя (должна быть уникальной)',
+    description: 'User email (must be unique)',
     maxLength: 255,
   })
   // декораторы class-validator для защиты сервера
-  @IsEmail({}, { message: 'Некорректный формат электронной почты' })
-  @IsNotEmpty({ message: 'Email не может быть пустым' })
-  @MaxLength(255, { message: 'Email не должен превышать 255 символов' })
+  @IsEmail({}, { message: 'Invalid email format' })
+  @IsNotEmpty({ message: 'Email cannot be empty' })
+  @MaxLength(255, { message: 'Email must not exceed 255 characters' })
   email: string;
 
   @ApiProperty({
     example: 'SecretPassword123',
-    description: 'Пароль пользователя (минимум 6 символов)',
+    description: 'User password (minimum 6 characters)',
     minLength: 6,
     maxLength: 255,
   })
-  @IsString({ message: 'Пароль должен быть строкой' })
-  @IsNotEmpty({ message: 'Пароль не может быть пустым' })
-  @MinLength(6, { message: 'Пароль должен быть не менее 6 символов' })
-  @MaxLength(255, { message: 'Пароль не должен превышать 255 символов' })
+  @IsString({ message: 'Password must be a string' })
+  @IsNotEmpty({ message: 'Password cannot be empty' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  @MaxLength(255, { message: 'Password must not exceed 255 characters' })
   password: string;
 
   @ApiProperty({
-    example: 'Иван',
-    description: 'Имя пользователя',
+    example: 'Ivan',
+    description: 'User first name',
     maxLength: 100,
   })
-  @IsString({ message: 'Имя должно быть строкой' })
-  @IsNotEmpty({ message: 'Имя не может быть пустым' })
-  @MaxLength(100, { message: 'Имя не должно превышать 100 символов' })
+  @IsString({ message: 'First name must be a string' })
+  @IsNotEmpty({ message: 'First name cannot be empty' })
+  @MaxLength(100, { message: 'First name must not exceed 100 characters' })
   firstName: string;
 
   @ApiProperty({
-    example: 'Иванов',
-    description: 'Фамилия пользователя',
+    example: 'Ivanov',
+    description: 'User last name',
     maxLength: 100,
   })
-  @IsString({ message: 'Фамилия должна быть строкой' })
-  @IsNotEmpty({ message: 'Фамилия не может быть пустой' })
-  @MaxLength(100, { message: 'Фамилия не должна превышать 100 символов' })
+  @IsString({ message: 'Last name must be a string' })
+  @IsNotEmpty({ message: 'Last name cannot be empty' })
+  @MaxLength(100, { message: 'Last name must not exceed 100 characters' })
   lastName: string;
 }

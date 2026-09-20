@@ -34,7 +34,9 @@ async function bootstrap() {
   // Создаем конфигурацию
   const config = new DocumentBuilder()
     .setTitle('Pizza Delivery API') // Заголовок страницы в браузере
-    .setDescription('Единая точка входа для микросервисного приложения доставки пиццы') // Описание проекта
+    .setDescription(
+      'A single entry point for a pizza delivery microservice application',
+    ) // Описание проекта
     .setVersion('1.0') // Версия API
 
     // Добавляем поддержку авторизации по JWT-токену (Bearer Auth)
@@ -45,7 +47,8 @@ async function bootstrap() {
         scheme: 'bearer', // схема авторизации Bearer
         bearerFormat: 'JWT', // Подсказка, что вводить нужно именно JWT-токен
         name: 'JWT', // внутреннее имя схемы авторизации
-        description: 'Введите ваш JWT-токен в поле ниже без слова Bearer',
+        description:
+          'Enter your JWT token in the field below without the word "Bearer".',
         in: 'header', // Указываем, что токен автоматически прикрепится к заголовкам запроса
       },
       'bearerAuth', // Уникальное кодовое имя для связи этой авторизации с защищенными роутами
@@ -61,7 +64,9 @@ async function bootstrap() {
       persistAuthorization: true, // ВАЖНО: Swagger запомнит ваш токен и он не сотрется при обновлении страницы!
     },
   });
-  console.log('[API Gateway] Документация Swagger успешно развернута по адресу: http://localhost:3000/api');
+  console.log(
+    '[API Gateway] Документация Swagger успешно развернута по адресу: http://localhost:3000/api',
+  );
 
   // 4. Запускаем HTTP-сервер на порту 3000
   const port = process.env.PORT || 3000;

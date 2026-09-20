@@ -5,6 +5,7 @@
  * так как пользователь может захотеть изменить только имя, или только пароль
  */
 
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
@@ -14,22 +15,38 @@ import {
 } from 'class-validator';
 
 export class UpdateProfileDto {
+  @ApiPropertyOptional({
+    example: 'Alex',
+    description: 'New user first name (optional)',
+    maxLength: 100,
+  })
   @IsOptional()
-  @IsString({ message: 'Имя должно быть строкой' })
-  @IsNotEmpty({ message: 'Имя не может быть пустым' })
-  @MaxLength(100, { message: 'Имя не должно превышать 100 символов' })
+  @IsString({ message: 'First name must be a string' })
+  @IsNotEmpty({ message: 'First name cannot be empty' })
+  @MaxLength(100, { message: 'First name must not exceed 100 characters' })
   firstName?: string;
 
+  @ApiPropertyOptional({
+    example: 'Petrov',
+    description: 'New user last name (optional)',
+    maxLength: 100,
+  })
   @IsOptional()
-  @IsString({ message: 'Фамилия должна быть строкой' })
-  @IsNotEmpty({ message: 'Фамилия не может быть пустой' })
-  @MaxLength(100, { message: 'Фамилия не должна превышать 100 символов' })
+  @IsString({ message: 'Last name must be a string' })
+  @IsNotEmpty({ message: 'Last name cannot be empty' })
+  @MaxLength(100, { message: 'Last name must not exceed 100 characters' })
   lastName?: string;
 
+  @ApiPropertyOptional({
+    example: 'NewSecurePassword123',
+    description: 'New user password (minimum 6 characters, optional)',
+    minLength: 6,
+    maxLength: 255,
+  })
   @IsOptional()
-  @IsString({ message: 'Пароль должен быть строкой' })
-  @IsNotEmpty({ message: 'Пароль не может быть пустым' })
-  @MinLength(6, { message: 'Пароль должен быть не менее 6 символов' })
-  @MaxLength(255, { message: 'Пароль не должен превышать 255 символов' })
+  @IsString({ message: 'Password must be a string' })
+  @IsNotEmpty({ message: 'Password cannot be empty' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  @MaxLength(255, { message: 'Password must not exceed 255 characters' })
   password?: string;
 }

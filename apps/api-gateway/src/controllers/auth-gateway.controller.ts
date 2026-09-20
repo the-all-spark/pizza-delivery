@@ -1,8 +1,8 @@
 // * Контроллер авторизации
 
 /**
- *  Контроллеры шлюза описывают HTTP-эндпоинты и распределяют права доступа
- * с помощью декораторов @Public() и @Roles().
+ *  Контроллеры шлюза описывают HTTP-эндпоинты и распределяют
+ * права доступа с помощью декораторов @Public() и @Roles().
  * Для отправки запросов в RabbitMQ используется метод this.client.send(pattern, payload).
  * Он возвращает Observable, который NestJS автоматически превращает в HTTP-ответ
  * после получения данных от микросервиса.
@@ -46,28 +46,28 @@ export class AuthGatewayController {
   @Public() // Маршрут открыт для всех
   @Post('register')
   @ApiOperation({
-    summary: 'Регистрация нового пользователя',
+    summary: 'New user registration',
     description:
-      'Создает новый аккаунт пользователя в системе. Отправляет данные в микросервис пользователей.',
+      'Creates a new user account in the system. Sends data to the user microservice.',
   })
   // Описание успешного ответа
   @ApiCreatedResponse({
-    description: 'Пользователь успешно зарегистрирован.',
+    description: 'The user has been successfully registered.',
     type: RegisterResponseDto,
   })
   // Описание других вариантов ответа (ошибки, кастомные статусы)
   @ApiResponse({
     status: 400,
-    description: 'Неверно заполнены поля формы (ошибка валидации).',
+    description: 'Form fields are filled out incorrectly (validation error).',
   })
   @ApiResponse({
     status: 409,
-    description: 'Пользователь c таким Email или Login уже существует.',
+    description: 'A user with this email or login already exists.',
   })
   @ApiResponse({
     status: 500,
     description:
-      'Внутренняя ошибка сервера при обработке запроса микросервисом.',
+      'Internal server error while processing the request by the microservice.',
   })
   register(@Body() body: RegisterDto) {
     // Отправляем команду в auth_queue и ждем результат
@@ -79,24 +79,23 @@ export class AuthGatewayController {
   @Post('login')
   @HttpCode(HttpStatus.OK) // Явно задаем 200 OK вместо дефолтного 201 для POST запросов
   @ApiOperation({
-    summary: 'Авторизация пользователя (вход)',
+    summary: 'User authorization (log in)',
     description:
-      'Проверяет учетные данные (email/password) и возвращает JWT-токен.',
+      'Verifies credentials (email/password) and returns a JWT token.',
   })
   @ApiOkResponse({
-    description: 'Успешная авторизация. Возвращает JWT токен.',
+    description: 'Successful authorization. Returns a JWT token.',
     type: LoginResponseDto,
   })
   @ApiResponse({
     status: 401,
-    description: 'Неверный email или пароль.',
+    description: 'Invalid email or password.',
   })
   @ApiResponse({
     status: 400,
-    description: 'Ошибка валидации входных данных.',
+    description: 'Input data validation error.',
   })
   login(@Body() body: LoginDto) {
     return this.authClient.send('user_login', body);
   }
 }
-
