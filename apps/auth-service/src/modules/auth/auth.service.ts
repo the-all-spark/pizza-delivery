@@ -1,13 +1,13 @@
 // Логика регистрации и авторизации (хэширование с помощью bcrypt и генерация токенов)
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { RpcException } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 
-import { User } from '../users/user.entity'; 
+import { User } from '../users/user.entity';
 import { RegisterPayload } from './interfaces/register-payload.interface';
 import { LoginPayload } from './interfaces/login-payload.interface';
 import { RegisterResponse } from './interfaces/register-response.interface';
@@ -19,6 +19,10 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+
+    // Внедряем прокси-клиент RabbitMQ для уведомлений
+    @Inject('NOTIFICATION_SERVICE')
+    private readonly notificationClient: ClientProxy,
   ) {}
 
   // ==========================================
@@ -33,7 +37,7 @@ export class AuthService {
       // Выбрасываем RpcException вместо Http СonflictException
       throw new RpcException({
         statusCode: 409,
-        message: 'Пользователь с таким Email уже существует',
+        message: 'A user with such email already exists.',
       });
     }
 
@@ -52,9 +56,17 @@ export class AuthService {
     // 4. Сохраняем пользователя в PostgreSQL
     const savedUser = await this.userRepository.save(newUser);
 
+    // Отправляем событие о регистрации нового пользователя в RabbitMQ.
+    // Сервис уведомлений (notification-service) поймает этот паттерн и вышлет приветственный email.
+    this.notificationClient.emit('user_registered_event', {
+      email: savedUser.email,
+      firstName: savedUser.firstName,
+      lastName: savedUser.lastName,
+    });
+
     // 5. Возвращаем созданного пользователя БЕЗ хэша пароля
     const { passwordHash: _, ...result } = savedUser;
-    return result as RegisterResponse;;
+    return result as RegisterResponse;
   }
 
   // ==========================================
@@ -68,7 +80,7 @@ export class AuthService {
     if (!user) {
       throw new RpcException({
         statusCode: 401,
-        message: 'Неверный email или пароль',
+        message: 'Invalid email or password',
       });
     }
 
@@ -77,7 +89,7 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new RpcException({
         statusCode: 401,
-        message: 'Неверный email или пароль',
+        message: 'Invalid email or password',
       });
     }
 

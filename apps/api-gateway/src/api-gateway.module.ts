@@ -2,10 +2,11 @@
 
 /**
  * Здесь мы настраиваем прокси-клиентов для очередей RabbitMQ.
- * Шлюз будет использовать две разные очереди:
- * auth_queue (для работы с пользователями) и pizza_queue (для меню, корзины и заказов).
+ * Шлюз будет использовать три разные очереди:
+ * auth_queue (для работы с пользователями), pizza_queue (для меню, корзины и заказов)
+ * и notification_queue (для отправки email уведомлений).
  * Также здесь регистрируется JwtModule.
-*/
+ */
 
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -17,7 +18,7 @@ import { GatewayJwtGuard } from './guards/gateway-jwt.guard';
 // Импортируем раздельные контроллеры
 import { AuthGatewayController } from './controllers/auth-gateway.controller';
 import { UsersGatewayController } from './controllers/users-gateway.controller';
-import { IngredientsGatewayController } from './controllers/ingredients-gateway.controller'
+import { IngredientsGatewayController } from './controllers/ingredients-gateway.controller';
 import { PizzasGatewayController } from './controllers/pizzas-gateway.controller';
 import { CartGatewayController } from './controllers/cart-gateway.controller';
 import { PromoCodesGatewayController } from './controllers/promo-codes-gateway.controller';
@@ -39,6 +40,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
 
     // Регистрируем RabbitMQ клиенты для отправки команд в микросервисы
     ClientsModule.registerAsync([
+      // Регистрация клиента для сервиса регистрации/авторизации
       {
         name: 'AUTH_SERVICE',
         imports: [ConfigModule],
@@ -57,6 +59,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
           },
         }),
       },
+      // Регистрация клиента для сервиса пицц
       {
         name: 'PIZZA_SERVICE',
         imports: [ConfigModule],
@@ -72,6 +75,25 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
             ],
             queue: 'pizza_queue', // Очередь для pizza-service
             queueOptions: { durable: true },
+          },
+        }),
+      },
+      // Регистрация клиента для сервиса уведомлений
+      {
+        name: 'NOTIFICATION_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [
+              configService.get<string>(
+                'RABBITMQ_URL',
+                'amqp://localhost:5672',
+              ),
+            ],
+            queue: 'notification_queue', // Очередь для notification-service
+            queueOptions: { durable: true }, // durable гарантирует сохранность писем при перезапуске брокера
           },
         }),
       },
