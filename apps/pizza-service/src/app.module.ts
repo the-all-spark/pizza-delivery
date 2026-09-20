@@ -43,7 +43,15 @@ import { SeedModule } from './modules/seed/seed.module';
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
           // Перечисляем все сущности этого микросервиса
-          entities: [User, Ingredient, Pizza, CartItem, PromoCode, Order, OrderItem],
+          entities: [
+            User,
+            Ingredient,
+            Pizza,
+            CartItem,
+            PromoCode,
+            Order,
+            OrderItem,
+          ],
           // Автоматическая генерация и обновление структуры таблиц
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
@@ -66,7 +74,7 @@ import { SeedModule } from './modules/seed/seed.module';
     CartModule,
     PromoCodesModule,
     OrdersModule,
-    SeedModule
+    SeedModule,
   ],
 })
 export class AppModule {}

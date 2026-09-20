@@ -1,25 +1,31 @@
 // Создание и Обновление
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsNumber, Min, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  Min,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateIngredientDto {
   @ApiProperty({
-    example: 'Сыр Моцарелла',
-    description: 'Уникальное название ингредиента для пиццы',
+    example: 'Mozzarella Cheese',
+    description: 'Unique name of the pizza ingredient',
     maxLength: 150,
   })
-  @IsString({ message: 'Название должно быть строкой' })
-  @IsNotEmpty({ message: 'Название не может быть пустым' })
-  @MaxLength(150, { message: 'Название не должно превышать 150 символов' })
+  @IsString({ message: 'Name must be a string' })
+  @IsNotEmpty({ message: 'Name cannot be empty' })
+  @MaxLength(150, { message: 'Name must not exceed 150 characters' })
   name: string;
 
   @ApiProperty({
-    example: 2.50,
-    description: 'Стоимость ингредиента (добавка к базовой цене пиццы)',
+    example: 2.5,
+    description: 'Ingredient cost (added to the base pizza price)',
     minimum: 0,
   })
-  @IsNumber({}, { message: 'Цена должна быть числом' })
-  @Min(0, { message: 'Цена не может быть отрицательной' })
+  @IsNumber({}, { message: 'Price must be a number' })
+  @Min(0, { message: 'Price cannot be negative' })
   price: number;
 }

@@ -6,20 +6,19 @@ import { ApiProperty } from '@nestjs/swagger';
 export class IngredientResponseDto {
   @ApiProperty({
     example: 1,
-    description: 'Уникальный идентификатор ингредиента (ID)',
+    description: 'Unique ingredient identifier (ID)',
   })
   ingrId: number;
 
   @ApiProperty({
-    example: 'Сыр Моцарелла',
-    description: 'Название ингредиента',
+    example: 'Mozzarella Cheese',
+    description: 'Ingredient name',
   })
   name: string;
 
   @ApiProperty({
-    example: 2.50,
-    description: 'Цена ингредиента',
+    example: 2.5,
+    description: 'Ingredient price',
   })
   price: number;
 }
-
