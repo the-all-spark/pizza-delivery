@@ -1,5 +1,7 @@
 // * Контроллер меню пицц
 
+// ! Добавить: Код, отвечающий за перехват файла, его сохранение на диск и формирование текстовой ссылки
+
 import { 
   Controller, Post, Get, Put, Delete, Body, Param, Inject, UseFilters, Query, ParseIntPipe, HttpCode, HttpStatus
 } from '@nestjs/common';
@@ -69,6 +71,27 @@ export class PizzasGatewayController {
     return this.pizzaClient.send('admin_create_pizza', body);
   }
 
+  // ! 
+  // @Post()
+  // @Roles('admin')
+  // @UseInterceptors(FileInterceptor('image', { dest: './apps/pizza-service/uploads' })) // 1. Физически сохраняем файл на диск
+  // createPizza(
+  //   @UploadedFile() file: any, // Доступ к файлу
+  //   @Body() body: any // Доступ к текстовым полям (title, price, description, ingredients)
+  // ) {
+  //   // 2. Формируем текстовую строку пути
+  //   const imageUrl = `/uploads/${file.filename}`;
+
+  //   // 3. Отправляем в RabbitMQ ЧИСТЫЙ ТЕКСТОВЫЙ ОБЪЕКТ
+  //   return this.pizzaClient.send('admin_create_pizza', {
+  //     title: body.title,
+  //     price: Number(body.price),
+  //     description: body.description,
+  //     ingredients: body.ingredients, // массив ID
+  //     imageUrl: imageUrl // ◄— Передаем строку! Микросервис получит обычный текст.
+  //   });
+  // }
+
   // ==========================================
   // МАРШРУТЫ ДЛЯ КОНКРЕТНЫХ СУЩНОСТЕЙ ПО ID
   // ==========================================
@@ -124,6 +147,29 @@ export class PizzasGatewayController {
   ) {
     return this.pizzaClient.send('admin_add_ingredient_to_pizza', { pizzaId: id, ingredientId: body.ingredientId });
   }
+
+  // * Удалить конкретный ингредиент из пиццы (DELETE /pizzas/:id/ingredients/:ingredientId)
+  @Delete(':id/ingredients/:ingredientId')
+  @Roles('admin')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ 
+    summary: 'Удалить конкретный ингредиент из пиццы', 
+    description: 'Доступно только администратору. Позволяет отвязать (убрать) ингредиент из рецепта существующей пиццы.' 
+  })
+  @ApiParam({ name: 'id', type: Number, description: 'Уникальный ID пиццы', example: 1 })
+  @ApiParam({ name: 'ingredientId', type: Number, description: 'ID ингредиента, который нужно убрать', example: 3 })
+  @ApiNoContentResponse({ description: 'Ингредиент успешно удален из пиццы. Ничего не возвращает.' })
+  @ApiResponse({ status: 400, description: 'Невалидные ID.' })
+  @ApiResponse({ status: 404, description: 'Пицца или ингредиент не найдены в этой пицце.' })
+  removeIngredientFromPizza(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('ingredientId', ParseIntPipe) ingredientId: number,
+  ) {
+    return this.pizzaClient.send('admin_remove_ingredient_from_pizza', { 
+      pizzaId: id, 
+      ingredientId 
+    });
+  }  
 
   // * Удалить пиццу по id (DELETE /pizzas/:id)
   @Delete(':id')
