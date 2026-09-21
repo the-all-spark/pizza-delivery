@@ -64,6 +64,29 @@ export class IngredientsGatewayController {
     return this.pizzaClient.send('get_all_ingredients', {});
   }
 
+  // * Получить конкретный ингредиент пиццы по его id (GET /ingredients/:id)
+  @Get(':id')
+  @ApiOperation({ 
+    summary: 'Get pizza ingredient by ID', 
+    description: 'Returns detailed information for a specific ingredient. Available only to admin.' 
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'Unique ingredient identifier',
+    example: 1,
+  })
+  @ApiOkResponse({ 
+    description: 'Ingredient successfully found and retrieved.', 
+    type: IngredientResponseDto 
+  })
+  @ApiResponse({ status: 400, description: 'Invalid ID format.' })
+  @ApiResponse({ status: 404, description: 'Ingredient with the specified ID not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  getIngredientById(@Param('id', ParseIntPipe) id: number) {
+    return this.pizzaClient.send('get_ingredient_by_id', { id });
+  }
+
   // * Добавить ингредиент пиццы (создать ингредиент) (POST /ingredients)
   @Post()
   @ApiOperation({

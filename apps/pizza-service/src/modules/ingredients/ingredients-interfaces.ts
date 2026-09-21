@@ -12,3 +12,8 @@ export interface UpdateIngredientPayload {
   name: string;
   price: number;
 }
+
+// Для получения ингредиента
+export interface GetIngredientByIdPayload {
+  id: number;
+}

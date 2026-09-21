@@ -1,108 +1,3 @@
-// // * Контроллер для промо-кодов
-
-// import { 
-//   Controller, 
-//   Post, 
-//   Get, 
-//   Put, 
-//   Delete, 
-//   Body, 
-//   Param, 
-//   Inject, 
-//   UseFilters, 
-//   ParseIntPipe,
-//   HttpCode,
-//   HttpStatus
-// } from '@nestjs/common';
-// import { ClientProxy } from '@nestjs/microservices';
-// import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
-// import { Roles } from '../decorators/roles.decorator';
-// import { RpcExceptionFilter } from '../rpc-exception.filter';
-
-// // Импорт DTO
-// import { CreatePromoCodeDto } from '../dto/promo-codes/create-promo-code.dto';
-// import { UpdatePromoCodeDto } from '../dto/promo-codes/update-promo-code.dto';
-// import { PromoCodeResponseDto } from '../dto/promo-codes/promo-code-response.dto';
-
-// @ApiTags('Promo-codes')
-// @ApiBearerAuth('bearerAuth')
-// @Controller('promo-codes')
-// @UseFilters(RpcExceptionFilter)
-// export class PromoCodesGatewayController {
-//   constructor(
-//     @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy
-//   ) {}
-
-//   // ========================
-//   // МАРШРУТЫ АДМИНИСТРАТОРА
-//   // ========================
-
-//   // * Создать промокод (POST /promo-codes/admin/add)
-//   @Post('admin/add')
-//   @Roles('admin')
-//   @ApiOperation({ 
-//     summary: 'Создать новый промокод', 
-//     description: 'Доступно только администратору. Создает купон со скидкой и временем действия.' 
-//   })
-//   @ApiCreatedResponse({ description: 'Промокод успешно создан.', type: PromoCodeResponseDto })
-//   @ApiResponse({ status: 400, description: 'Ошибка валидации полей.' })
-//   @ApiResponse({ status: 401, description: 'Не авторизован.' })
-//   @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
-//   @ApiResponse({ status: 409, description: 'Промокод с таким текстом (code) уже существует.' })
-//   createPromoCode(@Body() body: CreatePromoCodeDto) {
-//     return this.pizzaClient.send('admin_create_promo_code', body);
-//   }
-
-//   // * Изменить существующий промо-код по его id (PUT /promo-codes/admin/:id/edit)
-//   @Put('admin/:id/edit')
-//   @Roles('admin')
-//   @ApiOperation({ 
-//     summary: 'Изменить существующий промокод по ID', 
-//     description: 'Доступно только администратору. Позволяет обновить параметры купона.' 
-//   })
-//   @ApiOkResponse({ description: 'Промокод успешно обновлен.', type: PromoCodeResponseDto })
-//   @ApiResponse({ status: 400, description: 'Неверный ID или ошибка валидации данных.' })
-//   @ApiResponse({ status: 404, description: 'Промокод с указанным ID не найден.' })
-//   updatePromoCode(
-//     @Param('id', ParseIntPipe) id: number,
-//     @Body() body: UpdatePromoCodeDto
-//   ) {
-//     return this.pizzaClient.send('admin_update_promo_code', { promoId: id, ...body });
-//   }
-
-//   // * Удалить промо-код по id (DELETE /promo-codes/admin/:id/delete)
-//   @Delete('admin/:id/delete')
-//   @Roles('admin')
-//   @HttpCode(HttpStatus.NO_CONTENT)
-//   @ApiOperation({ 
-//     summary: 'Удалить промокод по ID', 
-//     description: 'Доступно только администратору. Удаляет промокод. В таблице заказов у старых чеков поле promo_code_id сбросится в NULL (onDelete: SET NULL).' 
-//   })
-//   @ApiResponse({ status: 204, description: 'Промокод успешно удален. Ничего не возвращает.' })
-//   @ApiResponse({ status: 400, description: 'Неверный формат ID.' })
-//   @ApiResponse({ status: 404, description: 'Промокод не найден.' })
-//   deletePromoCode(@Param('id', ParseIntPipe) id: number) {
-//     return this.pizzaClient.send('admin_delete_promo_code', { promoId: id });
-//   }
-
-//   // ========================
-//   // ОБЩИЕ МАРШРУТЫ
-//   // ========================
-
-//   // * Получить список всех промо-кодов (GET /promo-codes)
-//   @Get()
-//   @Roles('user', 'admin')
-//   @ApiOperation({ 
-//     summary: 'Получить список всех промокодов', 
-//     description: 'Доступно авторизованным пользователям и администраторам. Возвращает список купонов.' 
-//   })
-//   @ApiOkResponse({ description: 'Список промокодов успешно получен.', type: [PromoCodeResponseDto] })
-//   @ApiResponse({ status: 401, description: 'Не авторизован.' })
-//   getAllPromoCodes() {
-//     return this.pizzaClient.send('get_all_promo_codes', {});
-//   }
-// }
-
 // * Контроллер для промо-кодов
 
 import { 
@@ -154,11 +49,11 @@ export class PromoCodesGatewayController {
   @Get()
   @Roles('user', 'admin')
   @ApiOperation({ 
-    summary: 'Получить список всех промокодов', 
-    description: 'Доступно авторизованным пользователям и администраторам. Возвращает список купонов.' 
+    summary: 'Get a list of all promo codes', 
+    description: 'Available to authorized users and administrators. Returns a list of coupons.' 
   })
-  @ApiOkResponse({ description: 'Список промокодов успешно получен.', type: [PromoCodeResponseDto] })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
+  @ApiOkResponse({ description: 'Promo code list successfully retrieved.', type: [PromoCodeResponseDto] })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getAllPromoCodes() {
     return this.pizzaClient.send('get_all_promo_codes', {});
   }
@@ -167,14 +62,14 @@ export class PromoCodesGatewayController {
   @Post()
   @Roles('admin')
   @ApiOperation({ 
-    summary: 'Создать новый промокод', 
-    description: 'Доступно только администратору. Создает купон со скидкой и временем действия.' 
+    summary: 'Create a new promo code', 
+    description: 'Available only to administrators. Creates a discount coupon with validity time.' 
   })
-  @ApiCreatedResponse({ description: 'Промокод успешно создан.', type: PromoCodeResponseDto })
-  @ApiResponse({ status: 400, description: 'Ошибка валидации полей.' })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
-  @ApiResponse({ status: 409, description: 'Промокод с таким текстом (code) уже существует.' })
+  @ApiCreatedResponse({ description: 'Promo code successfully created.', type: PromoCodeResponseDto })
+  @ApiResponse({ status: 400, description: 'Field validation error.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
+  @ApiResponse({ status: 409, description: 'Promo code with this text (code) already exists.' })
   createPromoCode(@Body() body: CreatePromoCodeDto) {
     return this.pizzaClient.send('admin_create_promo_code', body);
   }
@@ -187,19 +82,19 @@ export class PromoCodesGatewayController {
   @Put(':id')
   @Roles('admin')
   @ApiOperation({ 
-    summary: 'Изменить существующий промокод по ID', 
-    description: 'Доступно только администратору. Позволяет обновить параметры купона.' 
+    summary: 'Update an existing promo code by ID', 
+    description: 'Available only to administrators. Allows updating coupon parameters.' 
   })
   @ApiParam({
     name: 'id',
     type: Number,
-    description: 'Уникальный идентификатор промокода',
+    description: 'Unique promo code identifier',
     example: 1,
   })
-  @ApiOkResponse({ description: 'Промокод успешно обновлен.', type: PromoCodeResponseDto })
-  @ApiResponse({ status: 400, description: 'Неверный ID или ошибка валидации данных.' })
-  @ApiResponse({ status: 404, description: 'Промокод с указанным ID не найден.' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
+  @ApiOkResponse({ description: 'Promo code successfully updated.', type: PromoCodeResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid ID or data validation error.' })
+  @ApiResponse({ status: 404, description: 'Promo code with the specified ID not found.' })
+  @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
   updatePromoCode(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdatePromoCodeDto
@@ -207,26 +102,35 @@ export class PromoCodesGatewayController {
     return this.pizzaClient.send('admin_update_promo_code', { promoId: id, ...body });
   }
 
+  // * Получить конкретный промокод по его id (GET /promo-codes/:id)
+  @Get(':id')
+  @Roles('admin', 'user') // Доступно всем авторизованным ролям
+  @ApiOperation({ 
+    summary: 'Get promo code information by ID', 
+    description: 'Returns details about the coupon, its status, and discount percentage.' 
+  })
+  @ApiParam({ name: 'id', type: Number, description: 'Unique promo code identifier', example: 1 })
+  @ApiOkResponse({ description: 'Promo code successfully found and retrieved.', type: PromoCodeResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid ID format.' })
+  @ApiResponse({ status: 404, description: 'Promo code not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  getPromoCodeById(@Param('id', ParseIntPipe) id: number) {
+    return this.pizzaClient.send('get_promo_code_by_id', { id });
+  }
+
   // * Удалить промо-код по id (DELETE /promo-codes/:id)
   @Delete(':id')
   @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ 
-    summary: 'Удалить промокод по ID', 
-    description: 'Доступно только администратору. Удаляет промокод. В таблице заказов у старых чеков поле promo_code_id сбросится в NULL (onDelete: SET NULL).' 
+    summary: 'Delete promo code by ID', 
+    description: 'Available only to administrators. Deletes the promo code.' 
   })
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    description: 'Уникальный идентификатор промокода',
-    example: 1,
-  })
-  @ApiNoContentResponse({ description: 'Промокод успешно удален. Ничего не возвращает.' })
-  @ApiResponse({ status: 400, description: 'Неверный формат ID.' })
-  @ApiResponse({ status: 404, description: 'Промокод не найден.' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
+  @ApiNoContentResponse({ description: 'Promo code successfully deleted. Returns no content.' })
+  @ApiResponse({ status: 400, description: 'Invalid ID format.' })
+  @ApiResponse({ status: 404, description: 'Promo code not found.' })
+  @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
   deletePromoCode(@Param('id', ParseIntPipe) id: number) {
     return this.pizzaClient.send('admin_delete_promo_code', { promoId: id });
   }
 }
-

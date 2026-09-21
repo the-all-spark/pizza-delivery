@@ -43,7 +43,7 @@ export class IngredientService {
       // Бросаем 409 Conflict, который шлюз превратит в HTTP-ошибку
       throw new RpcException({
         statusCode: 409,
-        message: `Ингредиент с названием "${name}" уже существует в каталоге.`,
+        message: `Ingredient named "${name}" already exists in the catalog.`,
       });
     }
 
@@ -66,7 +66,7 @@ export class IngredientService {
     if (!ingredient) {
       throw new RpcException({
         statusCode: 404,
-        message: `Ингредиент с ID ${id} не найден в каталоге.`,
+        message: `Ingredient with ID ${id} not found in the catalog.`,
       });
     }
 
@@ -79,7 +79,7 @@ export class IngredientService {
     if (duplicateName && duplicateName.ingrId !== id) {
       throw new RpcException({
         statusCode: 409,
-        message: `Не удалось обновить: название "${name}" уже используется другим ингредиентом.`,
+        message: `Failed to update: name "${name}" is already in use by another ingredient.`,
       });
     }
 
@@ -103,12 +103,30 @@ export class IngredientService {
     if (!ingredient) {
       throw new RpcException({
         statusCode: 404,
-        message: `Ингредиент с ID ${id} не найден, удаление невозможно.`,
+        message: `Ingredient with ID ${id} not found, deletion is not possible.`,
       });
     }
 
     // Выполняем физическое удаление строки из PostgreSQL
     await this.ingredientRepository.delete(id);
     return { success: true };
+  }
+
+  // ==========================================
+  // 5. ПОЛУЧИТЬ ИНГРЕДИЕНТ ПО ID
+  // ==========================================
+  async findById(id: number): Promise<Ingredient> {
+    const ingredient = await this.ingredientRepository.findOne({
+      where: { ingrId: id },
+    });
+
+    if (!ingredient) {
+      throw new RpcException({
+        statusCode: 404,
+        message: `Ingredient with ID ${id} not found in the catalog.`,
+      });
+    }
+
+    return ingredient;
   }
 }

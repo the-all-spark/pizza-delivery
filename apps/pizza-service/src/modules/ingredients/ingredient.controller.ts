@@ -8,6 +8,7 @@ import { IngredientService } from './ingredient.service';
 import type {
   CreateIngredientPayload,
   UpdateIngredientPayload,
+  GetIngredientByIdPayload
 } from './ingredients-interfaces';
 
 @Controller()
@@ -41,5 +42,12 @@ export class IngredientController {
   @MessagePattern('delete_ingredient')
   async deleteIngredient(@Payload() data: { id: number }) {
     return await this.ingredientService.delete(data.id);
+  }
+
+  // * 5. Получить ингредиент по его id
+  // Слушает команду 'get_ingredient_by_id' от API Gateway
+  @MessagePattern('get_ingredient_by_id')
+  async getIngredientById(@Payload() data: GetIngredientByIdPayload) {
+    return await this.ingredientService.findById(data.id);
   }
 }
