@@ -2,7 +2,7 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ScheduleModule } from '@nestjs/schedule'; // ◄— ДОБАВЛЕН ИМПОРТ ДЛЯ КРОНА
+import { ScheduleModule } from '@nestjs/schedule'; // импорт для Cron
  
 import { PizzaController } from './pizza.controller';
 import { PizzaService } from './pizza.service';
@@ -23,12 +23,10 @@ import { IngredientsModule } from '../ingredients/ingredients.module';
     IngredientsModule,
   ],
   controllers: [
-    // Подключаем контроллер, обрабатывающий сообщения RabbitMQ от шлюза
-    PizzaController,
+    PizzaController, // Подключаем контроллер, обрабатывающий сообщения RabbitMQ от шлюза
   ],
   providers: [
-    // Подключаем службу бизнес-логики каталога пицц
-    PizzaService,
+    PizzaService, // Подключаем службу бизнес-логики каталога пицц
   ],
   exports: [
     // Экспортируем сервис и репозиторий на случай привязки пицц к корзине (cart) или заказам (orders)

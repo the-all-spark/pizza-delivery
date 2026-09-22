@@ -57,7 +57,7 @@ export class PizzaService {
     if (!pizza) {
       throw new RpcException({
         statusCode: 404,
-        message: `Пицца с ID ${id} не найдена в меню.`,
+        message: `Pizza with ID ${id} was not found on the menu.`,
       });
     }
 
@@ -75,7 +75,7 @@ export class PizzaService {
     if (existingPizza) {
       throw new RpcException({
         statusCode: 409,
-        message: `Пицца с названием "${title}" уже существует в меню.`,
+        message: `Pizza with the title "${title}" already exists in the menu.`,
       });
     }
 
@@ -83,7 +83,7 @@ export class PizzaService {
     if (!ingredients || ingredients.length === 0) {
       throw new RpcException({
         statusCode: 400,
-        message: 'Невозможно создать пиццу без указания массива ингредиентов.',
+        message: 'Cannot create a pizza without specifying an array of ingredients.',
       });
     }
 
@@ -96,7 +96,7 @@ export class PizzaService {
     if (foundIngredients.length !== ingredients.length) {
       throw new RpcException({
         statusCode: 400,
-        message: 'Один или несколько указанных ID ингредиентов не существуют в системе.',
+        message: 'One or more of the specified ingredient IDs do not exist in the system.',
       });
     }
 
@@ -130,7 +130,7 @@ export class PizzaService {
       if (duplicate && duplicate.pId !== pizzaId) {
         throw new RpcException({
           statusCode: 409,
-          message: `Пицца с названием "${title}" уже существует в меню.`,
+          message: `Pizza with the title "${title}" already exists in the menu.`,
         });
       }
       updateFields.title = title;
@@ -156,7 +156,7 @@ export class PizzaService {
     if (!ingredient) {
       throw new RpcException({
         statusCode: 404,
-        message: `Ингредиент с ID ${ingredientId} не найден в каталоге.`,
+        message: `Ingredient with ID ${ingredientId} not found in the catalog.`,
       });
     }
 
@@ -165,7 +165,7 @@ export class PizzaService {
     if (alreadyExists) {
       throw new RpcException({
         statusCode: 400,
-        message: 'Этот ингредиент уже привязан к данной пицце.',
+        message: 'This ingredient is already linked to this pizza.',
       });
     }
 
@@ -187,7 +187,7 @@ export class PizzaService {
     if (index === -1) {
       throw new RpcException({
         statusCode: 404,
-        message: 'Указанный ингредиент не найден в рецепте этой пиццы.',
+        message: 'The specified ingredient was not found in the recipe of this pizza.',
       });
     }
 
@@ -247,7 +247,7 @@ export class PizzaService {
 
       throw new RpcException({
         statusCode: 500,
-        message: 'Не удалось удалить пиццу. Ошибка файловой системы, изменения отменены.',
+        message: 'Failed to delete pizza. File system error, changes rolled back.',
       });
     } finally {
       // Обязательно освобождаем QueryRunner во избежание утечки соединений в пуле PostgreSQL

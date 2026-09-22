@@ -4,27 +4,26 @@ import { ApiPropertyOptional } from '@nestjs/swagger'; // Используем O
 import { IsString, IsNumber, Min, IsOptional, MaxLength } from 'class-validator';
 
 export class UpdatePizzaDto {
-  @ApiPropertyOptional({ example: 'Пепперони Плюс', description: 'Новое название пиццы', maxLength: 255 })
+  @ApiPropertyOptional({ example: 'Pepperoni Plus', description: 'New pizza title', maxLength: 255 })
   @IsOptional() // Поле необязательно для передачи
-  @IsString({ message: 'Название должно быть строкой' })
-  @MaxLength(255, { message: 'Название не должно превышать 255 символов' })
+  @IsString({ message: 'Title must be a string' })
+  @MaxLength(255, { message: 'Title must not exceed 255 characters' })
   title?: string;
 
-  @ApiPropertyOptional({ example: 'Обновленное описание с добавлением острых колбасок', description: 'Новое описание пиццы' })
+  @ApiPropertyOptional({ example: 'Updated description with spicy sausages added', description: 'New pizza description' })
   @IsOptional()
-  @IsString({ message: 'Описание должно быть строкой' })
+  @IsString({ message: 'Description must be a string' })
   description?: string;
 
-  @ApiPropertyOptional({ example: 'https://example.com', description: 'Новая ссылка на изображение', maxLength: 500 })
+  @ApiPropertyOptional({ example: 'https://example.com', description: 'New image link', maxLength: 500 })
   @IsOptional()
-  @IsString({ message: 'Ссылка на изображение должна быть строкой' })
-  @MaxLength(500, { message: 'Ссылка не должна превышать 500 символов' })
+  @IsString({ message: 'Image link must be a string' })
+  @MaxLength(500, { message: 'Link must not exceed 500 characters' })
   imageUrl?: string;
 
-  @ApiPropertyOptional({ example: 30.00, description: 'Новая базовая цена пиццы' })
+  @ApiPropertyOptional({ example: 30.00, description: 'New base pizza price' })
   @IsOptional()
-  @IsNumber({}, { message: 'Цена должна быть числом' })
-  @Min(0, { message: 'Цена не может быть отрицательной' })
+  @IsNumber({}, { message: 'Price must be a number' })
+  @Min(0, { message: 'Price cannot be negative' })
   price?: number;
 }
-
