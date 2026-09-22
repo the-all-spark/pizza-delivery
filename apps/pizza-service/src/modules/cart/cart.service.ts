@@ -45,11 +45,13 @@ export class CartService {
     const { userId, pizzaId, quantity } = payload;
 
     // 1. Проверяем, существует ли вообще такая пицца в каталоге меню
-    const pizzaExists = await this.pizzaRepository.findOne({ where: { pId: pizzaId } });
+    const pizzaExists = await this.pizzaRepository.findOne({
+      where: { pId: pizzaId },
+    });
     if (!pizzaExists) {
       throw new RpcException({
         statusCode: 404,
-        message: `Пицца с ID ${pizzaId} не найдена в каталоге меню.`,
+        message: `Pizza with ID ${pizzaId} was not found in the menu catalog.`,
       });
     }
 
@@ -88,7 +90,7 @@ export class CartService {
     if (!cartItem) {
       throw new RpcException({
         statusCode: 404,
-        message: `Элемент корзины с ID ${cartItemId} не найден у текущего пользователя.`,
+        message: `The cart item with ID ${cartItemId} was not found for the current user.`,
       });
     }
 
@@ -100,7 +102,9 @@ export class CartService {
   // ==========================================
   // 4. УДАЛИТЬ ПОЗИЦИЮ ИЗ КОРЗИНЫ
   // ==========================================
-  async removeFromCart(payload: RemoveFromCartPayload): Promise<{ success: boolean }> {
+  async removeFromCart(
+    payload: RemoveFromCartPayload,
+  ): Promise<{ success: boolean }> {
     const { userId, cartItemId } = payload;
 
     // Проверяем существование и принадлежность элемента пользователю
@@ -111,7 +115,7 @@ export class CartService {
     if (!cartItem) {
       throw new RpcException({
         statusCode: 404,
-        message: `Элемент корзины с ID ${cartItemId} не найден у текущего пользователя.`,
+        message: `The cart item with ID ${cartItemId} was not found for the current user.`,
       });
     }
 
