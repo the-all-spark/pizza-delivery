@@ -26,6 +26,7 @@ import {
   ApiCreatedResponse,
   ApiParam,            
   ApiNoContentResponse,
+  ApiForbiddenResponse
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -35,12 +36,18 @@ import { AddToCartDto } from '../dto/cart/add-to-cart.dto';
 import { UpdateCartItemDto } from '../dto/cart/update-cart-item.dto';
 import { CartItemResponseDto } from '../dto/cart/cart-response.dto';
 import type { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
+import { ForbiddenErrorResponseDto } from '../dto/forbidden-error-response.dto';
 
 @ApiTags('Cart')
 @ApiBearerAuth('bearerAuth')
 @Controller('cart')
 @UseFilters(RpcExceptionFilter)
 @Roles('user')
+// Добавляем 403 ошибку на уровень всего контроллера, так как @Roles('user') защищает все эндпоинты
+@ApiForbiddenResponse({ 
+  description: 'Доступ запрещен. Администраторы не имеют доступа к корзинам пользователей.',
+  type: ForbiddenErrorResponseDto 
+})
 export class CartGatewayController {
   constructor(
     @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy
