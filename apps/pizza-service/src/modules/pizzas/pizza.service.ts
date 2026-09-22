@@ -2,15 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Cron, CronExpression } from '@nestjs/schedule'; // Понадобится для Крона во 2-й части
-import * as fs from 'fs/promises'; // Понадобится для работы с файлами во 2-й части
+import { Cron, CronExpression } from '@nestjs/schedule';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 
-// Импортируем сущности
 import { Pizza } from './pizza.entity';
 import { Ingredient } from '../ingredients/ingredient.entity';
 
-// Импортируем наши интерфейсы
 import { 
   PizzaPaginationPayload, 
   CreatePizzaPayload, 
@@ -33,7 +31,7 @@ export class PizzaService {
   // ==========================================
   // 1. ПОЛУЧИТЬ ПОСТРАНИЧНЫЙ СПИСОК ПИЦЦ
   // ==========================================
-  async findPaginated(payload: PizzaPaginationPayload): Promise<Pizza[]> { //!
+  async findPaginated(payload: PizzaPaginationPayload): Promise<Pizza[]> {
     const { page, limit } = payload;
     const skip = (page - 1) * limit;
 
@@ -217,19 +215,25 @@ export class PizzaService {
       // Благодаря onDelete: 'CASCADE' в Entity, промежуточная таблица очистится автоматически
       await queryRunner.manager.delete(Pizza, pizzaId);
 
-      // Шаг B: Пытаемся физически удалить файл изображения с диска
+      // Шаг Б: Пытаемся физически удалить файл изображения с диска
       if (pizza.imageUrl) {
-        // Вычисляем абсолютный путь к картинке на сервере 
-        // (файлы лежат в папке: apps/pizza-service/uploads/имя_файла)
-        const filename = path.basename(pizza.imageUrl);
-        const absolutePath = path.join(process.cwd(), 'apps', 'pizza-service', 'uploads', filename);
+        const filename = path.basename(pizza.imageUrl); // Извлекаем имя файла
+        
+        // Собираем абсолютный путь монтирования
+        const absolutePath = path.join('/usr/src/app', 'apps', 'pizza-service', 'uploads', filename);
 
-        // Проверяем существование файла, чтобы не падать на системной ошибке Node.js
-        await fs.access(absolutePath);
-        // Стираем файл с диска
-        await fs.unlink(absolutePath);
+        try {
+          // Проверяем наличие файла на диске
+          await fs.access(absolutePath);
+          // Если файл есть — стираем его с диска
+          await fs.unlink(absolutePath);
+          this.logger.log(`✅ Файл ${filename} успешно удален с диска.`);
+        } catch (fsError) {
+          // Логгер предупреждения на случай, если запись «битая» и файла на диске физически уже не было
+          this.logger.warn(`Файл ${filename} не найден по пути ${absolutePath}. Продолжаем очистку БД...`);
+        }
       }
-
+      
       // Если база успешно очищена и файл стерт — фиксируем транзакцию
       await queryRunner.commitTransaction();
       this.logger.log(`🗑️ Пицца "${pizza.title}" и её изображение успешно удалены из системы.`);
@@ -272,11 +276,11 @@ export class PizzaService {
       .getMany();
 
     if (oldPizzas.length === 0) {
-      this.logger.log('✓ Устаревших пицц, не заказывавшихся более 6 месяцев, не обнаружено.');
+      this.logger.log('✅ Устаревших пицц, не заказывавшихся более 6 месяцев, не обнаружено.');
       return;
     }
 
-    this.logger.warn(`⚠ Обнаружено ${oldPizzas.length} невостребованных пицц. Начинаем автоудаление...`);
+    this.logger.warn(`⚠️ Обнаружено ${oldPizzas.length} невостребованных пицц. Начинаем автоудаление...`);
 
     // Перебираем и удаляем каждую старую пиццу через наш безопасный транзакционный метод удаления
     for (const oldPizza of oldPizzas) {

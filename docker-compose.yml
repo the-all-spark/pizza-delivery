@@ -157,7 +157,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - pizza_uploads:/usr/src/app/apps/pizza-service/uploads
+      - ./apps/pizza-service/uploads:/usr/src/app/apps/pizza-service/uploads
     command: npm run start:dev -- pizza-service
     depends_on:
       - postgres_db
@@ -226,7 +226,6 @@ volumes:
   postgres_data:
   mongo_data:
   rabbitmq_data:
-  pizza_uploads:
 
 # Isolated Docker network: services talk to each other by name, not via the host
 networks:
