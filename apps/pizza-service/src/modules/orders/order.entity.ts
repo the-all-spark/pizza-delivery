@@ -32,7 +32,7 @@ export class Order {
   paymentMethod: PaymentMethod;
 
   @Column({ type: 'text', nullable: true })
-  comment: string;
+  comment: string | null;
 
   @Column({ name: 'total_price', type: 'decimal', precision: 10, scale: 2 })
   totalPrice: number;

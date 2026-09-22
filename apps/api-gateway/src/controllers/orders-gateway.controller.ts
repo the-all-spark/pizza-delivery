@@ -1,26 +1,28 @@
 // * Контроллер заказов
 
-import { 
-  Controller, 
-  Post, 
-  Get, 
+import {
+  Controller,
+  Post,
+  Get,
   Patch,
-  Body, 
-  Param, 
-  Inject, 
-  UseFilters, 
+  Body,
+  Param,
+  Inject,
+  UseFilters,
   Req,
-  ParseIntPipe
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { 
-  ApiTags, 
-  ApiBearerAuth, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiOkResponse, 
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiOkResponse,
   ApiCreatedResponse,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -28,6 +30,10 @@ import { RpcExceptionFilter } from '../rpc-exception.filter';
 import { CreateOrderDto } from '../dto/orders/create-order.dto';
 import { UpdateOrderStatusDto } from '../dto/orders/update-order-status.dto';
 import { OrderResponseDto } from '../dto/orders/order-response.dto';
+import {
+  PopularPizzaResponseDto,
+  PremiumUserAnalyticsResponseDto,
+} from '../dto/orders/analytics.dto';
 import type { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
 
 @ApiTags('Orders')
@@ -36,48 +42,134 @@ import type { AuthenticatedRequest } from '../interfaces/authenticated-request.i
 @UseFilters(RpcExceptionFilter)
 export class OrdersGatewayController {
   constructor(
-    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy
+    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy,
   ) {}
+
+  // ==========================================
+  // ЭНДПОИНТЫ АНАЛИТИКИ (ДОСТУПНО ТОЛЬКО ADMIN)
+  // ==========================================
+
+  // * 1. Найти самую популярную пиццу за выбранный месяц (GET /orders/analytics/popular-pizza)
+  @Get('analytics/popular-pizza')
+  @Roles('admin')
+  @ApiOperation({
+    summary: 'Аналитика: Самая популярная пицца месяца',
+    description:
+      'Доступно только администратору. Возвращает пиццу, которую чаще всего заказывали за выбранный месяц и год.',
+  })
+  @ApiQuery({
+    name: 'month',
+    type: Number,
+    example: 9,
+    description: 'Порядковый номер месяца (1-12)',
+  })
+  @ApiQuery({
+    name: 'year',
+    type: Number,
+    example: 2026,
+    description: 'Календарный год',
+  })
+  @ApiOkResponse({
+    description: 'Аналитика по популярной пицце успешно сформирована.',
+    type: PopularPizzaResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Доступ запрещен (требуется роль admin).',
+  })
+  getPopularPizza(
+    @Query('month', ParseIntPipe) month: number,
+    @Query('year', ParseIntPipe) year: number,
+  ) {
+    return this.pizzaClient.send('get_most_popular_pizza_of_month', {
+      month,
+      year,
+    });
+  }
+
+  // * 2. Найти премиум-пользователей со средним чеком выше среднего (GET /orders/analytics/premium-users)
+  @Get('analytics/premium-users')
+  @Roles('admin')
+  @ApiOperation({
+    summary: 'Аналитика: Поиск премиум-клиентов',
+    description:
+      'Доступно только администратору. Находит пользователей с количеством заказов >= 3, чей средний чек выше или равен среднему значению чека по всей системе.',
+  })
+  @ApiOkResponse({
+    description: 'Список премиум-пользователей успешно получен.',
+    type: [PremiumUserAnalyticsResponseDto],
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Доступ запрещен (требуется роль admin).',
+  })
+  getPremiumUsers() {
+    return this.pizzaClient.send('get_premium_users_analytics', {});
+  }
+
+  // ==========================================
+  // СТАНДАРТНЫЕ МАРШРУТЫ ЗАКАЗОВ
+  // ==========================================
 
   // * Получить список заказов (Пользователь: своя история заказов | Админ: все заказы в системе)
   // GET /orders
   @Get()
   @Roles('admin', 'user')
-  @ApiOperation({ 
-    summary: 'Получить список заказов', 
-    description: 'Для администратора возвращает все активные заказы в системе. Для пользователя — историю его собственных заказов.' 
+  @ApiOperation({
+    summary: 'Получить список заказов',
+    description:
+      'Для администратора возвращает все активные заказы в системе. Для пользователя — историю его собственных заказов.',
   })
-  @ApiOkResponse({ description: 'Список заказов успешно получен.', type: [OrderResponseDto] })
+  @ApiOkResponse({
+    description: 'Список заказов успешно получен.',
+    type: [OrderResponseDto],
+  })
   @ApiResponse({ status: 401, description: 'Не авторизован.' })
   getOrders(@Req() req: AuthenticatedRequest) {
     // Разделяем логику на основе роли пользователя из JWT-токена
     if (req.user.role.includes('admin')) {
       return this.pizzaClient.send('admin_get_all_orders', {});
     }
-    
-    return this.pizzaClient.send('get_user_orders_history', { userId: req.user.userId });
+
+    return this.pizzaClient.send('get_user_orders_history', {
+      userId: req.user.userId,
+    });
   }
 
   // * Сделать заказ (POST /orders)
   @Post()
   @Roles('user', 'admin')
-  @ApiOperation({ 
-    summary: 'Оформить заказ из корзины', 
-    description: 'Берет все элементы из текущей корзины пользователя, применяет промокод (если передан), фиксирует цены-снимки и очищает корзину.' 
+  @ApiOperation({
+    summary: 'Оформить заказ из корзины',
+    description:
+      'Берет все элементы из текущей корзины пользователя, применяет промокод (если передан), фиксирует цены-снимки и очищает корзину.',
   })
-  @ApiCreatedResponse({ description: 'Заказ успешно создан и отправлен на кухню.', type: OrderResponseDto })
-  @ApiResponse({ status: 400, description: 'Ошибка валидации или пустая корзина пользователя.' })
-  @ApiResponse({ status: 404, description: 'Указанный промокод не существует или просрочен.' })
+  @ApiCreatedResponse({
+    description: 'Заказ успешно создан и отправлен на кухню.',
+    type: OrderResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ошибка валидации или пустая корзина пользователя.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Указанный промокод не существует или просрочен.',
+  })
   createOrder(@Req() req: AuthenticatedRequest, @Body() body: CreateOrderDto) {
-    return this.pizzaClient.send('create_order', { userId: req.user.userId, ...body });
+    return this.pizzaClient.send('create_order', {
+      userId: req.user.userId,
+      ...body,
+    });
   }
 
   // * Получить информацию/статус конкретного заказа по его ID (GET /orders/:id)
   @Get(':id')
   @Roles('user', 'admin')
-  @ApiOperation({ 
-    summary: 'Получить информацию о конкретном заказе по ID', 
-    description: 'Позволяет клиенту или администратору узнать текущее состояние и детали конкретного заказа.' 
+  @ApiOperation({
+    summary: 'Получить информацию о конкретном заказе по ID',
+    description:
+      'Позволяет клиенту или администратору узнать текущее состояние и детали конкретного заказа.',
   })
   @ApiParam({
     name: 'id',
@@ -85,22 +177,30 @@ export class OrdersGatewayController {
     description: 'Уникальный идентификатор заказа',
     example: 105,
   })
-  @ApiOkResponse({ description: 'Информация о заказе успешно получена.', type: OrderResponseDto })
+  @ApiOkResponse({
+    description: 'Информация о заказе успешно получена.',
+    type: OrderResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Неверный формат ID.' })
   @ApiResponse({ status: 404, description: 'Заказ не найден.' })
   getOrder(
     @Req() req: AuthenticatedRequest,
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.pizzaClient.send('get_order_status', { userId: req.user.userId, orderId: id });
+    return this.pizzaClient.send('get_order_status', {
+      userId: req.user.userId,
+      orderId: id,
+      role: req.user.role,
+    });
   }
 
   // * Изменить статус заказа по его ID (PATCH /orders/:id)
   @Patch(':id')
   @Roles('admin')
-  @ApiOperation({ 
-    summary: 'Изменить статус выполнения заказа', 
-    description: 'Доступно только администратору. Переводит заказ на этапы: processing, delivering, completed и др.' 
+  @ApiOperation({
+    summary: 'Изменить статус выполнения заказа',
+    description:
+      'Доступно только администратору. Переводит заказ на этапы: processing, delivering, completed и др.',
   })
   @ApiParam({
     name: 'id',
@@ -108,14 +208,26 @@ export class OrdersGatewayController {
     description: 'Уникальный идентификатор заказа',
     example: 105,
   })
-  @ApiOkResponse({ description: 'Статус заказа успешно обновлен.', type: OrderResponseDto })
-  @ApiResponse({ status: 400, description: 'Неверный формат ID или некорректный статус.' })
+  @ApiOkResponse({
+    description: 'Статус заказа успешно обновлен.',
+    type: OrderResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Неверный формат ID или некорректный статус.',
+  })
   @ApiResponse({ status: 404, description: 'Заказ с указанным ID не найден.' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен (требуется роль admin).' })
+  @ApiResponse({
+    status: 403,
+    description: 'Доступ запрещен (требуется роль admin).',
+  })
   updateOrderStatus(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateOrderStatusDto
+    @Body() body: UpdateOrderStatusDto,
   ) {
-    return this.pizzaClient.send('admin_update_order_status', { orderId: id, status: body.status });
+    return this.pizzaClient.send('admin_update_order_status', {
+      orderId: id,
+      status: body.status,
+    });
   }
 }
