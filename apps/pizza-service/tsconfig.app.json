@@ -1,3 +1,5 @@
+// Настройки сборки приложения
+
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
@@ -5,7 +7,7 @@
     "declaration": true,
     "rootDir": "../../",
     "outDir": "../../dist/apps/pizza-service",
-    "types": ["node", "jest"] 
+    "types": ["node"] 
   },
   // добавили маску "../**/*", чтобы разрешить выход в общую папку apps
   "include": ["src/**/*", "../**/*", "../../shared/**/*"],
