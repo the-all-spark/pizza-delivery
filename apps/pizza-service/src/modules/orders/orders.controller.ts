@@ -6,6 +6,7 @@ import type {
   GetUserOrdersPayload,
   GetOrderStatusPayload,
   AdminUpdateStatusPayload,
+  AdminGetAllOrdersPayload
 } from './orders-interfaces';
 
 @Controller()
@@ -31,8 +32,8 @@ export class OrdersController {
   }
 
   @MessagePattern('admin_get_all_orders')
-  async adminGetAllOrders() {
-    return this.ordersService.adminGetAllOrders();
+  async adminGetAllOrders(@Payload() payload: AdminGetAllOrdersPayload) {
+    return this.ordersService.adminGetAllOrders(payload);
   }
 
   /**

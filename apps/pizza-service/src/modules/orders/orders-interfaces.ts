@@ -1,8 +1,16 @@
 import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
-// 1. Просмотр истории заказов (Пользователь)
+// 1. Просмотр истории заказов (Пользователь) — добавили параметры пагинации
 export interface GetUserOrdersPayload {
   userId: string;
+  page: number;
+  limit: number;
+}
+
+// Новая структура для запроса администратора
+export interface AdminGetAllOrdersPayload {
+  page: number;
+  limit: number;
 }
 
 // 2. Оформление нового заказа из корзины (POST /orders)

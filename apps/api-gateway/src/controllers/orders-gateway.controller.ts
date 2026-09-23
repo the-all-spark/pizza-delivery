@@ -30,6 +30,7 @@ import { RpcExceptionFilter } from '../rpc-exception.filter';
 import { CreateOrderDto } from '../dto/orders/create-order.dto';
 import { UpdateOrderStatusDto } from '../dto/orders/update-order-status.dto';
 import { OrderResponseDto } from '../dto/orders/order-response.dto';
+import { OrderPaginationQueryDto } from '../dto/orders/order-pagination-query.dto';
 import {
   PopularPizzaResponseDto,
   PremiumUserAnalyticsResponseDto,
@@ -53,29 +54,29 @@ export class OrdersGatewayController {
   @Get('analytics/popular-pizza')
   @Roles('admin')
   @ApiOperation({
-    summary: 'Аналитика: Самая популярная пицца месяца',
+    summary: 'Analytics: Most popular pizza of the month',
     description:
-      'Доступно только администратору. Возвращает пиццу, которую чаще всего заказывали за выбранный месяц и год.',
+      'Available only to administrators. Returns the pizza that was ordered most frequently during the selected month and year.',
   })
   @ApiQuery({
     name: 'month',
     type: Number,
     example: 9,
-    description: 'Порядковый номер месяца (1-12)',
+    description: 'Month number (1-12)',
   })
   @ApiQuery({
     name: 'year',
     type: Number,
     example: 2026,
-    description: 'Календарный год',
+    description: 'Calendar year',
   })
   @ApiOkResponse({
-    description: 'Аналитика по популярной пицце успешно сформирована.',
+    description: 'Popular pizza analytics successfully generated.',
     type: PopularPizzaResponseDto,
   })
   @ApiResponse({
     status: 403,
-    description: 'Доступ запрещен (требуется роль admin).',
+    description: 'Access denied (admin role required).',
   })
   getPopularPizza(
     @Query('month', ParseIntPipe) month: number,
@@ -91,17 +92,17 @@ export class OrdersGatewayController {
   @Get('analytics/premium-users')
   @Roles('admin')
   @ApiOperation({
-    summary: 'Аналитика: Поиск премиум-клиентов',
+    summary: 'Analytics: Search for premium clients',
     description:
-      'Доступно только администратору. Находит пользователей с количеством заказов >= 3, чей средний чек выше или равен среднему значению чека по всей системе.',
+      'Available only to administrators. Finds users with order count >= 3, whose average check amount is greater than or equal to the average check amount across the entire system.',
   })
   @ApiOkResponse({
-    description: 'Список премиум-пользователей успешно получен.',
+    description: 'Premium users list successfully retrieved.',
     type: [PremiumUserAnalyticsResponseDto],
   })
   @ApiResponse({
     status: 403,
-    description: 'Доступ запрещен (требуется роль admin).',
+    description: 'Access denied (admin role required).',
   })
   getPremiumUsers() {
     return this.pizzaClient.send('get_premium_users_analytics', {});
@@ -112,27 +113,31 @@ export class OrdersGatewayController {
   // ==========================================
 
   // * Получить список заказов (Пользователь: своя история заказов | Админ: все заказы в системе)
-  // GET /orders
+  // GET /orders?page=1&limit=10
   @Get()
   @Roles('admin', 'user')
-  @ApiOperation({
-    summary: 'Получить список заказов',
-    description:
-      'Для администратора возвращает все активные заказы в системе. Для пользователя — историю его собственных заказов.',
+  @ApiOperation({ 
+    summary: 'Get a list of orders with pagination', 
+    description: 'For administrators, returns a chunk of all active orders in the system. For users, returns a chunk of their personal order history.' 
   })
-  @ApiOkResponse({
-    description: 'Список заказов успешно получен.',
-    type: [OrderResponseDto],
-  })
-  @ApiResponse({ status: 401, description: 'Не авторизован.' })
-  getOrders(@Req() req: AuthenticatedRequest) {
-    // Разделяем логику на основе роли пользователя из JWT-токена
-    if (req.user.role.includes('admin')) {
-      return this.pizzaClient.send('admin_get_all_orders', {});
-    }
+  @ApiOkResponse({ description: 'Order list successfully retrieved with pagination metadata.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  getOrders(
+    @Req() req: AuthenticatedRequest,
+    @Query() query: OrderPaginationQueryDto
+  ) {
+    const paginationParams = {
+      page: query.page,
+      limit: query.limit,
+    };
 
-    return this.pizzaClient.send('get_user_orders_history', {
-      userId: req.user.userId,
+    if (req.user.role.includes('admin')) {
+      return this.pizzaClient.send('admin_get_all_orders', paginationParams);
+    }
+    
+    return this.pizzaClient.send('get_user_orders_history', { 
+      userId: req.user.userId, 
+      ...paginationParams 
     });
   }
 
@@ -140,21 +145,21 @@ export class OrdersGatewayController {
   @Post()
   @Roles('user', 'admin')
   @ApiOperation({
-    summary: 'Оформить заказ из корзины',
+    summary: 'Place an order from cart',
     description:
-      'Берет все элементы из текущей корзины пользователя, применяет промокод (если передан), фиксирует цены-снимки и очищает корзину.',
+      'Takes all items from the current user cart, applies a promo code (if provided), snapshots the prices, and clears the cart.',
   })
   @ApiCreatedResponse({
-    description: 'Заказ успешно создан и отправлен на кухню.',
+    description: 'Order successfully created and sent to the kitchen.',
     type: OrderResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: 'Ошибка валидации или пустая корзина пользователя.',
+    description: 'Validation error or empty user cart.',
   })
   @ApiResponse({
     status: 404,
-    description: 'Указанный промокод не существует или просрочен.',
+    description: 'The specified promo code does not exist or has expired.',
   })
   createOrder(@Req() req: AuthenticatedRequest, @Body() body: CreateOrderDto) {
     return this.pizzaClient.send('create_order', {
@@ -167,22 +172,22 @@ export class OrdersGatewayController {
   @Get(':id')
   @Roles('user', 'admin')
   @ApiOperation({
-    summary: 'Получить информацию о конкретном заказе по ID',
+    summary: 'Get information about a specific order by ID',
     description:
-      'Позволяет клиенту или администратору узнать текущее состояние и детали конкретного заказа.',
+      'Allows a client or administrator to view the current status and details of a specific order.',
   })
   @ApiParam({
     name: 'id',
     type: Number,
-    description: 'Уникальный идентификатор заказа',
+    description: 'Unique order identifier',
     example: 105,
   })
   @ApiOkResponse({
-    description: 'Информация о заказе успешно получена.',
+    description: 'Order information successfully retrieved.',
     type: OrderResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Неверный формат ID.' })
-  @ApiResponse({ status: 404, description: 'Заказ не найден.' })
+  @ApiResponse({ status: 400, description: 'Invalid ID format.' })
+  @ApiResponse({ status: 404, description: 'Order not found.' })
   getOrder(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
@@ -198,28 +203,28 @@ export class OrdersGatewayController {
   @Patch(':id')
   @Roles('admin')
   @ApiOperation({
-    summary: 'Изменить статус выполнения заказа',
+    summary: 'Change order execution status',
     description:
-      'Доступно только администратору. Переводит заказ на этапы: processing, delivering, completed и др.',
+      'Available only to administrators. Advances the order to stages such as processing, delivering, completed, etc.',
   })
   @ApiParam({
     name: 'id',
     type: Number,
-    description: 'Уникальный идентификатор заказа',
+    description: 'Unique order identifier',
     example: 105,
   })
   @ApiOkResponse({
-    description: 'Статус заказа успешно обновлен.',
+    description: 'Order status successfully updated.',
     type: OrderResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: 'Неверный формат ID или некорректный статус.',
+    description: 'Invalid ID format or incorrect status.',
   })
-  @ApiResponse({ status: 404, description: 'Заказ с указанным ID не найден.' })
+  @ApiResponse({ status: 404, description: 'Order with the specified ID not found.' })
   @ApiResponse({
     status: 403,
-    description: 'Доступ запрещен (требуется роль admin).',
+    description: 'Access denied (admin role required).',
   })
   updateOrderStatus(
     @Param('id', ParseIntPipe) id: number,

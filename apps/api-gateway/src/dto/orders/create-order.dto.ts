@@ -6,29 +6,27 @@ import { IsNotEmpty, IsString, IsEnum, IsOptional, MaxLength } from 'class-valid
 import { DeliveryMethod, PaymentMethod } from '@shared/enums';
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 'г. Минск, ул. Ленина, д. 10, кв. 25', description: 'Адрес доставки заказа' })
-  @IsString({ message: 'Адрес должен быть строкой' })
-  @IsNotEmpty({ message: 'Адрес доставки не может быть пустым' })
+  @ApiProperty({ example: '10 Lenin St, Apt 25, Minsk', description: 'Order delivery address' })
+  @IsString({ message: 'Address must be a string' })
+  @IsNotEmpty({ message: 'Delivery address cannot be empty' })
   address: string;
 
-  @ApiProperty({ example: DeliveryMethod.COURIER, enum: DeliveryMethod, description: 'Способ доставки (courier/pickup)' })
-  @IsEnum(DeliveryMethod, { message: 'Неверный способ доставки. Допустимы: courier, pickup' })
+  @ApiProperty({ example: DeliveryMethod.COURIER, enum: DeliveryMethod, description: 'Delivery method (courier/pickup)' })
+  @IsEnum(DeliveryMethod, { message: 'Invalid delivery method. Allowed: courier, pickup' })
   deliveryMethod: DeliveryMethod;
 
-  @ApiProperty({ example: PaymentMethod.CARD_ONLINE, enum: PaymentMethod, description: 'Способ оплаты (cash/card_online/card_courier)' })
-  @IsEnum(PaymentMethod, { message: 'Неверный способ оплаты' })
+  @ApiProperty({ example: PaymentMethod.CARD_ONLINE, enum: PaymentMethod, description: 'Payment method (cash/card_online/card_courier)' })
+  @IsEnum(PaymentMethod, { message: 'Invalid payment method' })
   paymentMethod: PaymentMethod;
 
-  @ApiPropertyOptional({ example: 'Домофон 1001, курьеру не звонить, кот пугается', description: 'Комментарий к заказу' })
+  @ApiPropertyOptional({ example: 'Intercom code 1001, do not call the courier, the cat gets scared', description: 'Order comment' })
   @IsOptional()
-  @IsString({ message: 'Комментарий должен быть строкой' })
+  @IsString({ message: 'Comment must be a string' })
   comment?: string;
 
-  @ApiPropertyOptional({ example: 'PIZZA2026', description: 'Текстовый промокод для получения скидки на этот заказ' })
+  @ApiPropertyOptional({ example: 'PIZZA2026', description: 'Text promo code to get a discount on this order' })
   @IsOptional()
-  @IsString({ message: 'Промокод должен быть строкой' })
-  @MaxLength(50, { message: 'Промокод не должен превышать 50 символов' })
+  @IsString({ message: 'Promo code must be a string' })
+  @MaxLength(50, { message: 'Promo code must not exceed 50 characters' })
   promoCode?: string; // передаем строку купона прямо сюда для добавления промокода к заказу
 }
-
-

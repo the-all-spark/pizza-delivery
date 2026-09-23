@@ -31,16 +31,40 @@ export class PizzaService {
   // ==========================================
   // 1. ПОЛУЧИТЬ ПОСТРАНИЧНЫЙ СПИСОК ПИЦЦ
   // ==========================================
-  async findPaginated(payload: PizzaPaginationPayload): Promise<Pizza[]> {
+  async findPaginated(payload: PizzaPaginationPayload): Promise<any> {
     const { page, limit } = payload;
     const skip = (page - 1) * limit;
 
-    // возвращаем пиццы БЕЗ детального списка ингредиентов
-    return await this.pizzaRepository.find({
+    // findAndCount возвращает кортеж: [массив_записей, общее_количество_в_БД]
+    const [pizzas, total] = await this.pizzaRepository.findAndCount({
       take: limit,
       skip: skip,
+      relations: {
+        ingredients: true,
+      },
       order: { createdAt: 'DESC' },
     });
+
+    // Форматируем decimal-строки цен пицц и их ингредиентов в валидные числа number
+    const formattedPizzas = pizzas.map((pizza) => {
+      pizza.price = Number(pizza.price);
+      
+      if (pizza.ingredients) {
+        pizza.ingredients = pizza.ingredients.map((ingr) => {
+          ingr.price = Number(ingr.price); 
+          return ingr;
+        });
+      }
+      return pizza;
+    });
+
+    // Формируем стандартизированный ответ с метаданными пагинации
+    return {
+      data: formattedPizzas,
+      total,
+      page,
+      limit,
+    };
   }
 
   // ==========================================

@@ -1,28 +1,28 @@
+// Схемы дя отображения аналитике в Swagger
+
 import { ApiProperty } from '@nestjs/swagger';
 
-// схемы дя отображения аналитике в Swagger
-
 export class PopularPizzaResponseDto {
-  @ApiProperty({ example: 4, description: 'ID самой популярной пиццы' })
+  @ApiProperty({ example: 4, description: 'ID of the most popular pizza' })
   pizzaId: number;
 
-  @ApiProperty({ example: 'Пепперони', description: 'Название пиццы' })
+  @ApiProperty({ example: 'Pepperoni', description: 'Pizza title' })
   title: string;
 
   @ApiProperty({
     example: 45,
-    description: 'Общее количество проданных единиц за месяц',
+    description: 'Total number of units sold during the month',
   })
   totalQuantity: number;
 }
 
 export class PremiumUserAnalyticsResponseDto {
-  @ApiProperty({ example: 12, description: 'ID премиум-пользователя' })
+  @ApiProperty({ example: 12, description: 'ID of the premium user' })
   userId: number;
 
-  @ApiProperty({ example: 42.5, description: 'Средний чек этого пользователя' })
+  @ApiProperty({ example: 42.5, description: 'Average check amount of this user' })
   averageCheck: number;
 
-  @ApiProperty({ example: 5, description: 'Общее количество успешных заказов' })
+  @ApiProperty({ example: 5, description: 'Total number of successful orders' })
   ordersCount: number;
 }

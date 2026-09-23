@@ -33,9 +33,9 @@ export class OrderItem {
   quantity: number;
 
   // Много строчек в чеке относятся к одному конкретному заказу 
-  @ManyToOne(() => Order, { onDelete: 'CASCADE' })
+  @ManyToOne('Order', (order: any) => order.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'order_id' })
-  order: Order;
+  order: any; // Меняем строгий тип класса Order на any, чтобы избежать циклического импорта файлов
 
   // Много разных строчек в разных заказах разных людей могут ссылаться на одну и ту же пиццу
   @ManyToOne(() => Pizza, { onDelete: 'SET NULL' })

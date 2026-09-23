@@ -6,9 +6,11 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { PromoCode } from '../promo-codes/promo-code.entity';
+import { OrderItem } from './order-item.entity';
 import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
 @Entity('orders')
@@ -47,4 +49,8 @@ export class Order {
   @ManyToOne(() => PromoCode, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'promo_code_id' })
   promoCode: PromoCode | null;
+
+  // у одного заказа может быть много позиций пицц (строчек в чеке)
+  @OneToMany('OrderItem', (item: any) => item.order)
+  items: any[]; // Меняем strict-класс на any для разрыва циклического импорта на этапе компиляции
 }

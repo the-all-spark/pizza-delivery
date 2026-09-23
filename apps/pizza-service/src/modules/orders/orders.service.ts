@@ -14,6 +14,7 @@ import {
   GetUserOrdersPayload,
   GetOrderStatusPayload,
   AdminUpdateStatusPayload,
+  AdminGetAllOrdersPayload
 } from './orders-interfaces';
 
 @Injectable()
@@ -50,7 +51,7 @@ export class OrdersService {
     if (!cartItems || cartItems.length === 0) {
       throw new RpcException({
         statusCode: 400,
-        message: 'Невозможно оформить заказ: ваша корзина пуста.',
+        message: 'Unable to place an order: your cart is empty.',
       });
     }
 
@@ -60,7 +61,7 @@ export class OrdersService {
       if (!item.pizza) {
         throw new RpcException({
           statusCode: 404,
-          message: `Пицца для позиции корзины больше не существует в меню.`,
+          message: `The pizza for the cart item is no longer on the menu.`,
         });
       }
       basePrice += Number(item.pizza.price) * item.quantity;
@@ -80,7 +81,7 @@ export class OrdersService {
         throw new RpcException({
           statusCode: 404,
           message:
-            'Указанный промокод не существует, деактивирован или просрочен.',
+            'The specified promo code does not exist, has been deactivated, or has expired.',
         });
       }
       discountPercent = appliedPromo.discountPercent;
@@ -123,45 +124,117 @@ export class OrdersService {
   }
 
   // ==========================================
-  // 2. ИСТОРИЯ ЗАКАЗОВ ПОЛЬЗОВАТЕЛЯ
+  // 2. ИСТОРИЯ ЗАКАЗОВ ПОЛЬЗОВАТЕЛЯ (С ПАГИНАЦИЕЙ)
   // ==========================================
-  async getUserOrdersHistory(payload: GetUserOrdersPayload): Promise<Order[]> {
-    return await this.orderRepository.find({
+  async getUserOrdersHistory(payload: GetUserOrdersPayload): Promise<any> {
+    const { page, limit } = payload;
+    const skip = (page - 1) * limit;
+
+    // findAndCount возвращает одновременно массив элементов [0] и общее число строк в БД [1]
+    const [orders, total] = await this.orderRepository.findAndCount({
       where: { userId: Number(payload.userId) },
-      order: { createdAt: 'DESC' }, // Сначала самые свежие заказы
-    });
-  }
-
-  // ==========================================
-  // 3. ВСЕ ЗАКАЗЫ В СИСТЕМЕ (ДЛЯ АДМИНА)
-  // ==========================================
-  async adminGetAllOrders(): Promise<Order[]> {
-    return await this.orderRepository.find({
+      relations: {
+        items: true,
+      },
       order: { createdAt: 'DESC' },
+      skip: skip,  // Сколько строк пропустить
+      take: limit, // Сколько строк забрать
     });
+
+    // Приводим decimal-строки к числам number
+    const formattedOrders = orders.map((order) => {
+      order.totalPrice = Number(order.totalPrice);
+      
+      if (order.items) {
+        order.items = order.items.map((item) => {
+          item.priceSnapshot = Number(item.priceSnapshot);
+          return item;
+        });
+      }
+      return order;
+    });
+
+    // Возвращаем объект со стандартизированной мета-информацией пагинации
+    return {
+      data: formattedOrders,
+      total,
+      page,
+      limit,
+    };
   }
 
   // ==========================================
-  // 4. ПОЛУЧИТЬ СТАТУС КОНКРЕТНОГО ЗАКАЗА
+  // 3. ВСЕ ЗАКАЗЫ В СИСТЕМЕ (ДЛЯ АДМИНА С ПАГИНАЦИЕЙ)
+  // ==========================================
+  async adminGetAllOrders(payload: AdminGetAllOrdersPayload): Promise<any> {
+    const { page, limit } = payload;
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await this.orderRepository.findAndCount({
+      relations: {
+        items: true,
+      },
+      order: { createdAt: 'DESC' },
+      skip: skip,
+      take: limit,
+    });
+
+    const formattedOrders = orders.map((order) => {
+      order.totalPrice = Number(order.totalPrice);
+      
+      if (order.items) {
+        order.items = order.items.map((item) => {
+          item.priceSnapshot = Number(item.priceSnapshot);
+          return item;
+        });
+      }
+      return order;
+    });
+
+    return {
+      data: formattedOrders,
+      total,
+      page,
+      limit,
+    };
+  }
+
+  // ==========================================
+  // 4. ПОЛУЧИТЬ СТАТУС/ИНФОРМАЦИЮ КОНКРЕТНОГО ЗАКАЗА ПО ID
   // ==========================================
   async getOrderStatus(payload: GetOrderStatusPayload): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { orderId: payload.orderId },
+      // Явно приказываем TypeORM подгрузить массив строчек чека из БД
+      relations: {
+        items: true,
+      },
     });
 
     if (!order) {
       throw new RpcException({
         statusCode: 404,
-        message: `Заказ с ID ${payload.orderId} не найден в системе.`,
+        message: `Order with ID ${payload.orderId} was not found in the system.`,
       });
     }
 
-    // Если запрашивает НЕ админ И заказ принадлежит НЕ этому пользователю
+    // Если запрашивает НЕ admin И заказ принадлежит НЕ этому пользователю
     const userIdNum = Number(payload.userId);
     if (!payload.role.includes('admin') && order.userId !== userIdNum) {
       throw new RpcException({
         statusCode: 403,
-        message: 'Доступ запрещен: вы не можете просматривать чужие заказы.',
+        message: `Access denied: you cannot view other people's orders.`,
+      });
+    }
+
+    // Конвертируем decimal-строку "362.00" обратно в чистый number для Swagger
+    order.totalPrice = Number(order.totalPrice);
+
+    // Дополнительно страхуем decimal-цены внутри каждой пиццы в заказе
+    if (order.items) {
+      order.items = order.items.map(item => {
+        item.priceSnapshot = Number(item.priceSnapshot);
+        return item;
       });
     }
 
@@ -181,7 +254,7 @@ export class OrdersService {
     if (!order) {
       throw new RpcException({
         statusCode: 404,
-        message: `Заказ с ID ${payload.orderId} не найден для обновления.`,
+        message: `Order with ID ${payload.orderId} not found for update.`,
       });
     }
 
@@ -220,7 +293,7 @@ export class OrdersService {
 
     // Если за этот месяц вообще не было заказов, возвращаем понятное сообщение
     if (!result || result.length === 0) {
-      return { message: 'За указанный период заказов не обнаружено.' };
+      return { message: 'No orders were found for the specified period.' };
     }
 
     // Возвращаем первую (и единственную благодаря LIMIT 1) строку результата

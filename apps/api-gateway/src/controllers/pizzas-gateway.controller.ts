@@ -41,6 +41,7 @@ import { CreatePizzaDto } from '../dto/pizzas/create-pizza.dto';
 import { UpdatePizzaDto } from '../dto/pizzas/update-pizza.dto.';
 import { AddIngredientToPizzaDto } from '../dto/pizzas/add-ingredient-to-pizza.dto';
 import { PizzaResponseDto } from '../dto/pizzas/pizza-response.dto';
+import { PizzaListResponseDto } from '../dto/pizzas/pizza-list-response.dto';
 
 @ApiTags('Pizzas')
 @ApiBearerAuth('bearerAuth')
@@ -77,7 +78,7 @@ export class PizzasGatewayController {
   })
   @ApiOkResponse({
     description: 'Pizza list successfully retrieved.',
-    type: [PizzaResponseDto],
+    type: PizzaListResponseDto,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getPizzas(
