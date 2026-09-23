@@ -97,6 +97,25 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
           },
         }),
       },
+      // Клиент для отправки событий в logger-service
+      {
+        name: 'LOGGER_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [
+              configService.get<string>(
+                'RABBITMQ_URL',
+                'amqp://localhost:5672',
+              ),
+            ],
+            queue: 'logger_queue', // Направляем сообщения строго в logger_queue
+            queueOptions: { durable: true },
+          },
+        }),
+      },
     ]),
   ],
   controllers: [

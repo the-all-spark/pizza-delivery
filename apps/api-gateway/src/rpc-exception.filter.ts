@@ -1,7 +1,9 @@
+// Фильтр исключений для шлюза
+
 /* Когда внутренний микросервис падает или выбрасывает ошибку 
 (например, ConflictException при регистрации), RabbitMQ передает её в виде системного объекта. 
 Без фильтра шлюз вернет клиенту общую ошибку 500 Internal Server Error.
-Мы создадим перехватчик, который трансформирует сообщения от внутренних сервисов в понятные HTTP-статусы.
+Перехватчик трансформирует сообщения от внутренних сервисов в понятные HTTP-статусы.
 */
 
 import {
@@ -17,21 +19,41 @@ import { Response } from 'express';
 
 @Catch()
 export class RpcExceptionFilter implements ExceptionFilter {
-  // Конструктор для внедрения службы уведомлений через прокси-клиент RabbitMQ
+  // Конструктор для внедрения служб уведомлений и централизованного логирования через прокси-клиент RabbitMQ
   constructor(
     @Inject('NOTIFICATION_SERVICE')
     private readonly notificationClient: ClientProxy,
+
+    @Inject('LOGGER_SERVICE')
+    private readonly loggerClient: ClientProxy,
   ) {}
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    // Если это стандартное HTTP исключение самого шлюза (например, глобальная гварда), отдаем как есть
+    // Если это стандартное HTTP исключение самого шлюза (например, глобальная гварда ролей),
+    // логируем его перед отправкой ответа клиенту
     if (exception instanceof HttpException) {
-      return response
-        .status(exception.getStatus())
-        .json(exception.getResponse());
+      const status = exception.getStatus();
+      const resObj = exception.getResponse();
+
+      // Извлекаем текстовое сообщение из объекта ответа NestJS
+      const errMsg =
+        typeof resObj === 'object' && resObj !== null && 'message' in resObj
+          ? (resObj as any).message
+          : exception.message;
+
+      // Отправляем логи гварды (401, 403) в MongoDB под уровнем warn
+      this.loggerClient.emit('log_event', {
+        context: 'api-gateway_http',
+        level: status >= 500 ? 'error' : 'warn',
+        message: `HTTP сбой: ${typeof errMsg === 'object' ? JSON.stringify(errMsg) : String(errMsg)}`,
+        trace: exception.stack || null,
+      });
+
+      // Возвращаем ответ клиенту, как и было раньше
+      return response.status(status).json(resObj);
     }
 
     // Логируем сырой объект ошибки в консоль шлюза для удобства локального дебага
@@ -57,6 +79,16 @@ export class RpcExceptionFilter implements ExceptionFilter {
     // Безопасно извлекаем сообщение об ошибке
     const message = exception?.message || 'Внутренняя ошибка микросервиса';
 
+    // Асинхронно отправляем лог сбоя в logger-service
+    // Разделяем уровни важности: 500+ это ошибка (error), всё что ниже (4xx) — предупреждение (warn)
+    this.loggerClient.emit('log_event', {
+      context: 'api-gateway',
+      level: status >= 500 ? 'error' : 'warn',
+      message:
+        typeof message === 'object' ? JSON.stringify(message) : String(message),
+      trace: exception?.stack || null, // Передаем стэк ошибки только если он доступен
+    });
+
     // Если зафиксирована критическая ошибка системы (статус 500 и выше)
     if (status >= 500) {
       console.log(
@@ -71,7 +103,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
 
       // Отправляем асинхронное событие в notification_queue для notification-service
       this.notificationClient.emit('critical_error_event', {
-        service: 'api-gateway_rpc_filter', // Указываем, что ошибку поймал RPC-фильтр шлюза
+        service: 'api-gateway_rpc_filter',
         message: `Microservice crashed with error: ${errorDetails}`,
       });
     }

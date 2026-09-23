@@ -78,14 +78,15 @@ services:
       - .env
     environment:
       # Настройки авторизации для входа в саму веб-панель в браузере
-      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
-      ME_CONFIG_BASICAUTH_USERNAME: "admin"
-      ME_CONFIG_BASICAUTH_PASSWORD: "logpass"
+      ME_CONFIG_OPTIONS_EDITORTHEME: 'ambiance'
+      ME_CONFIG_BASICAUTH_USERNAME: 'admin'
+      ME_CONFIG_BASICAUTH_PASSWORD: 'logpass'
 
       # Cтрока подключения
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
       # Явно фиксируем внутренний порт для скрипта инициализации
       VCAP_APP_PORT: 3000
+      ME_CONFIG_OPTIONS_DOCUMENTSPERPAGE: 1000
     ports:
       - '8081:3000'
     depends_on:

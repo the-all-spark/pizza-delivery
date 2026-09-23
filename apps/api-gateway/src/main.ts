@@ -10,6 +10,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; // Импор�
 import * as express from 'express';
 import { join } from 'path';
 import { ApiGatewayModule } from './api-gateway.module';
+import { LoggerInterceptor } from './interceptors/logger.interceptor';
+import { ClientProxy } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
@@ -21,6 +23,11 @@ async function bootstrap() {
       transform: true, // Приводит строки к числам/булевым типам там, где это нужно
     }),
   );
+
+  // 1.2 Глобальный перехватчик событий INFO
+  // Извлекаем инжектированный клиент логгера, чтобы передать его в конструктор интерцептора
+  const loggerClient = app.get<ClientProxy>('LOGGER_SERVICE');
+  app.useGlobalInterceptors(new LoggerInterceptor(loggerClient));
 
   // 2. Настраиваем раздачу картинок из папки uploads сервиса pizza-service
   // В Docker-compose папка примонтирована по пути приложения, делаем её доступной через http://localhost:3000/uploads/...
@@ -61,7 +68,7 @@ async function bootstrap() {
   // Разворачиваем веб-страницу Swagger по адресу /api (http://localhost:3000/api)
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      persistAuthorization: true, // ВАЖНО: Swagger запомнит ваш токен и он не сотрется при обновлении страницы!
+      persistAuthorization: true, // Swagger запомнит ваш токен и он не сотрется при обновлении страницы
     },
   });
   console.log(
