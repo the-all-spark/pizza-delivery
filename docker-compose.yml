@@ -69,6 +69,30 @@ services:
     networks:
       - pizza_network
 
+  # Веб-интерфейс Mongo Express
+  mongo-express:
+    image: mongo-express:latest
+    container_name: pizza_mongo_express
+    restart: always
+    env_file:
+      - .env
+    environment:
+      # Настройки авторизации для входа в саму веб-панель в браузере
+      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+      ME_CONFIG_BASICAUTH_USERNAME: "admin"
+      ME_CONFIG_BASICAUTH_PASSWORD: "logpass"
+
+      # Cтрока подключения
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
+      # Явно фиксируем внутренний порт для скрипта инициализации
+      VCAP_APP_PORT: 3000
+    ports:
+      - '8081:3000'
+    depends_on:
+      - mongodb
+    networks:
+      - pizza_network
+
   # ==========================================
   # 2. APPLICATION MICROSERVICES
   # ==========================================
