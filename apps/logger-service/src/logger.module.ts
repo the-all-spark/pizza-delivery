@@ -7,7 +7,7 @@ import { Log, LogSchema } from './schemas/log.schema';
 
 @Module({
   imports: [
-    // Подключаем ConfigModule, чтобы NestJS умел читать process.env из docker-compose
+    // Подключаем ConfigModule, чтобы NestJS умел читать process.env
     ConfigModule.forRoot({
       isGlobal: true,
     }),

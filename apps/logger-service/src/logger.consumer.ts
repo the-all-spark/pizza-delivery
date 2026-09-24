@@ -1,4 +1,4 @@
-// Приемщик сообщений (Consumer) из очередей RabbitMQ
+// * Приемщик сообщений (Consumer) из очередей RabbitMQ
 
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';

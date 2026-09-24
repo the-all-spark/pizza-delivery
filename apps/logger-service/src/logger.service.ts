@@ -1,4 +1,4 @@
-// Сервис для управления и сохранения логов в MongoDB
+// * Сервис для управления и сохранения логов в MongoDB
 
 /**
  * Включает метод, который принимает входящие данные, упаковывает их в структуру MongoDB 
@@ -42,7 +42,7 @@ export class LoggerService {
     if (log.level === 'error') {
       console.error(`${prefix} ${log.message}`);
       if (log.trace) {
-        console.error(log.trace); // Выводим стек ошибки, если он есть
+        console.error(log.trace);
       }
     } else if (log.level === 'warn') {
       console.warn(`${prefix} ${log.message}`);

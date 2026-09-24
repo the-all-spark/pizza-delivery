@@ -1,4 +1,4 @@
-// Глобальный перехватчик успешных HTTP-запросов для логирования событий (INFO)
+// * Глобальный перехватчик успешных HTTP-запросов для логирования событий (INFO)
 
 import {
   Injectable,
@@ -34,7 +34,7 @@ export class LoggerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => {
         // Логируем событие ТОЛЬКО если запрос завершился успешно (коды 2xx)
-        // Ошибки (4xx, 5xx) полностью обрабатываются вашим RpcExceptionFilter
+        // Ошибки (4xx, 5xx) полностью обрабатываются RpcExceptionFilter
         if (response.statusCode >= 200 && response.statusCode < 300) {
           const duration = Date.now() - startTime;
 

@@ -1,4 +1,4 @@
-// Точка входа для запуска logger-service
+// * Точка входа для запуска logger-service
 
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
@@ -11,9 +11,8 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        // Хост 'rabbitmq' берется из общей Docker-сети
         urls: [process.env.RABBITMQ_URL || 'amqp://localhost:5672'],
-        // Имя очереди, которую будет слушать наш сервис логов
+        // Имя очереди, которую будет слушать сервис логов
         queue: 'logger_queue',
         // Логика автоматического подтверждения доставки сообщений
         queueOptions: {

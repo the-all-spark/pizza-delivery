@@ -1,4 +1,4 @@
-// Фильтр исключений для шлюза
+// * Фильтр исключений для шлюза
 
 /* Когда внутренний микросервис падает или выбрасывает ошибку 
 (например, ConflictException при регистрации), RabbitMQ передает её в виде системного объекта. 
@@ -52,7 +52,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
         trace: exception.stack || null,
       });
 
-      // Возвращаем ответ клиенту, как и было раньше
+      // Возвращаем ответ клиенту
       return response.status(status).json(resObj);
     }
 
@@ -62,7 +62,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
       exception,
     );
 
-    // По умолчанию выставляем 500.
+    // По умолчанию выставляем 500
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (exception && typeof exception === 'object') {

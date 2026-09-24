@@ -1,4 +1,4 @@
-// Схема документа MongoDB для коллекции логов (Mongoose)
+// * Схема документа MongoDB для коллекции логов (Mongoose)
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
@@ -29,5 +29,5 @@ export class Log extends Document implements ILog {
   timestamp: Date;
 }
 
-// Генерируем стандартную фабрику схемы Mongoose на основе нашего класса
+// Генерируем стандартную фабрику схемы Mongoose на основе класса
 export const LogSchema = SchemaFactory.createForClass(Log);
