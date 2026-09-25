@@ -1,0 +1,65 @@
+name: CI Pipeline (Pizza Delivery)
+
+on:
+  push:
+    branches: [ "main", "feature/ci-setup" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  ci-process:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Клонируем исходный код репозитория NestJS
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Шаг 2: Устанавливаем Node.js для быстрой работы линтера
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Шаг 3: Устанавливаем локальные зависимости для линтера
+      - name: Install local dependencies
+        run: npm ci
+
+      # Шаг 4: Запускаем Rust-линтер Oxlint (проверка качества кода)
+      - name: Run Linter (Oxlint)
+        run: npm run lint
+
+      # Шаг 5: Автоматически создаем тестовый .env для Docker Compose
+      # Все переменные, которые запрашивают ваши сервисы, теперь будут заполнены
+      - name: Create Test .env File
+        run: |
+          echo "DB_USERNAME=test_user" >> .env
+          echo "DB_PASSWORD=test_pass" >> .env
+          echo "DB_NAME=pizza_test_db" >> .env
+          echo "MONGO_USERNAME=mongo_user" >> .env
+          echo "MONGO_PASSWORD=mongo_pass" >> .env
+          echo "MONGO_DB=pizza_test_logs" >> .env
+          echo "RABBITMQ_USER=rabbit_user" >> .env
+          echo "RABBITMQ_PASS=rabbit_pass" >> .env
+          echo "SMTP_HOST=mailpit" >> .env
+          echo "SMTP_PORT=1025" >> .env
+          echo "SMTP_USER=test" >> .env
+          echo "SMTP_PASS=test" >> .env
+
+      # Шаг 6: Собираем и поднимаем инфраструктуру монорепозитория
+      - name: Start Docker Containers
+        run: |
+          docker compose up -d --build
+          # Даем базам данных и брокеру сообщений 20 секунд на полную инициализацию портов
+          sleep 20
+
+      # Шаг 7: Выполняем тесты корзины NestJS в нативном Linux-окружении контейнера
+      # (используется флаг -t вместо -it)
+      - name: Run Cart Service Tests inside Docker Container
+        run: |
+          docker exec -t pizza_pizza_service npx jest --config apps/pizza-service/jest-pizza.config.json
+
+      # Шаг 8: Безопасно тушим и очищаем Docker-ресурсы, освобождая агент сборщика
+      - name: Stop Containers
+        if: always()
+        run: docker compose down -v --snapshots 2>/dev/null || docker compose down -v
