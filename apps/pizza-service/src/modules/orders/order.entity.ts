@@ -10,7 +10,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { PromoCode } from '../promo-codes/promo-code.entity';
-import { OrderItem } from './order-item.entity';
 import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
 @Entity('orders')

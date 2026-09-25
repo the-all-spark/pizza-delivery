@@ -252,7 +252,7 @@ export class PizzaService {
           // Если файл есть — стираем его с диска
           await fs.unlink(absolutePath);
           this.logger.log(`✅ Файл ${filename} успешно удален с диска.`);
-        } catch (fsError) {
+        } catch {
           // Логгер предупреждения на случай, если запись «битая» и файла на диске физически уже не было
           this.logger.warn(`Файл ${filename} не найден по пути ${absolutePath}. Продолжаем очистку БД...`);
         }
