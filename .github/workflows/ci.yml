@@ -2,9 +2,9 @@ name: CI Pipeline (Pizza Delivery)
 
 on:
   push:
-    branches: [ "main", "feature/ci-setup" ]
+    branches: ['main', 'feature/ci-setup']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   ci-process:
@@ -29,8 +29,12 @@ jobs:
       - name: Run Linter (Oxlint)
         run: npm run lint
 
+      # Шаг 4.1: Проверка форматирования кода (Prettier)
+      - name: Check formatting (Prettier)
+        run: npm run format:check
+
       # Шаг 5: Автоматически создаем тестовый .env для Docker Compose
-      # Все переменные, которые запрашивают ваши сервисы, теперь будут заполнены
+      # Все переменные, которые запрашивают сервисы, теперь будут заполнены
       - name: Create Test .env File
         run: |
           echo "DB_USERNAME=test_user" >> .env
