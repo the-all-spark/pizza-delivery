@@ -1,13 +1,7 @@
 // Создание и Обновление
 
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  Min,
-  MaxLength,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, Min, MaxLength } from 'class-validator';
 
 export class CreateIngredientDto {
   @ApiProperty({

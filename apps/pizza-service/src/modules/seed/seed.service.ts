@@ -63,7 +63,7 @@ export class SeedService implements OnApplicationBootstrap {
     } as DeepPartial<User>);
 
     await this.userRepository.save([adminUser, regularUser]);
-    
+
     console.log('✅ Тестовые пользователи успешно созданы.');
 
     // 3. Создаем ингредиенты
@@ -81,7 +81,7 @@ export class SeedService implements OnApplicationBootstrap {
     ];
 
     const savedIngredients = await this.ingredientRepository.save(
-      this.ingredientRepository.create(ingredientData)
+      this.ingredientRepository.create(ingredientData),
     );
     console.log('✅ Ингредиенты успешно добавлены.');
 
@@ -106,7 +106,12 @@ export class SeedService implements OnApplicationBootstrap {
         description: 'Пикантная пицца с куриным филе, грибами и дымным соусом Барбекю.',
         price: 21,
         imageUrl: '/uploads/barbecue.jpg',
-        ingredients: [savedIngredients[0], savedIngredients[3], savedIngredients[6], savedIngredients[9]], // Сыр, Грибы, Курица, Барбекю соус
+        ingredients: [
+          savedIngredients[0],
+          savedIngredients[3],
+          savedIngredients[6],
+          savedIngredients[9],
+        ], // Сыр, Грибы, Курица, Барбекю соус
       },
     ];
 

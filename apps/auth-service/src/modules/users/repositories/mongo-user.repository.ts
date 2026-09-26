@@ -69,9 +69,7 @@ export class MongoUserRepository implements IUserRepository {
       .exec();
 
     if (!updatedDoc) {
-      throw new NotFoundException(
-        `Пользователь с ID ${id} не найден в MongoDB`,
-      );
+      throw new NotFoundException(`Пользователь с ID ${id} не найден в MongoDB`);
     }
 
     return updatedDoc as unknown as User;

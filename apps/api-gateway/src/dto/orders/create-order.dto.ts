@@ -11,20 +11,34 @@ export class CreateOrderDto {
   @IsNotEmpty({ message: 'Delivery address cannot be empty' })
   address: string;
 
-  @ApiProperty({ example: DeliveryMethod.COURIER, enum: DeliveryMethod, description: 'Delivery method (courier/pickup)' })
+  @ApiProperty({
+    example: DeliveryMethod.COURIER,
+    enum: DeliveryMethod,
+    description: 'Delivery method (courier/pickup)',
+  })
   @IsEnum(DeliveryMethod, { message: 'Invalid delivery method. Allowed: courier, pickup' })
   deliveryMethod: DeliveryMethod;
 
-  @ApiProperty({ example: PaymentMethod.CARD_ONLINE, enum: PaymentMethod, description: 'Payment method (cash/card_online/card_courier)' })
+  @ApiProperty({
+    example: PaymentMethod.CARD_ONLINE,
+    enum: PaymentMethod,
+    description: 'Payment method (cash/card_online/card_courier)',
+  })
   @IsEnum(PaymentMethod, { message: 'Invalid payment method' })
   paymentMethod: PaymentMethod;
 
-  @ApiPropertyOptional({ example: 'Intercom code 1001, do not call the courier, the cat gets scared', description: 'Order comment' })
+  @ApiPropertyOptional({
+    example: 'Intercom code 1001, do not call the courier, the cat gets scared',
+    description: 'Order comment',
+  })
   @IsOptional()
   @IsString({ message: 'Comment must be a string' })
   comment?: string;
 
-  @ApiPropertyOptional({ example: 'PIZZA2026', description: 'Text promo code to get a discount on this order' })
+  @ApiPropertyOptional({
+    example: 'PIZZA2026',
+    description: 'Text promo code to get a discount on this order',
+  })
   @IsOptional()
   @IsString({ message: 'Promo code must be a string' })
   @MaxLength(50, { message: 'Promo code must not exceed 50 characters' })

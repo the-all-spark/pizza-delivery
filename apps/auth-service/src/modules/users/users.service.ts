@@ -73,10 +73,7 @@ export class UsersService {
     }
 
     // Вызываем метод обновления репозитория
-    const updatedUser = await this.userRepository.update(
-      userId,
-      fieldsToUpdate,
-    );
+    const updatedUser = await this.userRepository.update(userId, fieldsToUpdate);
 
     // Возвращаем результат без хэша пароля
     const { passwordHash: _, ...result } = updatedUser;

@@ -1,13 +1,7 @@
 // * DTO для валидации входящих данных при входе (/auth/login)
 
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class LoginDto {
   @ApiProperty({

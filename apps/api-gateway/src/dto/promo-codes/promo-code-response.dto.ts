@@ -12,7 +12,10 @@ export class PromoCodeResponseDto {
   @ApiProperty({ example: 15, description: 'Процент предоставляемой скидки' })
   discountPercent: number;
 
-  @ApiProperty({ example: '2026-12-31T23:59:59.000Z', description: 'Дата окончания действия купона' })
+  @ApiProperty({
+    example: '2026-12-31T23:59:59.000Z',
+    description: 'Дата окончания действия купона',
+  })
   expiresAt: Date;
 
   @ApiProperty({ example: true, description: 'Статус активности промокода' })

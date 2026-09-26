@@ -8,15 +8,7 @@
  * после получения данных от микросервиса.
  */
 
-import {
-  Controller,
-  Post,
-  Body,
-  UseFilters,
-  Inject,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseFilters, Inject, HttpCode, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
   ApiOperation,
@@ -38,17 +30,14 @@ import { LoginResponseDto } from '../dto/auth/login-response.dto';
 @Controller('auth') // Базовый префикс для всех роутов внутри класса
 @UseFilters(RpcExceptionFilter) // Применяем фильтр ошибок к контроллеру
 export class AuthGatewayController {
-  constructor(
-    @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
-  ) {}
+  constructor(@Inject('AUTH_SERVICE') private readonly authClient: ClientProxy) {}
 
   // * Регистрация (/auth/register)
   @Public() // Маршрут открыт для всех
   @Post('register')
   @ApiOperation({
     summary: 'New user registration',
-    description:
-      'Creates a new user account in the system. Sends data to the user microservice.',
+    description: 'Creates a new user account in the system. Sends data to the user microservice.',
   })
   // Описание успешного ответа
   @ApiCreatedResponse({
@@ -66,8 +55,7 @@ export class AuthGatewayController {
   })
   @ApiResponse({
     status: 500,
-    description:
-      'Internal server error while processing the request by the microservice.',
+    description: 'Internal server error while processing the request by the microservice.',
   })
   register(@Body() body: RegisterDto) {
     // Отправляем команду в auth_queue и ждем результат
@@ -80,8 +68,7 @@ export class AuthGatewayController {
   @HttpCode(HttpStatus.OK) // Явно задаем 200 OK вместо дефолтного 201 для POST запросов
   @ApiOperation({
     summary: 'User authorization (log in)',
-    description:
-      'Verifies credentials (email/password) and returns a JWT token.',
+    description: 'Verifies credentials (email/password) and returns a JWT token.',
   })
   @ApiOkResponse({
     description: 'Successful authorization. Returns a JWT token.',

@@ -33,17 +33,13 @@ async function bootstrap() {
   // В Docker-compose папка примонтирована по пути приложения, делаем её доступной через http://localhost:3000/uploads/...
   const uploadsPath = join(process.cwd(), 'apps', 'pizza-service', 'uploads');
   app.use('/uploads', express.static(uploadsPath));
-  console.log(
-    `[API Gateway] Папка статических файлов подключена по пути: ${uploadsPath}`,
-  );
+  console.log(`[API Gateway] Папка статических файлов подключена по пути: ${uploadsPath}`);
 
   // 3. Настраиваем SWAGGER документацию
   // Создаем конфигурацию
   const config = new DocumentBuilder()
     .setTitle('Pizza Delivery API') // Заголовок страницы в браузере
-    .setDescription(
-      'A single entry point for a pizza delivery microservice application',
-    ) // Описание проекта
+    .setDescription('A single entry point for a pizza delivery microservice application') // Описание проекта
     .setVersion('1.0') // Версия API
 
     // Добавляем поддержку авторизации по JWT-токену (Bearer Auth)
@@ -54,8 +50,7 @@ async function bootstrap() {
         scheme: 'bearer', // схема авторизации Bearer
         bearerFormat: 'JWT', // Подсказка, что вводить нужно именно JWT-токен
         name: 'JWT', // внутреннее имя схемы авторизации
-        description:
-          'Enter your JWT token in the field below without the word "Bearer".',
+        description: 'Enter your JWT token in the field below without the word "Bearer".',
         in: 'header', // Указываем, что токен автоматически прикрепится к заголовкам запроса
       },
       'bearerAuth', // Уникальное кодовое имя для связи этой авторизации с защищенными роутами
@@ -78,9 +73,7 @@ async function bootstrap() {
   // 4. Запускаем HTTP-сервер на порту 3000
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log(
-    `[API Gateway] HTTP-шлюз успешно запущен на публичном порту ${port}`,
-  );
+  console.log(`[API Gateway] HTTP-шлюз успешно запущен на публичном порту ${port}`);
 }
 
 void bootstrap();

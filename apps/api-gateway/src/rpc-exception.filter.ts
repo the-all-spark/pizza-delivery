@@ -57,10 +57,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
     }
 
     // Логируем сырой объект ошибки в консоль шлюза для удобства локального дебага
-    console.error(
-      '[Gateway Error Filter] Перехвачена ошибка микросервиса:',
-      exception,
-    );
+    console.error('[Gateway Error Filter] Перехвачена ошибка микросервиса:', exception);
 
     // По умолчанию выставляем 500
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -84,8 +81,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
     this.loggerClient.emit('log_event', {
       context: 'api-gateway',
       level: status >= 500 ? 'error' : 'warn',
-      message:
-        typeof message === 'object' ? JSON.stringify(message) : String(message),
+      message: typeof message === 'object' ? JSON.stringify(message) : String(message),
       trace: exception?.stack || null, // Передаем стэк ошибки только если он доступен
     });
 
@@ -98,8 +94,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
       // Собираем детали ошибки. Если стэк-трейс отсутствует (из-за сериализации RabbitMQ),
       // преобразуем текстовое или объектное сообщение в строковый вид.
       const errorDetails =
-        exception?.stack ||
-        (typeof message === 'object' ? JSON.stringify(message) : message);
+        exception?.stack || (typeof message === 'object' ? JSON.stringify(message) : message);
 
       // Отправляем асинхронное событие в notification_queue для notification-service
       this.notificationClient.emit('critical_error_event', {

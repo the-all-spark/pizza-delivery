@@ -4,10 +4,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users.service';
 
-import type {
-  PaginationOptions,
-  SearchOptions,
-} from './interfaces/user-repository.interface';
+import type { PaginationOptions, SearchOptions } from './interfaces/user-repository.interface';
 
 @Controller()
 export class UsersController {

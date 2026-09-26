@@ -3,7 +3,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule'; // импорт для Cron
- 
+
 import { PizzaController } from './pizza.controller';
 import { PizzaService } from './pizza.service';
 import { Pizza } from './pizza.entity';

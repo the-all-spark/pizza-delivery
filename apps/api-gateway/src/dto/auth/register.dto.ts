@@ -1,12 +1,6 @@
 // * DTO для валидации входящих данных при регистрации (/auth/register)
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
 
 /*
 Исключаем из DTO:

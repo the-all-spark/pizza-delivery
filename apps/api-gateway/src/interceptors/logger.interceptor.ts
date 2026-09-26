@@ -1,12 +1,6 @@
 // * Глобальный перехватчик успешных HTTP-запросов для логирования событий (INFO)
 
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  Inject,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -39,9 +33,7 @@ export class LoggerInterceptor implements NestInterceptor {
           const duration = Date.now() - startTime;
 
           // Безопасно извлекаем ID пользователя из JWT-гварды, если он авторизован
-          const userStr = request.user
-            ? `User ID: ${request.user.userId}`
-            : 'Anonymous';
+          const userStr = request.user ? `User ID: ${request.user.userId}` : 'Anonymous';
 
           // Формируем понятное сообщение лога
           const logMessage = `Успешный запрос: ${request.method} ${request.url} | ${userStr} | Статус: ${response.statusCode} | Время: ${duration}мс`;

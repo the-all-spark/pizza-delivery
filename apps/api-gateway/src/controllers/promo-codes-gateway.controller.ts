@@ -1,29 +1,29 @@
 // * Контроллер для промо-кодов
 
-import { 
-  Controller, 
-  Post, 
-  Get, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
-  Inject, 
-  UseFilters, 
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Inject,
+  UseFilters,
   ParseIntPipe,
   HttpCode,
-  HttpStatus
+  HttpStatus,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { 
-  ApiTags, 
-  ApiBearerAuth, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiOkResponse, 
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiOkResponse,
   ApiCreatedResponse,
-  ApiParam,             
-  ApiNoContentResponse
+  ApiParam,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -34,12 +34,10 @@ import { PromoCodeResponseDto } from '../dto/promo-codes/promo-code-response.dto
 
 @ApiTags('Promo-codes')
 @ApiBearerAuth('bearerAuth')
-@Controller('promo-codes') 
+@Controller('promo-codes')
 @UseFilters(RpcExceptionFilter)
 export class PromoCodesGatewayController {
-  constructor(
-    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy
-  ) {}
+  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
 
   // ========================
   // ОБЩИЕ МАРШРУТЫ И МАРШРУТЫ КОЛЛЕКЦИЙ (ВВЕРХУ)
@@ -48,11 +46,14 @@ export class PromoCodesGatewayController {
   // * Получить список всех промо-кодов (GET /promo-codes)
   @Get()
   @Roles('user', 'admin')
-  @ApiOperation({ 
-    summary: 'Get a list of all promo codes', 
-    description: 'Available to authorized users and administrators. Returns a list of coupons.' 
+  @ApiOperation({
+    summary: 'Get a list of all promo codes',
+    description: 'Available to authorized users and administrators. Returns a list of coupons.',
   })
-  @ApiOkResponse({ description: 'Promo code list successfully retrieved.', type: [PromoCodeResponseDto] })
+  @ApiOkResponse({
+    description: 'Promo code list successfully retrieved.',
+    type: [PromoCodeResponseDto],
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getAllPromoCodes() {
     return this.pizzaClient.send('get_all_promo_codes', {});
@@ -61,11 +62,14 @@ export class PromoCodesGatewayController {
   // * Создать промокод (POST /promo-codes)
   @Post()
   @Roles('admin')
-  @ApiOperation({ 
-    summary: 'Create a new promo code', 
-    description: 'Available only to administrators. Creates a discount coupon with validity time.' 
+  @ApiOperation({
+    summary: 'Create a new promo code',
+    description: 'Available only to administrators. Creates a discount coupon with validity time.',
   })
-  @ApiCreatedResponse({ description: 'Promo code successfully created.', type: PromoCodeResponseDto })
+  @ApiCreatedResponse({
+    description: 'Promo code successfully created.',
+    type: PromoCodeResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Field validation error.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
@@ -81,9 +85,9 @@ export class PromoCodesGatewayController {
   // * Изменить существующий промо-код по его id (PUT /promo-codes/:id)
   @Put(':id')
   @Roles('admin')
-  @ApiOperation({ 
-    summary: 'Update an existing promo code by ID', 
-    description: 'Available only to administrators. Allows updating coupon parameters.' 
+  @ApiOperation({
+    summary: 'Update an existing promo code by ID',
+    description: 'Available only to administrators. Allows updating coupon parameters.',
   })
   @ApiParam({
     name: 'id',
@@ -95,22 +99,22 @@ export class PromoCodesGatewayController {
   @ApiResponse({ status: 400, description: 'Invalid ID or data validation error.' })
   @ApiResponse({ status: 404, description: 'Promo code with the specified ID not found.' })
   @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
-  updatePromoCode(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdatePromoCodeDto
-  ) {
+  updatePromoCode(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePromoCodeDto) {
     return this.pizzaClient.send('admin_update_promo_code', { promoId: id, ...body });
   }
 
   // * Получить конкретный промокод по его id (GET /promo-codes/:id)
   @Get(':id')
   @Roles('admin', 'user') // Доступно всем авторизованным ролям
-  @ApiOperation({ 
-    summary: 'Get promo code information by ID', 
-    description: 'Returns details about the coupon, its status, and discount percentage.' 
+  @ApiOperation({
+    summary: 'Get promo code information by ID',
+    description: 'Returns details about the coupon, its status, and discount percentage.',
   })
   @ApiParam({ name: 'id', type: Number, description: 'Unique promo code identifier', example: 1 })
-  @ApiOkResponse({ description: 'Promo code successfully found and retrieved.', type: PromoCodeResponseDto })
+  @ApiOkResponse({
+    description: 'Promo code successfully found and retrieved.',
+    type: PromoCodeResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid ID format.' })
   @ApiResponse({ status: 404, description: 'Promo code not found.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
@@ -122,9 +126,9 @@ export class PromoCodesGatewayController {
   @Delete(':id')
   @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ 
-    summary: 'Delete promo code by ID', 
-    description: 'Available only to administrators. Deletes the promo code.' 
+  @ApiOperation({
+    summary: 'Delete promo code by ID',
+    description: 'Available only to administrators. Deletes the promo code.',
   })
   @ApiNoContentResponse({ description: 'Promo code successfully deleted. Returns no content.' })
   @ApiResponse({ status: 400, description: 'Invalid ID format.' })

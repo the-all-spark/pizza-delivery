@@ -17,12 +17,19 @@ export class OrderResponseDto {
   @ApiProperty({ example: 50, description: 'Total order price including promo code discount' })
   totalPrice: number;
 
-  @ApiProperty({ example: OrderStatus.PENDING, enum: OrderStatus, description: 'Current execution status' })
+  @ApiProperty({
+    example: OrderStatus.PENDING,
+    enum: OrderStatus,
+    description: 'Current execution status',
+  })
   status: OrderStatus;
 
   @ApiProperty({ example: '2026-03-31T15:00:00.000Z', description: 'Receipt creation time' })
   createdAt: Date;
 
-  @ApiProperty({ description: 'Nested receipt items (pizza snapshots)', type: [OrderItemResponseDto] })
+  @ApiProperty({
+    description: 'Nested receipt items (pizza snapshots)',
+    type: [OrderItemResponseDto],
+  })
   items: OrderItemResponseDto[];
 }

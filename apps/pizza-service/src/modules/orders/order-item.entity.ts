@@ -1,12 +1,6 @@
 // Детали заказа / Корзина внутри заказа (строчки чека)
 
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Pizza } from '../pizzas/pizza.entity';
 
 @Entity('order_items')
@@ -31,7 +25,7 @@ export class OrderItem {
   @Column({ type: 'int' })
   quantity: number;
 
-  // Много строчек в чеке относятся к одному конкретному заказу 
+  // Много строчек в чеке относятся к одному конкретному заказу
   @ManyToOne('Order', (order: any) => order.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'order_id' })
   order: any; // Меняем строгий тип класса Order на any, чтобы избежать циклического импорта файлов

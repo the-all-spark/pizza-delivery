@@ -6,12 +6,12 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { PizzaService } from './pizza.service';
 
 // Импортируем созданные интерфейсы для строгой типизации входящих payload
-import type { 
-  PizzaPaginationPayload, 
-  CreatePizzaPayload, 
+import type {
+  PizzaPaginationPayload,
+  CreatePizzaPayload,
   UpdatePizzaPayload,
   AddIngredientToPizzaPayload,
-  RemoveIngredientFromPizzaPayload
+  RemoveIngredientFromPizzaPayload,
 } from './pizza-interfaces';
 
 @Controller()

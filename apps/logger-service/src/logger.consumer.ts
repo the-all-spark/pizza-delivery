@@ -17,7 +17,7 @@ export class LoggerConsumer {
   async handleLogEvent(@Payload() data: Omit<ILog, 'timestamp'>) {
     // Безопасно передаем данные в сервис для записи в MongoDB и вывода в консоль
     await this.loggerService.createLog(data);
-    
+
     // Возвращаем статус успеха для RabbitMQ (подтверждение обработки)
     return { success: true };
   }

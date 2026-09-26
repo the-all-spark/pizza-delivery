@@ -6,7 +6,7 @@ import type {
   GetUserOrdersPayload,
   GetOrderStatusPayload,
   AdminUpdateStatusPayload,
-  AdminGetAllOrdersPayload
+  AdminGetAllOrdersPayload,
 } from './orders-interfaces';
 
 @Controller()
@@ -63,9 +63,7 @@ export class OrdersController {
    * Паттерн: 'get_most_popular_pizza_of_month'
    */
   @MessagePattern('get_most_popular_pizza_of_month')
-  async getMostPopularPizzaOfMonth(
-    @Payload() data: { month: number; year: number },
-  ) {
+  async getMostPopularPizzaOfMonth(@Payload() data: { month: number; year: number }) {
     return this.ordersService.getMostPopularPizzaOfMonth(data.month, data.year);
   }
 

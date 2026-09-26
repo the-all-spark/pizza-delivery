@@ -26,9 +26,7 @@ export class NotificationConsumer {
   // * 2. Слушаем событие удаления аккаунта пользователя
   // Паттерн 'user_deleted_event' отправляется из users.service.ts
   @EventPattern('user_deleted_event')
-  async handleUserDeleted(
-    @Payload() data: { email: string; firstName: string; lastName: string },
-  ) {
+  async handleUserDeleted(@Payload() data: { email: string; firstName: string; lastName: string }) {
     console.log(`📩 Получено событие удаления пользователя: ${data.email}`);
 
     // Передаем email и имя в сервис для отправки прощального письма
@@ -38,17 +36,10 @@ export class NotificationConsumer {
   // * 3. Слушаем событие критической ошибки из любого микросервиса системы
   // Паттерн 'critical_error_event' может быть отправлен любым сервисом
   @EventPattern('critical_error_event')
-  async handleCriticalError(
-    @Payload() data: { service: string; message: string },
-  ) {
-    console.log(
-      `⚠️ Получено уведомление о критической ошибке из сервиса: ${data.service}`,
-    );
+  async handleCriticalError(@Payload() data: { service: string; message: string }) {
+    console.log(`⚠️ Получено уведомление о критической ошибке из сервиса: ${data.service}`);
 
     // Отправляем отчет на email администратора
-    await this.notificationService.sendCriticalErrorEmail(
-      data.service,
-      data.message,
-    );
+    await this.notificationService.sendCriticalErrorEmail(data.service, data.message);
   }
 }

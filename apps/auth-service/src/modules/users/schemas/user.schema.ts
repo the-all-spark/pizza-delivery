@@ -28,7 +28,4 @@ export class MongoUser extends Document {
 export const MongoUserSchema = SchemaFactory.createForClass(MongoUser);
 
 // Создаем составной индекс по имени и фамилии
-MongoUserSchema.index(
-  { firstName: 1, lastName: 1 },
-  { name: 'idx_users_names' },
-);
+MongoUserSchema.index({ firstName: 1, lastName: 1 }, { name: 'idx_users_names' });

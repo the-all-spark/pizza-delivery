@@ -102,9 +102,7 @@ export class CartService {
   // ==========================================
   // 4. УДАЛИТЬ ПОЗИЦИЮ ИЗ КОРЗИНЫ
   // ==========================================
-  async removeFromCart(
-    payload: RemoveFromCartPayload,
-  ): Promise<{ success: boolean }> {
+  async removeFromCart(payload: RemoveFromCartPayload): Promise<{ success: boolean }> {
     const { userId, cartItemId } = payload;
 
     // Проверяем существование и принадлежность элемента пользователю

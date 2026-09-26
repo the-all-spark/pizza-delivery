@@ -1,6 +1,6 @@
 // * Юнит-тесты на Jest для CartService
 
-import { describe, beforeEach, it, expect, jest } from '@jest/globals'; 
+import { describe, beforeEach, it, expect, jest } from '@jest/globals';
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -74,13 +74,14 @@ describe('CartService', () => {
       jest.spyOn(pizzaRepo, 'findOne').mockResolvedValue(null);
 
       // Проверяем, что вызов сервиса падает с ошибкой RpcException (404)
-      await expect(service.addToCart({ userId: 1, pizzaId: 999, quantity: 1 }))
-        .rejects.toThrow(RpcException);
+      await expect(service.addToCart({ userId: 1, pizzaId: 999, quantity: 1 })).rejects.toThrow(
+        RpcException,
+      );
     });
 
     it('должен увеличить количество (quantity++), если пицца уже лежит в корзине', async () => {
       const existingCartItem = { cartId: 1, userId: 1, pizzaId: 10, quantity: 2 };
-      
+
       jest.spyOn(pizzaRepo, 'findOne').mockResolvedValue({ pId: 10 } as any); // Пицца в меню существует
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(existingCartItem as any); // Пицца уже есть в корзине
       jest.spyOn(cartItemRepo, 'save').mockImplementation(async (item) => item as any); // Метод save просто возвращает объект
@@ -113,13 +114,14 @@ describe('CartService', () => {
     it('должен выбросить 404 ошибку, если элемент корзины не найден или чужой', async () => {
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(null); // Элемент в базе не найден
 
-      await expect(service.updateCartItem({ userId: 1, cartItemId: 55, quantity: 5 }))
-        .rejects.toThrow(RpcException);
+      await expect(
+        service.updateCartItem({ userId: 1, cartItemId: 55, quantity: 5 }),
+      ).rejects.toThrow(RpcException);
     });
 
     it('должен успешно изменить количество существующего элемента корзины', async () => {
       const existingItem = { cartId: 5, userId: 1, pizzaId: 10, quantity: 1 };
-      
+
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(existingItem as any);
       jest.spyOn(cartItemRepo, 'save').mockImplementation(async (item) => item as any);
 
@@ -136,13 +138,14 @@ describe('CartService', () => {
     it('должен выбросить 404, если пользователь пытается удалить не существующий или чужой элемент', async () => {
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(null);
 
-      await expect(service.removeFromCart({ userId: 1, cartItemId: 99 }))
-        .rejects.toThrow(RpcException);
+      await expect(service.removeFromCart({ userId: 1, cartItemId: 99 })).rejects.toThrow(
+        RpcException,
+      );
     });
 
     it('должен успешно вызвать метод физического удаления из базы данных', async () => {
       const existingItem = { cartId: 12, userId: 1, pizzaId: 10, quantity: 1 };
-      
+
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(existingItem as any);
       jest.spyOn(cartItemRepo, 'delete').mockResolvedValue({ affected: 1 } as any); // Имитируем успешное удаление TypeORM
 

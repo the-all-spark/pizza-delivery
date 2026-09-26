@@ -9,11 +9,7 @@ import * as path from 'path';
 import { Pizza } from './pizza.entity';
 import { Ingredient } from '../ingredients/ingredient.entity';
 
-import { 
-  PizzaPaginationPayload, 
-  CreatePizzaPayload, 
-  UpdatePizzaPayload 
-} from './pizza-interfaces';
+import { PizzaPaginationPayload, CreatePizzaPayload, UpdatePizzaPayload } from './pizza-interfaces';
 
 @Injectable()
 export class PizzaService {
@@ -48,10 +44,10 @@ export class PizzaService {
     // Форматируем decimal-строки цен пицц и их ингредиентов в валидные числа number
     const formattedPizzas = pizzas.map((pizza) => {
       pizza.price = Number(pizza.price);
-      
+
       if (pizza.ingredients) {
         pizza.ingredients = pizza.ingredients.map((ingr) => {
-          ingr.price = Number(ingr.price); 
+          ingr.price = Number(ingr.price);
           return ingr;
         });
       }
@@ -185,7 +181,7 @@ export class PizzaService {
     }
 
     // Проверяем, не добавлен ли этот ингредиент в пиццу уже сейчас
-    const alreadyExists = pizza.ingredients.some(ing => ing.ingrId === ingredientId);
+    const alreadyExists = pizza.ingredients.some((ing) => ing.ingrId === ingredientId);
     if (alreadyExists) {
       throw new RpcException({
         statusCode: 400,
@@ -195,7 +191,7 @@ export class PizzaService {
 
     // Добавляем новый ингредиент в массив связей сущности
     pizza.ingredients.push(ingredient);
-    
+
     // Сохраняем пиццу — TypeORM сам добавит строчку в промежуточную таблицу pizza_ingredients
     return await this.pizzaRepository.save(pizza);
   }
@@ -207,7 +203,7 @@ export class PizzaService {
     const pizza = await this.findDetailById(pizzaId);
 
     // Ищем индекс ингредиента в текущем массиве связей пиццы
-    const index = pizza.ingredients.findIndex(ing => ing.ingrId === ingredientId);
+    const index = pizza.ingredients.findIndex((ing) => ing.ingrId === ingredientId);
     if (index === -1) {
       throw new RpcException({
         statusCode: 404,
@@ -217,7 +213,7 @@ export class PizzaService {
 
     // Удаляем ингредиент из массива связей сущности
     pizza.ingredients.splice(index, 1);
-    
+
     // Сохраняем пиццу — TypeORM сам удалит строчку из таблицы pizza_ingredients
     return await this.pizzaRepository.save(pizza);
   }
@@ -242,9 +238,15 @@ export class PizzaService {
       // Шаг Б: Пытаемся физически удалить файл изображения с диска
       if (pizza.imageUrl) {
         const filename = path.basename(pizza.imageUrl); // Извлекаем имя файла
-        
+
         // Собираем абсолютный путь монтирования
-        const absolutePath = path.join('/usr/src/app', 'apps', 'pizza-service', 'uploads', filename);
+        const absolutePath = path.join(
+          '/usr/src/app',
+          'apps',
+          'pizza-service',
+          'uploads',
+          filename,
+        );
 
         try {
           // Проверяем наличие файла на диске
@@ -254,20 +256,24 @@ export class PizzaService {
           this.logger.log(`✅ Файл ${filename} успешно удален с диска.`);
         } catch {
           // Логгер предупреждения на случай, если запись «битая» и файла на диске физически уже не было
-          this.logger.warn(`Файл ${filename} не найден по пути ${absolutePath}. Продолжаем очистку БД...`);
+          this.logger.warn(
+            `Файл ${filename} не найден по пути ${absolutePath}. Продолжаем очистку БД...`,
+          );
         }
       }
-      
+
       // Если база успешно очищена и файл стерт — фиксируем транзакцию
       await queryRunner.commitTransaction();
       this.logger.log(`🗑️ Пицца "${pizza.title}" и её изображение успешно удалены из системы.`);
       return { success: true };
-
     } catch (error) {
       // Если что-то пошло не так (например, ошибка fs при удалении файла) — делаем откат
       await queryRunner.rollbackTransaction();
       const errorMessage = error instanceof Error ? error.stack : String(error);
-      this.logger.error(`❌ Ошибка удаления пиццы с ID ${pizzaId}. Транзакция откатана.`, errorMessage);
+      this.logger.error(
+        `❌ Ошибка удаления пиццы с ID ${pizzaId}. Транзакция откатана.`,
+        errorMessage,
+      );
 
       throw new RpcException({
         statusCode: 500,
@@ -292,9 +298,10 @@ export class PizzaService {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-    // Находим все пиццы, которые не заказывались более 6 месяцев 
+    // Находим все пиццы, которые не заказывались более 6 месяцев
     // (lastOrderedAt старше шести месяцев ИЛИ пицца старая, но её вообще ни разу не заказывали)
-    const oldPizzas = await this.pizzaRepository.createQueryBuilder('pizza')
+    const oldPizzas = await this.pizzaRepository
+      .createQueryBuilder('pizza')
       .where('pizza.lastOrderedAt < :date', { date: sixMonthsAgo })
       .orWhere('pizza.createdAt < :date AND pizza.lastOrderedAt IS NULL', { date: sixMonthsAgo })
       .getMany();
@@ -304,7 +311,9 @@ export class PizzaService {
       return;
     }
 
-    this.logger.warn(`⚠️ Обнаружено ${oldPizzas.length} невостребованных пицц. Начинаем автоудаление...`);
+    this.logger.warn(
+      `⚠️ Обнаружено ${oldPizzas.length} невостребованных пицц. Начинаем автоудаление...`,
+    );
 
     // Перебираем и удаляем каждую старую пиццу через наш безопасный транзакционный метод удаления
     for (const oldPizza of oldPizzas) {
@@ -312,8 +321,11 @@ export class PizzaService {
         await this.deletePizza(oldPizza.pId);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.stack : String(error);
-        this.logger.error(`❌ Не удалось автоматически удалить старую пиццу с ID ${oldPizza.pId}`, errorMessage);
+        this.logger.error(
+          `❌ Не удалось автоматически удалить старую пиццу с ID ${oldPizza.pId}`,
+          errorMessage,
+        );
       }
     }
   }
-} 
+}

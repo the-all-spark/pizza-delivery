@@ -1,12 +1,12 @@
 // DTO для возврата списка пицц с пагинацией и метаданными
 
 import { ApiProperty } from '@nestjs/swagger';
-import {PizzaResponseDto} from './pizza-response.dto';
+import { PizzaResponseDto } from './pizza-response.dto';
 
 export class PizzaListResponseDto {
-  @ApiProperty({ 
+  @ApiProperty({
     type: [PizzaResponseDto],
-    description: 'Array of pizza for current page' 
+    description: 'Array of pizza for current page',
   })
   data: PizzaResponseDto[];
 

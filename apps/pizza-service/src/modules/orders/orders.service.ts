@@ -14,7 +14,7 @@ import {
   GetUserOrdersPayload,
   GetOrderStatusPayload,
   AdminUpdateStatusPayload,
-  AdminGetAllOrdersPayload
+  AdminGetAllOrdersPayload,
 } from './orders-interfaces';
 
 @Injectable()
@@ -80,8 +80,7 @@ export class OrdersService {
       if (!appliedPromo || new Date() > new Date(appliedPromo.expiresAt)) {
         throw new RpcException({
           statusCode: 404,
-          message:
-            'The specified promo code does not exist, has been deactivated, or has expired.',
+          message: 'The specified promo code does not exist, has been deactivated, or has expired.',
         });
       }
       discountPercent = appliedPromo.discountPercent;
@@ -137,14 +136,14 @@ export class OrdersService {
         items: true,
       },
       order: { createdAt: 'DESC' },
-      skip: skip,  // Сколько строк пропустить
+      skip: skip, // Сколько строк пропустить
       take: limit, // Сколько строк забрать
     });
 
     // Приводим decimal-строки к числам number
     const formattedOrders = orders.map((order) => {
       order.totalPrice = Number(order.totalPrice);
-      
+
       if (order.items) {
         order.items = order.items.map((item) => {
           item.priceSnapshot = Number(item.priceSnapshot);
@@ -181,7 +180,7 @@ export class OrdersService {
 
     const formattedOrders = orders.map((order) => {
       order.totalPrice = Number(order.totalPrice);
-      
+
       if (order.items) {
         order.items = order.items.map((item) => {
           item.priceSnapshot = Number(item.priceSnapshot);
@@ -232,7 +231,7 @@ export class OrdersService {
 
     // Дополнительно страхуем decimal-цены внутри каждой пиццы в заказе
     if (order.items) {
-      order.items = order.items.map(item => {
+      order.items = order.items.map((item) => {
         item.priceSnapshot = Number(item.priceSnapshot);
         return item;
       });
@@ -244,9 +243,7 @@ export class OrdersService {
   // ==========================================
   // 5. ИЗМЕНЕНИЕ СТАТУСА ЗАКАЗА (ДЛЯ АДМИНА)
   // ==========================================
-  async adminUpdateOrderStatus(
-    payload: AdminUpdateStatusPayload,
-  ): Promise<Order> {
+  async adminUpdateOrderStatus(payload: AdminUpdateStatusPayload): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { orderId: payload.orderId },
     });

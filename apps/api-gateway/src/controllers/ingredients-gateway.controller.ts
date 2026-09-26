@@ -48,8 +48,7 @@ export class IngredientsGatewayController {
   @Get()
   @ApiOperation({
     summary: 'Get all pizza ingredients',
-    description:
-      'Returns a full list of available ingredients. Available only to admin.',
+    description: 'Returns a full list of available ingredients. Available only to admin.',
   })
   @ApiOkResponse({
     description: 'Ingredient list successfully retrieved.',
@@ -66,9 +65,9 @@ export class IngredientsGatewayController {
 
   // * Получить конкретный ингредиент пиццы по его id (GET /ingredients/:id)
   @Get(':id')
-  @ApiOperation({ 
-    summary: 'Get pizza ingredient by ID', 
-    description: 'Returns detailed information for a specific ingredient. Available only to admin.' 
+  @ApiOperation({
+    summary: 'Get pizza ingredient by ID',
+    description: 'Returns detailed information for a specific ingredient. Available only to admin.',
   })
   @ApiParam({
     name: 'id',
@@ -76,9 +75,9 @@ export class IngredientsGatewayController {
     description: 'Unique ingredient identifier',
     example: 1,
   })
-  @ApiOkResponse({ 
-    description: 'Ingredient successfully found and retrieved.', 
-    type: IngredientResponseDto 
+  @ApiOkResponse({
+    description: 'Ingredient successfully found and retrieved.',
+    type: IngredientResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Invalid ID format.' })
   @ApiResponse({ status: 404, description: 'Ingredient with the specified ID not found.' })
@@ -114,8 +113,7 @@ export class IngredientsGatewayController {
   @Put(':id')
   @ApiOperation({
     summary: 'Update pizza ingredient by ID',
-    description:
-      'Updates data of an existing ingredient by its unique identifier.',
+    description: 'Updates data of an existing ingredient by its unique identifier.',
   })
   // Документируем параметр пути для Swagger
   @ApiParam({
@@ -137,10 +135,7 @@ export class IngredientsGatewayController {
     description: 'Ingredient with the specified ID not found.',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  updateIngredient(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: CreateIngredientDto,
-  ) {
+  updateIngredient(@Param('id', ParseIntPipe) id: number, @Body() body: CreateIngredientDto) {
     return this.pizzaClient.send('update_ingredient', { id, ...body });
   }
 

@@ -48,12 +48,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [
-              configService.get<string>(
-                'RABBITMQ_URL',
-                'amqp://localhost:5672',
-              ),
-            ],
+            urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
             queue: 'auth_queue', // Очередь для auth-service
             queueOptions: { durable: true },
           },
@@ -67,12 +62,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [
-              configService.get<string>(
-                'RABBITMQ_URL',
-                'amqp://localhost:5672',
-              ),
-            ],
+            urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
             queue: 'pizza_queue', // Очередь для pizza-service
             queueOptions: { durable: true },
           },
@@ -86,12 +76,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [
-              configService.get<string>(
-                'RABBITMQ_URL',
-                'amqp://localhost:5672',
-              ),
-            ],
+            urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
             queue: 'notification_queue', // Очередь для notification-service
             queueOptions: { durable: true }, // durable гарантирует сохранность писем при перезапуске брокера
           },
@@ -105,12 +90,7 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [
-              configService.get<string>(
-                'RABBITMQ_URL',
-                'amqp://localhost:5672',
-              ),
-            ],
+            urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
             queue: 'logger_queue', // Направляем сообщения строго в logger_queue
             queueOptions: { durable: true },
           },

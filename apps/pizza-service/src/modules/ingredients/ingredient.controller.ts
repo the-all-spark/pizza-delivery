@@ -8,7 +8,7 @@ import { IngredientService } from './ingredient.service';
 import type {
   CreateIngredientPayload,
   UpdateIngredientPayload,
-  GetIngredientByIdPayload
+  GetIngredientByIdPayload,
 } from './ingredients-interfaces';
 
 @Controller()

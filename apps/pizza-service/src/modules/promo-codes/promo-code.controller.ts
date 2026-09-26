@@ -39,4 +39,3 @@ export class PromoCodeController {
     return await this.promoCodeService.delete(data.promoId);
   }
 }
-

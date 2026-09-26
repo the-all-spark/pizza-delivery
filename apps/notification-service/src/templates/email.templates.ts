@@ -40,10 +40,7 @@ export const getGoodbyeTemplate = (firstName: string): string => {
  * @param service Название упавшего микросервиса
  * @param errorMessage Текст ошибки или стэк-трейс
  */
-export const getCriticalErrorTemplate = (
-  service: string,
-  errorMessage: string,
-): string => {
+export const getCriticalErrorTemplate = (service: string, errorMessage: string): string => {
   const timestamp = new Date().toISOString();
   return `
     <div style="font-family: monospace; line-height: 1.5; color: #333; max-width: 800px; margin: 0 auto; border: 2px solid #c0392b; padding: 20px; border-radius: 8px; background-color: #fdf2f2;">

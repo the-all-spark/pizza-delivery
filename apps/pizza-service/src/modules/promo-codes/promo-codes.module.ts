@@ -7,9 +7,7 @@ import { PromoCodeService } from './promo-code.service';
 import { PromoCode } from './promo-code.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([PromoCode]),
-  ],
+  imports: [TypeOrmModule.forFeature([PromoCode])],
   controllers: [PromoCodeController],
   providers: [PromoCodeService],
   exports: [PromoCodeService, TypeOrmModule], // Экспортируем для модуля заказов orders

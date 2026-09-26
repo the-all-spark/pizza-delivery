@@ -42,9 +42,7 @@ export class GatewayJwtGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException(
-        'Authorization token is missing or invalid.',
-      );
+      throw new UnauthorizedException('Authorization token is missing or invalid.');
     }
 
     const token = authHeader.split(' ')[1];
@@ -68,10 +66,10 @@ export class GatewayJwtGuard implements CanActivate {
       };
 
       // 4. Проверяем роли пользователей (Авторизация по ролям)
-      const requiredRoles = this.reflector.getAllAndOverride<string[]>(
-        ROLES_KEY,
-        [context.getHandler(), context.getClass()],
-      );
+      const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+        context.getHandler(),
+        context.getClass(),
+      ]);
 
       // Если у маршрута нет ограничений по ролям, значит он доступен любому авторизованному пользователю
       if (!requiredRoles || requiredRoles.length === 0) {

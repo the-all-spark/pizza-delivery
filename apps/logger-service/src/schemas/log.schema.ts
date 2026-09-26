@@ -7,7 +7,6 @@ import { ILog } from './log.interface';
 // Объявляем класс как документ MongoDB с автоматическим созданием коллекции 'logs'
 @Schema({ collection: 'logs', versionKey: false })
 export class Log extends Document implements ILog {
-  
   // Поле context обязательно для заполнения и индексируется для быстрого поиска
   @Prop({ required: true, index: true, type: String })
   context: string;

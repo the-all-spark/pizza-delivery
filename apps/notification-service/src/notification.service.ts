@@ -33,16 +33,9 @@ export class NotificationService implements OnModuleInit {
   }
 
   // Универсальный внутренний метод для отправки любого email
-  private async sendEmail(
-    to: string,
-    subject: string,
-    html: string,
-  ): Promise<void> {
+  private async sendEmail(to: string, subject: string, html: string): Promise<void> {
     // this.configService.get('ИМЯ', 'значение_по_умолчанию') - защита от падения
-    const from = this.configService.get<string>(
-      'SMTP_FROM',
-      'no-reply@pizza.com',
-    );
+    const from = this.configService.get<string>('SMTP_FROM', 'no-reply@pizza.com');
 
     try {
       await this.transporter.sendMail({
@@ -51,9 +44,7 @@ export class NotificationService implements OnModuleInit {
         subject,
         html,
       });
-      console.log(
-        `✉️ Email с темой "${subject}" успешно отправлен на адрес: ${to}`,
-      );
+      console.log(`✉️ Email с темой "${subject}" успешно отправлен на адрес: ${to}`);
     } catch (error) {
       console.error(`❌ Ошибка при отправке email на адрес ${to}:`, error);
     }
@@ -82,15 +73,9 @@ export class NotificationService implements OnModuleInit {
   // ==========================================
   // 3. ОТПРАВКА КРИТИЧЕСКОЙ ОШИБКИ АДМИНИСТРАТОРУ
   // ==========================================
-  async sendCriticalErrorEmail(
-    serviceName: string,
-    errorMessage: string,
-  ): Promise<void> {
+  async sendCriticalErrorEmail(serviceName: string, errorMessage: string): Promise<void> {
     // Считываем email администратора из .env
-    const adminEmail = this.configService.get<string>(
-      'ADMIN_EMAIL',
-      'admin@pizza.com',
-    );
+    const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@pizza.com');
     const subject = `⚠️ CRITICAL ERROR REPORT: ${serviceName}`;
     const htmlContent = getCriticalErrorTemplate(serviceName, errorMessage);
 

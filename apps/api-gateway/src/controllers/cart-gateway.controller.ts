@@ -45,21 +45,17 @@ import { ForbiddenErrorResponseDto } from '../dto/forbidden-error-response.dto';
 @Roles('user')
 // Добавляем 403 ошибку на уровень всего контроллера, так как @Roles('user') защищает все эндпоинты
 @ApiForbiddenResponse({
-  description:
-    'Access denied. Administrators do not have access to user carts.',
+  description: 'Access denied. Administrators do not have access to user carts.',
   type: ForbiddenErrorResponseDto,
 })
 export class CartGatewayController {
-  constructor(
-    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy,
-  ) {}
+  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
 
   // * Просмотр содержимого собственной корзины (GET /cart)
   @Get()
   @ApiOperation({
     summary: 'View cart content',
-    description:
-      'Returns a list of all pizzas added by the current authorized user.',
+    description: 'Returns a list of all pizzas added by the current authorized user.',
   })
   @ApiOkResponse({
     description: 'Cart content successfully retrieved.',
@@ -74,8 +70,7 @@ export class CartGatewayController {
   @Post()
   @ApiOperation({
     summary: 'Add pizza to cart',
-    description:
-      'Adds a pizza to the cart. If the pizza already exists, increases its quantity.',
+    description: 'Adds a pizza to the cart. If the pizza already exists, increases its quantity.',
   })
   @ApiCreatedResponse({
     description: 'Pizza successfully added to the cart.',
@@ -131,8 +126,7 @@ export class CartGatewayController {
   @HttpCode(HttpStatus.NO_CONTENT) // Возвращаем 204 No Content
   @ApiOperation({
     summary: 'Remove item from cart',
-    description:
-      'Completely removes a specific pizza from the cart of the current user.',
+    description: 'Completely removes a specific pizza from the cart of the current user.',
   })
   @ApiParam({
     name: 'cartItemId',

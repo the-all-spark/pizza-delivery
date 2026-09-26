@@ -1,7 +1,7 @@
 // DTO успешного ответа
 
 /**
- * также нужно подтянуть созданный ранее IngredientResponseDto, 
+ * также нужно подтянуть созданный ранее IngredientResponseDto,
  * так как детальный ответ возвращает вложенный массив ингредиентов
  */
 
@@ -21,7 +21,7 @@ export class PizzaResponseDto {
   @ApiProperty({ example: 'https://example.com', description: 'Image link' })
   imageUrl: string;
 
-  @ApiProperty({ example: 25.00, description: 'Pizza price' })
+  @ApiProperty({ example: 25.0, description: 'Pizza price' })
   price: number;
 
   @ApiProperty({ example: '2026-03-31T12:00:00.000Z', description: 'Date added to the menu' })

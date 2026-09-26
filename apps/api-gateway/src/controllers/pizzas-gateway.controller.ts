@@ -48,9 +48,7 @@ import { PizzaListResponseDto } from '../dto/pizzas/pizza-list-response.dto';
 @Controller('pizzas')
 @UseFilters(RpcExceptionFilter)
 export class PizzasGatewayController {
-  constructor(
-    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy,
-  ) {}
+  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
 
   // ==========================================
   // ОБЩИЕ МАРШРУТЫ И МАРШРУТЫ АДМИНИСТРАТОРА (КОЛЛЕКЦИИ)
@@ -114,8 +112,7 @@ export class PizzasGatewayController {
         destination: './apps/pizza-service/uploads', // Путь, куда физически ляжет файл
         filename: (req, file, callback) => {
           // Генерируем уникальное и безопасное имя файла (текущее_время + случайное_число + оригинальное_расширение)
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = path.extname(file.originalname);
           callback(null, `pizza-${uniqueSuffix}${ext}`);
         },
@@ -151,14 +148,10 @@ export class PizzasGatewayController {
       if (typeof rawIngredients === 'string') {
         // Если админ ввел в формате JSON-массива "[1,2,3,5]"
         if (rawIngredients.startsWith('[') && rawIngredients.endsWith(']')) {
-          ingredientIds = JSON.parse(rawIngredients).map((id: any) =>
-            Number(id),
-          );
+          ingredientIds = JSON.parse(rawIngredients).map((id: any) => Number(id));
         } else {
           // Если админ ввел через запятую "1,2,3,5"
-          ingredientIds = rawIngredients
-            .split(',')
-            .map((id) => Number(id.trim()));
+          ingredientIds = rawIngredients.split(',').map((id) => Number(id.trim()));
         }
       }
       // Дополнительная валидация: фильтруем пустые или некорректные ID (NaN)
@@ -167,9 +160,7 @@ export class PizzasGatewayController {
       // Если парсинг строки не удался — физически стираем только что сохраненный файл
       const fs = require('fs');
       if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath);
-      throw new Error(
-        'Invalid ingredients field format. Use format: 1,2,3,5',
-      );
+      throw new Error('Invalid ingredients field format. Use format: 1,2,3,5');
     }
 
     try {
@@ -189,9 +180,7 @@ export class PizzasGatewayController {
       const fs = require('fs');
       if (fs.existsSync(absoluteFilePath)) {
         fs.unlinkSync(absoluteFilePath);
-        console.log(
-          `🧹 Мусорный файл ${file.filename} успешно зачищен после ошибки микросервиса.`,
-        );
+        console.log(`🧹 Мусорный файл ${file.filename} успешно зачищен после ошибки микросервиса.`);
       }
       // Пробрасываем ошибку дальше в RpcExceptionFilter
       throw microserviceError;
@@ -253,10 +242,7 @@ export class PizzasGatewayController {
     status: 409,
     description: 'Pizza with this title already exists.',
   })
-  editPizza(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdatePizzaDto,
-  ) {
+  editPizza(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePizzaDto) {
     return this.pizzaClient.send('admin_edit_pizza', { pizzaId: id, ...body });
   }
 

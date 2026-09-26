@@ -38,9 +38,7 @@ import { RegisterResponseDto } from '../dto/auth/register-response.dto'; // DTO 
 @Controller('users')
 @UseFilters(RpcExceptionFilter)
 export class UsersGatewayController {
-  constructor(
-    @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
-  ) {}
+  constructor(@Inject('AUTH_SERVICE') private readonly authClient: ClientProxy) {}
 
   // * Получение списка пользователей / Поиск по имени и фамилии
   // один эндпоинт GET /users, где все параметры опциональны или имеют дефолтные значения.
@@ -126,10 +124,7 @@ export class UsersGatewayController {
     description: 'Validation error of the submitted fields.',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  editProfile(
-    @Req() req: AuthenticatedRequest,
-    @Body() body: UpdateProfileDto,
-  ) {
+  editProfile(@Req() req: AuthenticatedRequest, @Body() body: UpdateProfileDto) {
     return this.authClient.send('user_edit_profile', {
       userId: req.user.userId,
       firstName: body.firstName,
