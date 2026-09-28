@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "rootDir": "../../",
+    "outDir": "../../dist/apps/pizza-service",
+    "types": ["node"] 
+  },
+  "include": ["src/**/*", "../**/*", "../../src/shared/**/*", "../../src/apps/api-gateway/src/controllers", "../../src/apps/api-gateway/src/decorators", "../../src/apps/api-gateway/src/interfaces", "../../src/apps/api-gateway/src/api-gateway.module.ts", "../../src/apps/api-gateway/src/main.ts", "../../src/apps/api-gateway/src/rpc-exception.filter.ts", "../../src/apps/api-gateway/src/dto/auth", "../../src/apps/api-gateway/src/dto/ingredients", "../../src/apps/api-gateway/src/dto/users", "../../src/apps/api-gateway/src/dto/promo-codes", "../../src/apps/api-gateway/src/dto/orders", "../../src/apps/auth-service/src/modules/auth/interfaces", "../../src/apps/auth-service/tsconfig.app.json", "../../src/apps/auth-service/src/modules/auth/auth.module.ts", "../../src/apps/auth-service/src/modules/users/repositories", "../../src/apps/auth-service/src/modules/users/schemas", "../../src/apps/auth-service/src/modules/users/user.entity.ts", "../../src/apps/auth-service/src/modules/users/users.controller.ts", "../../src/apps/auth-service/src/modules/users/users.module.ts", "../../src/apps/auth-service/src/modules/users/users.service.ts", "../../src/apps/logger-service/src/logger.consumer.ts", "../../src/apps/logger-service/src/logger.module.ts", "../../src/apps/logger-service/src/logger.service.ts", "../../src/apps/logger-service/src/main.ts", "../../src/apps/logger-service/tsconfig.app.json", "../../src/apps/auth-service/src/main.ts"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+}

@@ -22,25 +22,25 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "paths": {
-      "@shared/*": ["./shared/*"] 
+      "@shared/*": ["./src/shared/*"] 
     }
   },
   "files": [],
   "references": [
     {
-      "path": "./apps/api-gateway/tsconfig.app.json"
+      "path": "./src/apps/api-gateway/tsconfig.app.json"
     },
     {
-      "path": "./apps/auth-service/tsconfig.app.json"
+      "path": "./src/apps/auth-service/tsconfig.app.json"
     },
     {
-      "path": "./apps/pizza-service/tsconfig.app.json"
+      "path": "./src/apps/pizza-service/tsconfig.app.json"
     },
     {
-      "path": "./apps/notification-service/tsconfig.app.json"
+      "path": "./src/apps/notification-service/tsconfig.app.json"
     },
     {
-      "path": "./apps/logger-service/tsconfig.app.json"
+      "path": "./src/apps/logger-service/tsconfig.app.json"
     }
   ]
 }
