@@ -102,7 +102,7 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: apps/api-gateway/Dockerfile
+      dockerfile: src/apps/api-gateway/Dockerfile #! изменение пути
       target: builder # останавливаем сборку на этапе builder, где есть Nest CLI
       args:
         BUILD_DIST: 'false' # Говорим Dockerfile: "Не собирай dist на диске F"
@@ -129,7 +129,7 @@ services:
   auth-service:
     build:
       context: .
-      dockerfile: apps/auth-service/Dockerfile
+      dockerfile: src/apps/auth-service/Dockerfile
       target: builder
       args:
         BUILD_DIST: 'false'
@@ -162,7 +162,7 @@ services:
   pizza-service:
     build:
       context: .
-      dockerfile: apps/pizza-service/Dockerfile
+      dockerfile: src/apps/pizza-service/Dockerfile
       target: builder
       args:
         BUILD_DIST: 'false'
@@ -182,7 +182,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - ./apps/pizza-service/uploads:/usr/src/app/apps/pizza-service/uploads
+      - ./uploads:/usr/src/app/uploads #! проверить пути
     command: npm run start:dev -- pizza-service
     depends_on:
       - postgres_db
@@ -194,7 +194,7 @@ services:
   notification-service:
     build:
       context: .
-      dockerfile: apps/notification-service/Dockerfile
+      dockerfile: src/apps/notification-service/Dockerfile
       target: builder
       args:
         BUILD_DIST: 'false'
@@ -223,7 +223,7 @@ services:
   logger-service:
     build:
       context: .
-      dockerfile: apps/logger-service/Dockerfile
+      dockerfile: src/apps/logger-service/Dockerfile
       target: builder
       args:
         BUILD_DIST: 'false'

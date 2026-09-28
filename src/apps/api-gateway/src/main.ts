@@ -1,7 +1,7 @@
 // *  Главная точка схода сервиса
 
 /**
- * Поднимает шлюз на порту 3000, включает глобальные Pipes для DTO-валидации 
+ * Поднимает шлюз на порту 3000, включает глобальные Pipes для DTO-валидации
  * и настраивает SWAGGER документацию и Express для раздачи изображений пицц из общей папки.
  */
 
@@ -30,7 +30,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggerInterceptor(loggerClient));
 
   // Раздача картинок из папки uploads //! проверить пути
-  // const uploadsPath = join(process.cwd(), 'apps', 'pizza-service', 'uploads'); //!
   const uploadsPath = join(process.cwd(), 'uploads');
   app.use('/uploads', express.static(uploadsPath));
   console.log(`[API Gateway] Папка статических файлов подключена по пути: ${uploadsPath}`);

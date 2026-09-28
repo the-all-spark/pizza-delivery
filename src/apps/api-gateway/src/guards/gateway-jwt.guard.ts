@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { IS_PUBLIC_KEY } from '../../../../src/apps/api-gateway/src/decorators/public.decorator';
-import { ROLES_KEY } from '../../../../src/apps/api-gateway/src/decorators/roles.decorator';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { ROLES_KEY } from '../decorators/roles.decorator';
 
 @Injectable()
 export class GatewayJwtGuard implements CanActivate {

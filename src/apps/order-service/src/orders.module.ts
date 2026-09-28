@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
+import { OrdersService } from '../orders/orders.service';
 
-import { Order } from './order.entity';
+import { Order } from '../orders/order.entity';
 import { OrderItem } from './order-item.entity';
 
 // Импортируем сущности смежных модулей микросервиса
-import { CartItem } from '../cart/cart-item.entity';
-import { PromoCode } from '../promo-codes/promo-code.entity';
-import { Pizza } from '../pizzas/pizza.entity';
+import { CartItem } from '../../cart-service/src/cart-item.entity';
+import { PromoCode } from '../../pizza-service/src/modules/promo-codes/promo-code.entity';
+import { Pizza } from '../../pizza-service/src/pizza.entity';
 
 @Module({
   imports: [

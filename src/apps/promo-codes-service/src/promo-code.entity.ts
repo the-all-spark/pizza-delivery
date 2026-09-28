@@ -2,7 +2,7 @@
 // например, код PIZZA2026, дающий скидку 20%
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Order } from '../orders/order.entity';
+import { Order } from '../../../../order-service/orders/order.entity';
 
 @Entity('promo_codes')
 export class PromoCode {

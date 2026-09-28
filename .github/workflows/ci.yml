@@ -25,13 +25,13 @@ jobs:
       - name: Install local dependencies
         run: npm ci
 
-      # Шаг 4: Запускаем Rust-линтер Oxlint (проверка качества кода)
-      - name: Run Linter (Oxlint)
-        run: npm run lint
-
-      # Шаг 4.1: Проверка форматирования кода (Prettier)
+      # Шаг 4: Проверка форматирования кода (Prettier)
       - name: Check formatting (Prettier)
         run: npm run format:check
+
+      # Шаг 4.1: Запускаем Rust-линтер Oxlint (проверка качества кода)
+      - name: Run Linter (Oxlint)
+        run: npm run lint
 
       # Шаг 5: Автоматически создаем тестовый .env для Docker Compose
       # Все переменные, которые запрашивают сервисы, теперь будут заполнены

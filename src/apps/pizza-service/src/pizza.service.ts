@@ -7,7 +7,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 import { Pizza } from './pizza.entity';
-import { Ingredient } from '../ingredients/ingredient.entity';
+import { Ingredient } from '../../ingredients-service/src/ingredient.entity';
 
 import { PizzaPaginationPayload, CreatePizzaPayload, UpdatePizzaPayload } from './pizza-interfaces';
 
@@ -240,13 +240,8 @@ export class PizzaService {
         const filename = path.basename(pizza.imageUrl); // Извлекаем имя файла
 
         // Собираем абсолютный путь монтирования
-        const absolutePath = path.join(
-          '/usr/src/app',
-          'apps',
-          'pizza-service',
-          'uploads',
-          filename,
-        );
+        // const absolutePath = path.join('/usr/src/app', 'uploads', filename);
+        const absolutePath = path.join(process.cwd(), 'uploads', 'pizzas', filename); //! проверить путь
 
         try {
           // Проверяем наличие файла на диске

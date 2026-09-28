@@ -1,7 +1,7 @@
 // DTO успешного ответа
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IngredientResponseDto } from '../../../../../src/apps/api-gateway/src/dto/ingredients/ingredient-response.dto';
+import { IngredientResponseDto } from '../ingredients/ingredient-response.dto';
 
 export class PizzaResponseDto {
   @ApiProperty({ example: 1, description: 'Pizza ID' })

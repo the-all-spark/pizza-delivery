@@ -1,7 +1,7 @@
 // Детали заказа / Корзина внутри заказа (строчки чека)
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Pizza } from '../pizzas/pizza.entity';
+import { Pizza } from '../../pizza-service/src/pizza.entity';
 
 @Entity('order_items')
 export class OrderItem {

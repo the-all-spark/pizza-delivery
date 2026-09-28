@@ -1,38 +1,41 @@
 // Генерация тестовых данных БД
 
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+// import { InjectRepository } from '@nestjs/typeorm';  // !
+// import { DeepPartial, Repository } from 'typeorm';
+import { DataSource, DeepPartial, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-// Импортируем сущности
-import { User } from '../../../../auth-service/src/modules/users/user.entity';
-import { Pizza } from '../pizzas/pizza.entity';
-import { PromoCode } from '../promo-codes/promo-code.entity';
-import { Ingredient } from '../ingredients/ingredient.entity';
-import { UserRole } from '@shared/enums';
+import { User } from '../../apps/auth-service/src/modules/users/user.entity';
+import { Pizza } from '../../apps/pizza-service/src/pizza.entity';
+import { PromoCode } from '../../apps/promo-codes-service/src/promo-code.entity';
+import { Ingredient } from '../../apps/ingredients-service/src/ingredient.entity';
+import { UserRole } from '../../shared/enums';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Pizza)
-    private readonly pizzaRepository: Repository<Pizza>,
-    @InjectRepository(PromoCode)
-    private readonly promoCodeRepository: Repository<PromoCode>,
-    @InjectRepository(Ingredient)
-    private readonly ingredientRepository: Repository<Ingredient>,
-  ) {}
+  // Объявляем репозитории как свойства класса
+  private userRepository: Repository<User>;
+  private pizzaRepository: Repository<Pizza>;
+  private promoCodeRepository: Repository<PromoCode>;
+  private ingredientRepository: Repository<Ingredient>;
 
-  // Этот метод NestJS вызывает автоматически, когда всё приложение успешно запустилось
+  // Внедряем только DataSource — для него декораторы в конструкторе NestJS не требуются!
+  constructor(private readonly dataSource: DataSource) {
+    // Инициализируем репозитории напрямую через подключение к БД
+    this.userRepository = this.dataSource.getRepository(User);
+    this.pizzaRepository = this.dataSource.getRepository(Pizza);
+    this.promoCodeRepository = this.dataSource.getRepository(PromoCode);
+    this.ingredientRepository = this.dataSource.getRepository(Ingredient);
+  }
+
   async onApplicationBootstrap() {
     console.log('--- Проверка базы данных для сиддинга ---');
     await this.seed();
   }
 
   private async seed() {
-    // 1. Проверяем, есть ли уже пользователи в базе данных
+    // Проверяем, есть ли уже пользователи в базе данных
     const userCount = await this.userRepository.count();
     if (userCount > 0) {
       console.log('База данных уже содержит данные. Сиддинг пропущен.');
@@ -41,7 +44,7 @@ export class SeedService implements OnApplicationBootstrap {
 
     console.log('База пуста. Начинаем наполнение тестовыми данными...');
 
-    // 2. Создаем пользователей (Администратор и Пользователь) с хэшированием паролей
+    // Создаем пользователей (Администратор и Пользователь) с хэшированием паролей
     const saltRounds = 10;
     const adminPasswordHash = await bcrypt.hash('admin123', saltRounds);
     const userPasswordHash = await bcrypt.hash('user123', saltRounds);
@@ -63,10 +66,9 @@ export class SeedService implements OnApplicationBootstrap {
     } as DeepPartial<User>);
 
     await this.userRepository.save([adminUser, regularUser]);
-
     console.log('✅ Тестовые пользователи успешно созданы.');
 
-    // 3. Создаем ингредиенты
+    // Наполняем БД ингредиентами
     const ingredientData = [
       { name: 'Сыр Моцарелла', price: 2.5 },
       { name: 'Пепперони', price: 2 },
@@ -85,46 +87,46 @@ export class SeedService implements OnApplicationBootstrap {
     );
     console.log('✅ Ингредиенты успешно добавлены.');
 
-    // 4. Создаем тестовые пиццы (привязываем к ним созданные ингредиенты)
+    // Наполняем БД пиццами
     const pizzaData = [
       {
         title: 'Пепперони',
         description: 'Классическая пицца с пикантной колбасой пепперони и обилием моцареллы.',
         price: 27,
-        imageUrl: '/uploads/pepperoni.jpg',
-        ingredients: [savedIngredients[0], savedIngredients[1], savedIngredients[8]], // Сыр, Пепперони, Томатный соус
+        imageUrl: '/uploads/pizzas/pepperoni.jpg',
+        ingredients: [savedIngredients[0], savedIngredients[1], savedIngredients[8]],
       },
       {
         title: 'Маргарита',
         description: 'Простота и вкус: сочные томаты, ароматный соус и нежный сыр.',
         price: 22,
-        imageUrl: '/uploads/margarita.jpg',
-        ingredients: [savedIngredients[0], savedIngredients[2], savedIngredients[8]], // Сыр, Томаты, Томатный соус
+        imageUrl: '/uploads/pizzas/margarita.png',
+        ingredients: [savedIngredients[0], savedIngredients[2], savedIngredients[8]],
       },
       {
         title: 'Цыпленок Барбекю',
         description: 'Пикантная пицца с куриным филе, грибами и дымным соусом Барбекю.',
         price: 21,
-        imageUrl: '/uploads/barbecue.jpg',
+        imageUrl: '/uploads/pizzas/barbecue.png',
         ingredients: [
           savedIngredients[0],
           savedIngredients[3],
           savedIngredients[6],
           savedIngredients[9],
-        ], // Сыр, Грибы, Курица, Барбекю соус
+        ],
       },
     ];
 
     await this.pizzaRepository.save(this.pizzaRepository.create(pizzaData));
     console.log('✅ Тестовые пиццы успешно добавлены.');
 
-    // 5. Создаем 2 промокода (один активный, один просроченный)
+    // Наполняем БД промо-кодами
     const now = new Date();
     const futureDate = new Date();
-    futureDate.setMonth(now.getMonth() + 3); // Действует еще 3 месяца
+    futureDate.setMonth(now.getMonth() + 3);
 
     const pastDate = new Date();
-    pastDate.setMonth(now.getMonth() - 1); // Истек 1 месяц назад
+    pastDate.setMonth(now.getMonth() - 1);
 
     const promoCodes = [
       {

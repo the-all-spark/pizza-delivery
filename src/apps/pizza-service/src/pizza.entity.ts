@@ -6,7 +6,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Ingredient } from '../ingredients/ingredient.entity';
+import { Ingredient } from '../../ingredients-service/src/ingredient.entity';
 
 @Entity('pizzas')
 export class Pizza {

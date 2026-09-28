@@ -11,10 +11,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,
@@ -22,7 +19,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "paths": {
-      "@shared/*": ["./src/shared/*"] 
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "files": [],
@@ -34,13 +31,25 @@
       "path": "./src/apps/auth-service/tsconfig.app.json"
     },
     {
-      "path": "./src/apps/pizza-service/tsconfig.app.json"
-    },
-    {
       "path": "./src/apps/notification-service/tsconfig.app.json"
     },
     {
       "path": "./src/apps/logger-service/tsconfig.app.json"
+    },
+    {
+      "path": "./src/apps/pizza-service/tsconfig.app.json"
+    },
+    {
+      "path": "./src/apps/cart-service/tsconfig.app.json"
+    },
+    {
+      "path": "./src/apps/ingredients-service/tsconfig.app.json"
+    },
+    {
+      "path": "./src/apps/order-service/tsconfig.app.json"
+    },
+    {
+      "path": "./src/apps/promo-codes-service/tsconfig.app.json"
     }
   ]
 }

@@ -11,10 +11,8 @@ RUN npm ci
 
 COPY . .
 
-# Принимаем аргумент. По умолчанию он равен true (для продакшна)
 ARG BUILD_DIST=true
 
-# Запускаем сборку ТОЛЬКО если аргумент равен true. 
 RUN if [ "$BUILD_DIST" = "true" ]; then npx nest build api-gateway; else echo "Skipping build for dev"; fi
 
 # ==========================================

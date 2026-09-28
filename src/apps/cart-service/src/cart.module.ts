@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CartController } from './cart.controller';
 import { CartService } from './cart.service';
 import { CartItem } from './cart-item.entity';
-import { Pizza } from '../pizzas/pizza.entity';
+import { Pizza } from '../../pizza-service/src/pizza.entity';
 
 @Module({
   imports: [

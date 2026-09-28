@@ -5,8 +5,8 @@
     "declaration": true,
     "rootDir": "./src",
     "outDir": "../../dist/apps/notification-service",
-    "types": ["node", "jest"] 
+    "types": ["node", "jest"]
   },
-  "include": ["src/**/*"],
+  "include": ["./src/**/*", "../../../src/apps/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

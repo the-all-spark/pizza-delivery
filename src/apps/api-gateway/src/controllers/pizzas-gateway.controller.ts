@@ -108,7 +108,10 @@ export class PizzasGatewayController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './uploads/pizzas', // Путь, куда физически ляжет файл //! проверить
+        destination: (req, file, callback) => {
+          const uploadPath = path.join(process.cwd(), 'uploads', 'pizzas'); //! проверить
+          callback(null, uploadPath);
+        },
         filename: (req, file, callback) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = path.extname(file.originalname);
@@ -117,22 +120,15 @@ export class PizzasGatewayController {
       }),
     }),
   )
-  async createPizza(
-    @UploadedFile() file: any,
-    @Body() body: CreatePizzaDto,
-  ) {
+  async createPizza(@UploadedFile() file: any, @Body() body: CreatePizzaDto) {
     if (!file) {
       throw new Error('Pizza image is a required field.');
     }
 
-    const imageUrl = `/uploads/${file.filename}`;
+    const imageUrl = `/uploads/pizzas/${file.filename}`; //! проверить
 
-    // Вычисляем абсолютный путь к файлу на случай, если его придется удалить при ошибке //! проверить
-    const absoluteFilePath = path.join(
-      process.cwd(),
-      'uploads',
-      file.filename,
-    );
+    //! проверить
+    const absoluteFilePath = path.join(process.cwd(), 'uploads', 'pizzas', file.filename);
 
     // Пансинг ингредиентов для multipart/form-data (из строки в массив чисел)
     let ingredientIds: number[] = [];

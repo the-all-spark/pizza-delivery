@@ -7,8 +7,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
-import { CartService } from '../cart.service';
-import { CartItem } from '../cart-item.entity';
+import { CartService } from '../../cart/cart.service';
+import { CartItem } from '../../cart/cart-item.entity';
 import { Pizza } from '../../pizzas/pizza.entity';
 
 describe('CartService', () => {
