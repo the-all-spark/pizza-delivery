@@ -30,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/order-service ./dist/apps/order-servi
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/order-service/main.ts"]
+CMD ["node", "dist/apps/order-service/main.js"]

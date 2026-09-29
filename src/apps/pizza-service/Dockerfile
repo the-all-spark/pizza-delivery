@@ -30,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/pizza-service ./dist/apps/pizza-servi
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/pizza-service/main.ts"]
+CMD ["node", "dist/apps/pizza-service/main.js"]

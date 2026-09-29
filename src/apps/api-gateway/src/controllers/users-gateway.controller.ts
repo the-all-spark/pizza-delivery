@@ -30,7 +30,7 @@ import type { AuthenticatedRequest } from '../interfaces/authenticated-request.i
 
 import { SearchUserQueryDto } from '../dto/users/search-user-query.dto';
 import { UpdateProfileDto } from '../dto/users/update-profile.dto';
-import { RegisterResponseDto } from '../dto/auth/register-response.dto'; // DTO для отображения схем пользователей
+import { RegisterResponseDto } from '../dto/auth/register-response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('bearerAuth')

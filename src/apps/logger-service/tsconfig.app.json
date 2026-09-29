@@ -3,10 +3,13 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "rootDir": "./src",
-    "outDir": "../../dist/apps/logger-service",
+    "rootDir": "../../../", 
+    "outDir": "../../../dist", 
     "types": ["node", "jest"]
   },
-  "include": ["./src/**/*", "../../../src/apps/**/*"],
+  "include": [
+    "src/**/*",
+    "../../../src/**/*" 
+  ],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

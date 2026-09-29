@@ -1,13 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src/apps/api-gateway/src",
+  "sourceRoot": "src", 
   "compilerOptions": {
     "deleteOutDir": true,
     "builder": "rspack"
   },
   "monorepo": true,
-  "root": "src/apps/api-gateway",
+  "root": "",
   "projects": {
     "api-gateway": {
       "type": "application",
@@ -15,7 +15,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/api-gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/api-gateway/tsconfig.app.json"
+        "tsConfigPath": "src/apps/api-gateway/tsconfig.app.json",
+        "outDir": "dist/src/apps/api-gateway"
       }
     },
     "auth-service": {
@@ -24,7 +25,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/auth-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/auth-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/auth-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/auth-service"
       }
     },
     "pizza-service": {
@@ -33,7 +35,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/pizza-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/pizza-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/pizza-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/pizza-service"
       }
     },
     "promo-code-service": {
@@ -42,7 +45,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/promo-code-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/promo-code-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/promo-code-service/tsconfig.app.json", 
+        "outDir": "dist/src/apps/promo-code-service"
       }
     },
     "ingredients-service": {
@@ -51,7 +55,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/ingredients-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/ingredients-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/ingredients-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/ingredients-service"
       }
     },
     "cart-service": {
@@ -60,7 +65,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/cart-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/cart-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/cart-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/cart-service"
       }
     },
     "order-service": {
@@ -69,7 +75,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/order-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/order-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/order-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/order-service"
       }
     },
     "notification-service": {
@@ -78,7 +85,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/notification-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/notification-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/notification-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/notification-service"
       }
     },
     "logger-service": {
@@ -87,7 +95,8 @@
       "entryFile": "main",
       "sourceRoot": "src/apps/logger-service/src",
       "compilerOptions": {
-        "tsConfigPath": "src/apps/logger-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/logger-service/tsconfig.app.json",
+        "outDir": "dist/src/apps/logger-service"
       }
     }
   }

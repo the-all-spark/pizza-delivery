@@ -19,7 +19,8 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "paths": {
-      "@shared/*": ["./src/shared/*"]
+      "@shared/*": ["./src/shared/*"],
+      "@apps/*": ["./src/apps/*"]
     }
   },
   "files": [],

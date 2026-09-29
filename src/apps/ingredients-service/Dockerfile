@@ -30,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/ingredients-service ./dist/apps/ingre
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/ingredients-service/main.ts"]
+CMD ["node", "dist/apps/ingredients-service/main.js"]

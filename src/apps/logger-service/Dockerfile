@@ -30,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/logger-service ./dist/apps/logger-ser
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/logger-service/main.ts"]
+CMD ["node", "dist/apps/logger-service/main.js"]

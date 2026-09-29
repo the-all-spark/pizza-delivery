@@ -3,15 +3,13 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "rootDir": "../../",
-    "outDir": "../../dist/apps/api-gateway",
+    "rootDir": "../../", 
+    "outDir": "../../../dist/apps/api-gateway", 
     "types": ["node", "jest"]
   },
   "include": [
     "./src/**/*",
-    "../../../src/shared/**/*",
-    "../../../src/core/**/*",
-    "../../../src/apps/**/*"
+    "../../../src/shared/**/*"
   ],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

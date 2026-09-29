@@ -30,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/notification-service ./dist/apps/noti
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/notification-service/main.ts"]
+CMD ["node", "dist/apps/notification-service/main.js"]
