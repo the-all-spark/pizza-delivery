@@ -7,7 +7,7 @@ import { DataSourceOptions } from 'typeorm';
 
 import { PromoCodeController } from './promo-code.controller';
 import { PromoCodeService } from './promo-code.service';
-import { PromoCode } from './promo-code.entity';
+import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { PromoCode } from './promo-code.entity';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
-          entities: [PromoCode],
+          entities: Object.values(Entities),
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
@@ -34,7 +34,7 @@ import { PromoCode } from './promo-code.entity';
       },
     }),
 
-    TypeOrmModule.forFeature([PromoCode]),
+    TypeOrmModule.forFeature([Entities.PromoCode]),
   ],
   controllers: [PromoCodeController],
   providers: [PromoCodeService],

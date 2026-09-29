@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
-import { Ingredient } from './ingredient.entity';
+import { Ingredient } from '@shared/entities';
 import { CreateIngredientPayload } from './ingredient-interfaces';
 
 @Injectable()
@@ -94,7 +94,7 @@ export class IngredientService {
         message: `Ingredient with ID ${id} not found, deletion is not possible.`,
       });
     }
-    
+
     await this.ingredientRepository.delete(id);
     return { success: true };
   }

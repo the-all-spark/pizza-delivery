@@ -1,6 +1,6 @@
 // Абстракция для смены БД
 
-import { User } from '../user.entity';
+import { User } from '@shared/entities';
 
 // Структура параметров для пагинации
 export interface PaginationOptions {

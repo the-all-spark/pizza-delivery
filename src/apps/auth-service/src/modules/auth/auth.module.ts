@@ -8,11 +8,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from '../auth/auth.service';
-import { User } from '../users/user.entity';
+import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    // TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Entities.User]),
 
     ClientsModule.registerAsync([
       {

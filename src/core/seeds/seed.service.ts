@@ -1,15 +1,10 @@
 // Генерация тестовых данных БД
 
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';  // !
-// import { DeepPartial, Repository } from 'typeorm';
 import { DataSource, DeepPartial, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import { User } from '../../apps/auth-service/src/modules/users/user.entity';
-import { Pizza } from '../../apps/pizza-service/src/pizza.entity';
-import { PromoCode } from '../../apps/promo-code-service/src/promo-code.entity';
-import { Ingredient } from '../../apps/ingredients-service/src/ingredient.entity';
+import { Pizza, User, PromoCode, Ingredient } from '@shared/entities';
 import { UserRole } from '../../shared/enums';
 
 @Injectable()

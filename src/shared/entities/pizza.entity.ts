@@ -6,7 +6,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Ingredient } from '../../ingredients-service/src/ingredient.entity';
+import { Ingredient } from './ingredient.entity';
 
 @Entity('pizzas')
 export class Pizza {
@@ -37,7 +37,7 @@ export class Pizza {
 
   // Создание промежуточной таблицы pizza_ingredients
   @JoinTable({
-    name: 'pizza_ingredients', 
+    name: 'pizza_ingredients',
     joinColumn: { name: 'pizza_id', referencedColumnName: 'pId' },
     inverseJoinColumn: {
       name: 'ingredient_id',

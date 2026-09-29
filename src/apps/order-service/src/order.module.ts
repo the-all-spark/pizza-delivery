@@ -8,11 +8,7 @@ import { DataSourceOptions } from 'typeorm';
 import { OrdersController } from './order.controller';
 import { OrdersService } from './order.service';
 
-import { Order } from './order.entity';
-import { OrderItem } from './order-item.entity';
-import { CartItem } from '../../cart-service/src/cart-item.entity';
-import { PromoCode } from '../../promo-code-service/src/promo-code.entity';
-import { Pizza } from '../../pizza-service/src/pizza.entity';
+import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
@@ -31,7 +27,7 @@ import { Pizza } from '../../pizza-service/src/pizza.entity';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
-          entities: [Pizza, CartItem, PromoCode, OrderItem, Order],
+          entities: Object.values(Entities),
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
@@ -39,7 +35,13 @@ import { Pizza } from '../../pizza-service/src/pizza.entity';
       },
     }),
 
-    TypeOrmModule.forFeature([Pizza, CartItem, PromoCode, OrderItem, Order]),
+    TypeOrmModule.forFeature([
+      Entities.Pizza,
+      Entities.CartItem,
+      Entities.PromoCode,
+      Entities.OrderItem,
+      Entities.Order,
+    ]),
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

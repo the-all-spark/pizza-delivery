@@ -6,8 +6,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-import { Pizza } from './pizza.entity';
-import { Ingredient } from '../../ingredients-service/src/ingredient.entity';
+import { Pizza, Ingredient } from '@shared/entities';
 
 import { PizzaPaginationPayload, CreatePizzaPayload, UpdatePizzaPayload } from './pizza-interfaces';
 
@@ -25,7 +24,7 @@ export class PizzaService {
   ) {}
 
   // ==========================================
-  // 1. ПОЛУЧИТЬ ПОСТРАНИЧНЫЙ СПИСОК ПИЦЦ 
+  // 1. ПОЛУЧИТЬ ПОСТРАНИЧНЫЙ СПИСОК ПИЦЦ
   // ==========================================
   async findPaginated(payload: PizzaPaginationPayload): Promise<any> {
     const { page, limit } = payload;
@@ -255,7 +254,7 @@ export class PizzaService {
   // ==========================================
   // 8. КРОН-ЗАДАЧА: АВТОМАТИЧЕСКАЯ ОЧИСТКА СТАРЫХ ПИЦЦ
   // ==========================================
-  
+
   // Крон запускается каждый день в полночь
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleAutomaticPizzaCleanup() {

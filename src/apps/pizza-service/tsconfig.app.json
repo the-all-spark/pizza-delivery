@@ -3,13 +3,10 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "rootDir": "../../../", 
-    "outDir": "../../../dist", 
+    "rootDir": "../../",
+    "outDir": "../../../dist/src/apps/pizza-service",
     "types": ["node", "jest"]
   },
-  "include": [
-    "src/**/*",
-    "../../../src/**/*" 
-  ],
+  "include": ["./src/**/*", "../../../src/shared/**/*", "../../../src/core/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

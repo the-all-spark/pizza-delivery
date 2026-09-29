@@ -4,11 +4,7 @@ import { Repository, DataSource, In } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { OrderStatus } from '@shared/enums';
 
-import { Order } from './order.entity';
-import { OrderItem } from './order-item.entity';
-import { CartItem } from '../../cart-service/src/cart-item.entity';
-import { PromoCode } from '../../promo-code-service/src/promo-code.entity';
-import { Pizza } from '../../pizza-service/src/pizza.entity';
+import { Pizza, Order, OrderItem, CartItem, PromoCode } from '@shared/entities';
 
 import {
   CreateOrderPayload,
@@ -115,10 +111,7 @@ export class OrdersService {
 
     // Массово обновляем дату (lastOrderedAt) для всех уникальных pizzaId, участвующих в заказе
     const pizzaIds = cartItems.map((item) => item.pizzaId);
-    await this.pizzaRepository.update(
-      { pId: In(pizzaIds) },
-      { lastOrderedAt: new Date() },
-    );
+    await this.pizzaRepository.update({ pId: In(pizzaIds) }, { lastOrderedAt: new Date() });
 
     await this.cartItemRepository.delete({ userId: userIdNum });
 
@@ -280,7 +273,7 @@ export class OrdersService {
       ORDER BY "totalQuantity" DESC
       LIMIT 1;
       `,
-      [month, year], 
+      [month, year],
     );
 
     if (!result || result.length === 0) {

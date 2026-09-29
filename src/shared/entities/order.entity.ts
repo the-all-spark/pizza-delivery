@@ -9,7 +9,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { PromoCode } from '../../promo-code-service/src/promo-code.entity';
+import { PromoCode } from './promo-code.entity';
 import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
 @Entity('orders')

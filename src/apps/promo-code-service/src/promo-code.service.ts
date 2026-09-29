@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
-import { PromoCode } from './promo-code.entity';
+import { PromoCode } from '@shared/entities';
 import { CreatePromoCodePayload, UpdatePromoCodePayload } from './promo-code-interfaces';
 
 @Injectable()

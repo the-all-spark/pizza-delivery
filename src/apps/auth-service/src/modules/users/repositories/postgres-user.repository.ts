@@ -9,7 +9,7 @@ import {
   PaginationOptions,
   SearchOptions,
 } from '../interfaces/user-repository.interface';
-import { User } from '../user.entity';
+import { User } from '@shared/entities';
 
 @Injectable()
 export class PostgresUserRepository implements IUserRepository {

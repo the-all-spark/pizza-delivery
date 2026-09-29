@@ -7,8 +7,7 @@ import { DataSourceOptions } from 'typeorm';
 
 import { CartController } from './cart.controller';
 import { CartService } from './cart.service';
-import { CartItem } from './cart-item.entity';
-import { Pizza } from '../../pizza-service/src/pizza.entity';
+import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
@@ -27,7 +26,7 @@ import { Pizza } from '../../pizza-service/src/pizza.entity';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
-          entities: [CartItem, Pizza],
+          entities: Object.values(Entities),
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
@@ -35,7 +34,7 @@ import { Pizza } from '../../pizza-service/src/pizza.entity';
       },
     }),
 
-    TypeOrmModule.forFeature([CartItem, Pizza]),
+    TypeOrmModule.forFeature([Entities.CartItem, Entities.Pizza]),
   ],
   controllers: [CartController],
   providers: [CartService],

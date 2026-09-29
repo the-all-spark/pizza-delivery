@@ -1,5 +1,3 @@
-// Настройки сверхбыстрого компилятора SWC
-
 {
   "jsc": {
     "parser": {
@@ -11,6 +9,11 @@
       "legacyDecorator": true,
       "decoratorMetadata": true
     },
-    "target": "es2022"
+    "target": "es2022",
+    "baseUrl": "./",
+    "paths": {
+      "@shared/*": ["../../../src/shared/*"],
+      "@apps/*": ["../../../src/apps/*"]
+    }
   }
 }

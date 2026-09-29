@@ -7,7 +7,8 @@ import { DataSourceOptions } from 'typeorm';
 
 import { IngredientController } from './ingredient.controller';
 import { IngredientService } from './ingredient.service';
-import { Ingredient } from './ingredient.entity';
+
+import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { Ingredient } from './ingredient.entity';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
-          entities: [Ingredient],
+          entities: Object.values(Entities),
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
@@ -34,7 +35,7 @@ import { Ingredient } from './ingredient.entity';
       },
     }),
 
-    TypeOrmModule.forFeature([Ingredient]),
+    TypeOrmModule.forFeature([Entities.Ingredient]),
   ],
   controllers: [IngredientController],
   providers: [IngredientService],

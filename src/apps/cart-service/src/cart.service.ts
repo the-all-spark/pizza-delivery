@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
-import { CartItem } from './cart-item.entity';
-import { Pizza } from '../../pizza-service/src/pizza.entity';
+import { Pizza, CartItem } from '@shared/entities';
 
 import {
   GetCartPayload,

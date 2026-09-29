@@ -7,9 +7,10 @@ import { createDatabase } from 'typeorm-extension';
 import type { DataSourceOptions } from 'typeorm';
 // import { MongooseModule } from '@nestjs/mongoose';
 
-import { User } from './modules/users/user.entity';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+
+import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { AuthModule } from './modules/auth/auth.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: dbName || 'pizza_delivery',
-          entities: [User],
+          entities: Object.values(Entities),
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Order } from '../../order-service/src/order.entity';
+import { Order } from './order.entity';
 
 @Entity('promo_codes')
 export class PromoCode {

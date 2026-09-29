@@ -81,7 +81,6 @@ services:
       ME_CONFIG_OPTIONS_EDITORTHEME: 'ambiance'
       ME_CONFIG_BASICAUTH_USERNAME: 'admin'
       ME_CONFIG_BASICAUTH_PASSWORD: 'logpass'
-
       # Cтрока подключения
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
       # Явно фиксируем внутренний порт для скрипта инициализации
@@ -102,7 +101,7 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: src/apps/api-gateway/Dockerfile #! изменение пути
+      dockerfile: src/apps/api-gateway/Dockerfile
       target: builder # останавливаем сборку на этапе builder, где есть Nest CLI
       args:
         BUILD_DIST: 'false' # Говорим Dockerfile: "Не собирай dist на диске F"
@@ -116,17 +115,10 @@ services:
       NODE_ENV: development
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
       WATCHPACK_POLLING: 'true'
-      # СУПЕР-ФЛАГ: Перенаправляет поиск Node.js в реальную папку сборки Rspack
-      # NODE_OPTIONS: "--require /usr/src/app/node_modules/tsconfig-paths/register"
-      # NODE_PATH: "/usr/src/app/dist/src" # <-- Указываем Node.js искать здесь
     volumes:
       - .:/usr/src/app # 1. Пробрасываем ВЕСЬ корень
       - /usr/src/app/node_modules # 2. Изолируем корневые node_modules
     command: npm run start:dev -- api-gateway --config nest-cli.json
-    # command: npx nest start --watch api-gateway --path dist/src/apps/api-gateway/main.js
-    # command: node --watch --watch-path=./dist ./dist/apps/api-gateway/main.js
-    # command: sh -c "npx nest build --watch api-gateway & npx nodemon --watch dist --ext js --exec 'node dist/*apps/api-gateway/main.js || node dist/apps/api-gateway/main.js'"
-    # command: sh -c "npx nest build --watch api-gateway & node --watch --watch-path=/usr/src/app/dist /usr/src/app/dist/src/apps/api-gateway/main.js"
     depends_on:
       - rabbitmq
     networks:

@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "lint": "oxlint .",
     "test": "jest",
+    "test:cart": "docker exec -t pizza_cart_service npx jest --config src/apps/cart-service/jest-pizza.config.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
   },

@@ -7,7 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 
-import { User } from '../users/user.entity';
+import { User } from '@shared/entities';
+
 import { RegisterPayload } from '../auth/interfaces/register-payload.interface';
 import { LoginPayload } from '../auth/interfaces/login-payload.interface';
 import { RegisterResponse } from '../auth/interfaces/register-response.interface';

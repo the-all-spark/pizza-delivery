@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Pizza } from '../../pizza-service/src/pizza.entity';
+import { Pizza } from './pizza.entity';
 
 @Entity('cart_items')
 @Unique(['userId', 'pizzaId'])

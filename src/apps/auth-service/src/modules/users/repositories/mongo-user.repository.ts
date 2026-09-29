@@ -9,7 +9,7 @@ import {
   PaginationOptions,
   SearchOptions,
 } from '../interfaces/user-repository.interface';
-import { User } from '../user.entity';
+import { User } from '@shared/entities';
 import { MongoUser } from '../../users/schemas/user.schema';
 
 @Injectable()
@@ -25,12 +25,7 @@ export class MongoUserRepository implements IUserRepository {
     const { page, limit } = options;
     const skip = (page - 1) * limit;
 
-    const docs = await this.userModel
-      .find()
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .exec();
+    const docs = await this.userModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit).exec();
 
     return docs as unknown as User[];
   }
@@ -47,10 +42,7 @@ export class MongoUserRepository implements IUserRepository {
       query.lastName = new RegExp(lastName, 'i');
     }
 
-    const docs = await this.userModel
-      .find(query)
-      .sort({ firstName: 1, lastName: 1 })
-      .exec();
+    const docs = await this.userModel.find(query).sort({ firstName: 1, lastName: 1 }).exec();
 
     return docs as unknown as User[];
   }

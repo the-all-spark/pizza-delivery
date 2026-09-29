@@ -20,7 +20,8 @@
     "strictPropertyInitialization": false,
     "paths": {
       "@shared/*": ["./src/shared/*"],
-      "@apps/*": ["./src/apps/*"]
+      "@apps/*": ["./src/apps/*"],
+      "@core/*": ["./src/core/*"]
     }
   },
   "files": [],

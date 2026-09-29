@@ -1,14 +1,12 @@
-// Настройки типов для тестов (используется IDE и тестовым движком)
-
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
     "types": ["node", "jest"],
-    "isolatedModules": true,
-    "rootDir": "src"
+    "isolatedModules": true
   },
-  "include": [
-    "./src/**/*.spec.ts",
-    "./src/**/*.d.ts"
-  ]
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/**/*", "../../../src/shared/**/*"]
 }

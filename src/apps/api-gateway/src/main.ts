@@ -40,7 +40,7 @@ async function bootstrap() {
     .setDescription('A single entry point for a pizza delivery microservice application')
     .setVersion('1.0')
 
-    .addServer('http://localhost:3000/docs', 'v1.0 (Local Development)')
+    .addServer('http://localhost:3000', 'v1.0 (Local Development)')
 
     .addBearerAuth(
       {
@@ -63,7 +63,7 @@ async function bootstrap() {
     },
   });
   console.log(
-    '[API Gateway] Документация Swagger успешно развернута по адресу: http://localhost:3000/api',
+    '[API Gateway] Документация Swagger успешно развернута по адресу: http://localhost:3000/docs',
   );
 
   // Запуск HTTP-сервера на порту 3000

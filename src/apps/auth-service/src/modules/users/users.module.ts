@@ -3,7 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { User } from './user.entity';
+import * as Entities from '@shared/entities';
+
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 
@@ -17,7 +18,8 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    // TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Entities.User]),
 
     // Для перехода на MongoDB - регистрируем схему для MongoDB
     // MongooseModule.forFeature([

@@ -8,8 +8,7 @@ import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
 import { CartService } from '../cart.service';
-import { CartItem } from '../cart-item.entity';
-import { Pizza } from '../../../pizza-service/src/pizza.entity';
+import { CartItem, Pizza } from '@shared/entities';
 
 describe('CartService', () => {
   let service: CartService;
@@ -81,13 +80,13 @@ describe('CartService', () => {
     it('должен увеличить количество (quantity++), если пицца уже лежит в корзине', async () => {
       const existingCartItem = { cartId: 1, userId: 1, pizzaId: 10, quantity: 2 };
 
-      jest.spyOn(pizzaRepo, 'findOne').mockResolvedValue({ pId: 10 } as any); 
-      jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(existingCartItem as any); 
+      jest.spyOn(pizzaRepo, 'findOne').mockResolvedValue({ pId: 10 } as any);
+      jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(existingCartItem as any);
       jest.spyOn(cartItemRepo, 'save').mockImplementation(async (item) => item as any);
 
       const result = await service.addToCart({ userId: 1, pizzaId: 10, quantity: 3 });
 
-      expect(result.quantity).toEqual(5); 
+      expect(result.quantity).toEqual(5);
       expect(cartItemRepo.save).toHaveBeenCalledWith(existingCartItem);
     });
 

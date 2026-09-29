@@ -7,10 +7,10 @@ import { DataSourceOptions } from 'typeorm';
 
 import { PizzaController } from './pizza.controller';
 import { PizzaService } from './pizza.service';
-import { Pizza } from './pizza.entity';
 
-import { Ingredient } from '../../ingredients-service/src/ingredient.entity';
-import { SeedModule } from '../../../core/seeds/seed.module';
+import * as Entities from '@shared/entities';
+
+import { SeedModule } from '@core/seeds/seed.module';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { SeedModule } from '../../../core/seeds/seed.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
-          entities: [Ingredient, Pizza],
+          entities: Object.values(Entities),
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
@@ -47,7 +47,7 @@ import { SeedModule } from '../../../core/seeds/seed.module';
     }),
 
     // Регистрируем локальные сущности для репозиториев текущего модуля
-    TypeOrmModule.forFeature([Ingredient, Pizza]),
+    TypeOrmModule.forFeature([Entities.Ingredient, Entities.Pizza]),
 
     // Инициализируем планировщик задач
     ScheduleModule.forRoot(),
