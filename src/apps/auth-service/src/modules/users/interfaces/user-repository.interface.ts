@@ -3,14 +3,12 @@
 import { User } from '../user.entity';
 
 // Структура параметров для пагинации
-// Обязательные параметры, так как шлюз всегда гарантирует их отправку (через ?? 1 и ?? 10)
 export interface PaginationOptions {
   page: number;
   limit: number;
 }
 
 // Структура параметров для поиска по имени/фамилии
-// Опциональные параметры, так как искать можно только по имени, только по фамилии или по обоим полям
 export interface SearchOptions {
   firstName?: string;
   lastName?: string;

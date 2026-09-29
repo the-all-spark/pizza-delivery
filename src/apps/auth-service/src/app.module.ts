@@ -6,9 +6,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createDatabase } from 'typeorm-extension';
 import type { DataSourceOptions } from 'typeorm';
 // import { MongooseModule } from '@nestjs/mongoose';
-import { User } from '../../../src/apps/auth-service/src/modules/users/user.entity';
-import { UsersModule } from '../../../src/apps/auth-service/src/modules/users/users.module';
-import { AuthModule } from '../../../src/apps/auth-service/src/modules/auth/auth.module';
+
+import { User } from './modules/users/user.entity';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -29,14 +30,13 @@ import { AuthModule } from '../../../src/apps/auth-service/src/modules/auth/auth
           password: configService.get<string>('DB_PASSWORD'),
           database: dbName || 'pizza_delivery',
           entities: [User],
-          synchronize: true, // По классу User TypeORM создаёт/обновляет таблицу users.
+          synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
 
-        // Для typeorm-extension
         await createDatabase({
           options,
-          initialDatabase: 'postgres', // первоначальное подключение к системной базе 'postgres'
+          initialDatabase: 'postgres',
           ifNotExist: true,
         });
 

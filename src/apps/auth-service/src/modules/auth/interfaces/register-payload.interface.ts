@@ -1,6 +1,6 @@
 export interface RegisterPayload {
   email: string;
-  password: string; // Чистый пароль от шлюза, который мы будем хэшировать
+  password: string;
   firstName: string;
   lastName: string;
 }

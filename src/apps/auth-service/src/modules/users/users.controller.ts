@@ -10,24 +10,19 @@ import type { PaginationOptions, SearchOptions } from './interfaces/user-reposit
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // * 1. Получение списка всех пользователей с пагинацией (для админа)
-  // Слушает команду 'admin_get_users' от API Gateway
+  // * Получение списка всех пользователей с пагинацией (для админа)
   @MessagePattern('admin_get_users')
   async getAllUsers(@Payload() data: PaginationOptions) {
-    // data содержит гарантированные шлюзом { page, limit }
     return await this.usersService.getAllUsers(data);
   }
 
-  // * 2. Поиск пользователей по имени и/или фамилии (для админа)
-  // Слушает команду 'user_search' от API Gateway
+  // * Поиск пользователей по имени и/или фамилии (для админа)
   @MessagePattern('user_search')
   async searchUsers(@Payload() data: SearchOptions) {
-    // data содержит опциональные { firstName, lastName }
     return await this.usersService.searchUsers(data);
   }
 
-  // * 3. Редактирование профиля текущего пользователя
-  // Слушает команду 'user_edit_profile' от API Gateway
+  // * Редактирование профиля текущего пользователя
   @MessagePattern('user_edit_profile')
   async editProfile(
     @Payload()
@@ -39,12 +34,10 @@ export class UsersController {
     },
   ) {
     const { userId, ...updateFields } = data;
-    // Передаем отдельно ID и отдельно объект с полями для обновления
     return await this.usersService.editProfile(userId, updateFields);
   }
 
-  // * 4. Удаление собственного аккаунта пользователем
-  // Слушает команду 'user_delete_account' от API Gateway
+  // * Удаление собственного аккаунта пользователем
   @MessagePattern('user_delete_account')
   async deleteAccount(@Payload() data: { userId: number }) {
     return await this.usersService.deleteAccount(data.userId);

@@ -7,15 +7,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { AuthController } from './auth.controller';
-import { AuthService } from '../../../../../../apps/auth-service/src/modules/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { User } from '../users/user.entity';
 
 @Module({
   imports: [
-    // 1. Регистрируем сущность User в TypeORM для этого модуля
     TypeOrmModule.forFeature([User]),
 
-    // Регистрируем клиент RabbitMQ для отправки событий уведомлений
     ClientsModule.registerAsync([
       {
         name: 'NOTIFICATION_SERVICE',
@@ -25,7 +23,7 @@ import { User } from '../users/user.entity';
           transport: Transport.RMQ,
           options: {
             urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
-            queue: 'notification_queue', // Очередь для отправки писем
+            queue: 'notification_queue',
             queueOptions: { durable: true },
           },
         }),
@@ -43,8 +41,8 @@ import { User } from '../users/user.entity';
       }),
     }),
   ],
-  controllers: [AuthController], // Подключаем контроллер, слушающий RabbitMQ
-  providers: [AuthService], // Подключаем сервис с бизнес-логикой
-  exports: [AuthService], // Экспортируем сервис на случай, если он понадобится другим модулям
+  controllers: [AuthController],
+  providers: [AuthService],
+  exports: [AuthService],
 })
 export class AuthModule {}

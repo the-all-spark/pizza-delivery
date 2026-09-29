@@ -7,7 +7,6 @@ import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 
-// Импортируем абстрактный контракт и его реальную Postgres-реализацию
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { PostgresUserRepository } from './repositories/postgres-user.repository';
 
@@ -18,7 +17,6 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
 
 @Module({
   imports: [
-    // 1. Регистрируем сущность User в контексте данного модуля для TypeORM
     TypeOrmModule.forFeature([User]),
 
     // Для перехода на MongoDB - регистрируем схему для MongoDB
@@ -26,8 +24,6 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
     //   { name: MongoUser.name, schema: MongoUserSchema },
     // ]),
 
-    // 2. Регистрируем клиент RabbitMQ для отправки событий в notification-service
-    // Благодаря этому UsersService сможет успешно использовать @Inject('NOTIFICATION_SERVICE')
     ClientsModule.registerAsync([
       {
         name: 'NOTIFICATION_SERVICE',
@@ -37,7 +33,7 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
           transport: Transport.RMQ,
           options: {
             urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
-            queue: 'notification_queue', // Имя очереди для отправки писем
+            queue: 'notification_queue',
             queueOptions: { durable: true },
           },
         }),
@@ -48,16 +44,13 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
   providers: [
     UsersService,
 
-    // 3. СВЯЗЫВАЕМ ИНТЕРФЕЙС И РЕАЛИЗАЦИЮ (абстракцию и реальную базу данных):
-    // Говорим NestJS: "При запросе IUserRepository — внедри PostgresUserRepository"
+    // связываем абстракцию и реальную базу данных
     {
       provide: IUserRepository,
       useClass: PostgresUserRepository,
       // useClass: MongoUserRepository // Для перехода на MongoDB
     },
   ],
-  // Экспортируем UsersService и IUserRepository, чтобы другие модули (например, AuthModule)
-  // могли использовать методы работы с пользователями через абстракцию
   exports: [UsersService, IUserRepository, TypeOrmModule],
 })
 export class UsersModule {}

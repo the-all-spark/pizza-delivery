@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 
 import { UserRole } from '@shared/enums';
 
 @Entity('users')
-@Index('idx_users_names', ['firstName', 'lastName']) // Быстрый поиск по имени и фамилии
+@Index('idx_users_names', ['firstName', 'lastName'])
 export class User {
   @PrimaryGeneratedColumn({ name: 'u_id' })
   uId: number;

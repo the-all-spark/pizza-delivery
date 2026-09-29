@@ -1,13 +1,13 @@
-// Схемы данных (Аналог Entity для Mongo) - описание структуры пользователя для Mongo
+// Схемы данных (Аналог Entity для Mongo) - описание структуры пользователя для MongoDB
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserRole } from '@shared/enums';
 
-@Schema({ collection: 'users', timestamps: true }) // timestamps автоматически создаст аналоги createdAt и updatedAt
+@Schema({ collection: 'users', timestamps: true }) 
 export class MongoUser extends Document {
   @Prop({ required: true, unique: true, type: Number })
-  uId: number; // Сохраняем числовой ID для полной совместимости со шлюзом
+  uId: number;
 
   @Prop({ required: true, unique: true, type: String, trim: true })
   email: string;
@@ -15,7 +15,7 @@ export class MongoUser extends Document {
   @Prop({ required: true, type: String })
   passwordHash: string;
 
-  @Prop({ required: true, type: String, index: true }) // Добавляем индекс для быстрого поиска
+  @Prop({ required: true, type: String, index: true })
   firstName: string;
 
   @Prop({ required: true, type: String, index: true })
@@ -27,5 +27,4 @@ export class MongoUser extends Document {
 
 export const MongoUserSchema = SchemaFactory.createForClass(MongoUser);
 
-// Создаем составной индекс по имени и фамилии
 MongoUserSchema.index({ firstName: 1, lastName: 1 }, { name: 'idx_users_names' });
