@@ -1,6 +1,6 @@
 import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
-// 1. Просмотр истории заказов (Пользователь)
+// Просмотр истории заказов (Пользователь)
 export interface GetUserOrdersPayload {
   userId: string;
   page: number;
@@ -13,7 +13,7 @@ export interface AdminGetAllOrdersPayload {
   limit: number;
 }
 
-// 2. Оформление нового заказа из корзины (POST /orders)
+// Оформление нового заказа из корзины (POST /orders)
 export interface CreateOrderPayload {
   userId: string;
   address: string;
@@ -23,14 +23,14 @@ export interface CreateOrderPayload {
   promoCode?: string; // Текстовый код купона, например 'PIZZA2026'
 }
 
-// 3. Получение статуса конкретного заказа (GET /orders/:id)
+// Получение статуса конкретного заказа (GET /orders/:id)
 export interface GetOrderStatusPayload {
   userId: string;
   orderId: number;
   role: string; // роль, чтобы контролировать права доступа на уровне сервиса
 }
 
-// 4. Изменение статуса заказа администратором (PATCH /orders/:id)
+// Изменение статуса заказа администратором (PATCH /orders/:id)
 export interface AdminUpdateStatusPayload {
   orderId: number;
   status: OrderStatus;

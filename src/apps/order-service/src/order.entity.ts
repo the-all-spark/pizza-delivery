@@ -9,7 +9,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { PromoCode } from '../../pizza-service/src/modules/promo-codes/promo-code.entity';
+import { PromoCode } from '../../promo-code-service/src/promo-code.entity';
 import { OrderStatus, DeliveryMethod, PaymentMethod } from '@shared/enums';
 
 @Entity('orders')
@@ -21,7 +21,7 @@ export class Order {
   userId: number | null;
 
   @Column({ name: 'promo_code_id', type: 'int', nullable: true })
-  promoCodeId: number | null; // ID примененного купона
+  promoCodeId: number | null;
 
   @Column({ type: 'text' })
   address: string;
@@ -44,12 +44,10 @@ export class Order {
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  // Много разных заказов могут использовать один и тот же промокод
   @ManyToOne(() => PromoCode, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'promo_code_id' })
   promoCode: PromoCode | null;
 
-  // у одного заказа может быть много позиций пицц (строчек в чеке)
   @OneToMany('OrderItem', (item: any) => item.order)
-  items: any[]; // Меняем strict-класс на any для разрыва циклического импорта на этапе компиляции
+  items: any[];
 }

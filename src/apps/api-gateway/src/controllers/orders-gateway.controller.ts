@@ -42,7 +42,7 @@ import type { AuthenticatedRequest } from '../interfaces/authenticated-request.i
 @Controller('orders')
 @UseFilters(RpcExceptionFilter)
 export class OrdersGatewayController {
-  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
+  constructor(@Inject('ORDER_SERVICE') private readonly orderClient: ClientProxy) {}
 
   // ==========================================
   // ЭНДПОИНТЫ АНАЛИТИКИ (ДОСТУПНО ТОЛЬКО ADMIN)
@@ -80,7 +80,7 @@ export class OrdersGatewayController {
     @Query('month', ParseIntPipe) month: number,
     @Query('year', ParseIntPipe) year: number,
   ) {
-    return this.pizzaClient.send('get_most_popular_pizza_of_month', {
+    return this.orderClient.send('get_most_popular_pizza_of_month', {
       month,
       year,
     });
@@ -103,7 +103,7 @@ export class OrdersGatewayController {
     description: 'Access denied (admin role required).',
   })
   getPremiumUsers() {
-    return this.pizzaClient.send('get_premium_users_analytics', {});
+    return this.orderClient.send('get_premium_users_analytics', {});
   }
 
   // ==========================================
@@ -128,10 +128,10 @@ export class OrdersGatewayController {
     };
 
     if (req.user.role.includes('admin')) {
-      return this.pizzaClient.send('admin_get_all_orders', paginationParams);
+      return this.orderClient.send('admin_get_all_orders', paginationParams);
     }
 
-    return this.pizzaClient.send('get_user_orders_history', {
+    return this.orderClient.send('get_user_orders_history', {
       userId: req.user.userId,
       ...paginationParams,
     });
@@ -158,7 +158,7 @@ export class OrdersGatewayController {
     description: 'The specified promo code does not exist or has expired.',
   })
   createOrder(@Req() req: AuthenticatedRequest, @Body() body: CreateOrderDto) {
-    return this.pizzaClient.send('create_order', {
+    return this.orderClient.send('create_order', {
       userId: req.user.userId,
       ...body,
     });
@@ -185,7 +185,7 @@ export class OrdersGatewayController {
   @ApiResponse({ status: 400, description: 'Invalid ID format.' })
   @ApiResponse({ status: 404, description: 'Order not found.' })
   getOrder(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
-    return this.pizzaClient.send('get_order_status', {
+    return this.orderClient.send('get_order_status', {
       userId: req.user.userId,
       orderId: id,
       role: req.user.role,
@@ -220,7 +220,7 @@ export class OrdersGatewayController {
     description: 'Access denied (admin role required).',
   })
   updateOrderStatus(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateOrderStatusDto) {
-    return this.pizzaClient.send('admin_update_order_status', {
+    return this.orderClient.send('admin_update_order_status', {
       orderId: id,
       status: body.status,
     });

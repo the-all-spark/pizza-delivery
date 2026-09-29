@@ -4,10 +4,10 @@ import { Repository, DataSource, In } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { OrderStatus } from '@shared/enums';
 
-import { Order } from '../orders/order.entity';
+import { Order } from './order.entity';
 import { OrderItem } from './order-item.entity';
 import { CartItem } from '../../cart-service/src/cart-item.entity';
-import { PromoCode } from '../../pizza-service/src/modules/promo-codes/promo-code.entity';
+import { PromoCode } from '../../promo-code-service/src/promo-code.entity';
 import { Pizza } from '../../pizza-service/src/pizza.entity';
 
 import {
@@ -16,7 +16,7 @@ import {
   GetOrderStatusPayload,
   AdminUpdateStatusPayload,
   AdminGetAllOrdersPayload,
-} from './orders-interfaces';
+} from './order-interfaces';
 
 @Injectable()
 export class OrdersService {
@@ -36,7 +36,7 @@ export class OrdersService {
     @InjectRepository(Pizza)
     private readonly pizzaRepository: Repository<Pizza>,
 
-    // DataSource нужен для безопасного выполнения аналитических Raw SQL запросов
+    // для безопасного выполнения аналитических Raw-SQL запросов
     private readonly dataSource: DataSource,
   ) {}
 
@@ -46,7 +46,6 @@ export class OrdersService {
   async createOrder(payload: CreateOrderPayload): Promise<Order> {
     const userIdNum = Number(payload.userId);
 
-    // 1. Выкачиваем текущую корзину пользователя со всеми данными о пиццах
     const cartItems = await this.cartItemRepository.find({
       where: { userId: userIdNum },
       relations: { pizza: true },
@@ -59,7 +58,6 @@ export class OrdersService {
       });
     }
 
-    // 2. Рассчитываем базовую стоимость заказа по актуальным ценам из каталога
     let basePrice = 0;
     for (const item of cartItems) {
       if (!item.pizza) {
@@ -71,7 +69,6 @@ export class OrdersService {
       basePrice += Number(item.pizza.price) * item.quantity;
     }
 
-    // 3. Проверяем и применяем промокод, если он был передан
     let appliedPromo: PromoCode | null = null;
     let discountPercent = 0;
 
@@ -80,7 +77,6 @@ export class OrdersService {
         where: { code: payload.promoCode, isActive: true },
       });
 
-      // Проверяем существование купона и его срок годности
       if (!appliedPromo || new Date() > new Date(appliedPromo.expiresAt)) {
         throw new RpcException({
           statusCode: 404,
@@ -90,10 +86,8 @@ export class OrdersService {
       discountPercent = appliedPromo.discountPercent;
     }
 
-    // 4. Вычисляем финальную стоимость с учетом скидки
     const finalPrice = basePrice * (1 - discountPercent / 100);
 
-    // 5. Создаем «шапку» заказа
     const newOrder = this.orderRepository.create({
       userId: userIdNum,
       address: payload.address,
@@ -107,7 +101,6 @@ export class OrdersService {
 
     const savedOrder = await this.orderRepository.save(newOrder);
 
-    // 6. Формируем строчки чека (снимки цен и названий)
     const orderItemsToSave = cartItems.map((cartItem) => {
       return this.orderItemRepository.create({
         orderId: savedOrder.orderId,
@@ -123,11 +116,10 @@ export class OrdersService {
     // Массово обновляем дату (lastOrderedAt) для всех уникальных pizzaId, участвующих в заказе
     const pizzaIds = cartItems.map((item) => item.pizzaId);
     await this.pizzaRepository.update(
-      { pId: In(pizzaIds) }, // Выбираем только те пиццы, которые были в корзине
-      { lastOrderedAt: new Date() }, // Выставляем текущую дату заказа
+      { pId: In(pizzaIds) },
+      { lastOrderedAt: new Date() },
     );
 
-    // 7. Очищаем корзину пользователя — заказ успешно зафиксирован
     await this.cartItemRepository.delete({ userId: userIdNum });
 
     return savedOrder;
@@ -140,18 +132,16 @@ export class OrdersService {
     const { page, limit } = payload;
     const skip = (page - 1) * limit;
 
-    // findAndCount возвращает одновременно массив элементов [0] и общее число строк в БД [1]
     const [orders, total] = await this.orderRepository.findAndCount({
       where: { userId: Number(payload.userId) },
       relations: {
         items: true,
       },
       order: { createdAt: 'DESC' },
-      skip: skip, // Сколько строк пропустить
-      take: limit, // Сколько строк забрать
+      skip: skip,
+      take: limit,
     });
 
-    // Приводим decimal-строки к числам number
     const formattedOrders = orders.map((order) => {
       order.totalPrice = Number(order.totalPrice);
 
@@ -164,7 +154,6 @@ export class OrdersService {
       return order;
     });
 
-    // Возвращаем объект со стандартизированной мета-информацией пагинации
     return {
       data: formattedOrders,
       total,
@@ -215,7 +204,6 @@ export class OrdersService {
   async getOrderStatus(payload: GetOrderStatusPayload): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { orderId: payload.orderId },
-      // Явно приказываем TypeORM подгрузить массив строчек чека из БД
       relations: {
         items: true,
       },
@@ -228,7 +216,6 @@ export class OrdersService {
       });
     }
 
-    // Если запрашивает НЕ admin И заказ принадлежит НЕ этому пользователю
     const userIdNum = Number(payload.userId);
     if (!payload.role.includes('admin') && order.userId !== userIdNum) {
       throw new RpcException({
@@ -237,10 +224,8 @@ export class OrdersService {
       });
     }
 
-    // Конвертируем decimal-строку "362.00" обратно в чистый number для Swagger
     order.totalPrice = Number(order.totalPrice);
 
-    // Дополнительно страхуем decimal-цены внутри каждой пиццы в заказе
     if (order.items) {
       order.items = order.items.map((item) => {
         item.priceSnapshot = Number(item.priceSnapshot);
@@ -280,7 +265,6 @@ export class OrdersService {
    */
 
   async getMostPopularPizzaOfMonth(month: number, year: number): Promise<any> {
-    // Выполняем чистый SQL через подключенный DataSource
     const result = await this.dataSource.query(
       `
       SELECT 
@@ -296,15 +280,13 @@ export class OrdersService {
       ORDER BY "totalQuantity" DESC
       LIMIT 1;
       `,
-      [month, year], // Передаем параметры безопасно (защита от SQL-инъекций)
+      [month, year], 
     );
 
-    // Если за этот месяц вообще не было заказов, возвращаем понятное сообщение
     if (!result || result.length === 0) {
       return { message: 'No orders were found for the specified period.' };
     }
 
-    // Возвращаем первую (и единственную благодаря LIMIT 1) строку результата
     return result[0];
   }
 
@@ -320,7 +302,6 @@ export class OrdersService {
    */
 
   async getPremiumUsersWithHighAverageCheck(): Promise<any[]> {
-    // Выполняем аналитический запрос через DataSource
     const results = await this.dataSource.query(
       `
       WITH user_averages AS (
