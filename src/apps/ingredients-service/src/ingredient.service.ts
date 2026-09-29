@@ -1,6 +1,4 @@
-// Сервис управления ингредиентами
-/* методы выборки, создания с проверкой на дубликат названия, 
-обновления и удаления сущностей с пробросом RpcException */
+// * Сервис управления ингредиентами
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,14 +6,12 @@ import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
 import { Ingredient } from './ingredient.entity';
-import { CreateIngredientPayload } from './ingredients-interfaces';
+import { CreateIngredientPayload } from './ingredient-interfaces';
 
 @Injectable()
 export class IngredientService {
   constructor(
     @InjectRepository(Ingredient)
-    // внедряем стандартный Repository<Ingredient> от TypeORM
-    // для прямого взаимодействия с таблицей ingredients в PostgreSQL
     private readonly ingredientRepository: Repository<Ingredient>,
   ) {}
 
@@ -24,7 +20,7 @@ export class IngredientService {
   // ==========================================
   async findAll(): Promise<Ingredient[]> {
     return await this.ingredientRepository.find({
-      order: { name: 'ASC' }, // Сортируем по алфавиту для удобства админа
+      order: { name: 'ASC' },
     });
   }
 
@@ -34,20 +30,17 @@ export class IngredientService {
   async create(data: CreateIngredientPayload): Promise<Ingredient> {
     const { name, price } = data;
 
-    // Проверяем, существует ли уже ингредиент с таким именем
     const existingIngredient = await this.ingredientRepository.findOne({
       where: { name },
     });
 
     if (existingIngredient) {
-      // Бросаем 409 Conflict, который шлюз превратит в HTTP-ошибку
       throw new RpcException({
         statusCode: 409,
         message: `Ingredient named "${name}" already exists in the catalog.`,
       });
     }
 
-    // Создаем экземпляр сущности и сохраняем его в PostgreSQL
     const newIngredient = this.ingredientRepository.create({ name, price });
     return await this.ingredientRepository.save(newIngredient);
   }
@@ -58,7 +51,6 @@ export class IngredientService {
   async update(id: number, data: CreateIngredientPayload): Promise<Ingredient> {
     const { name, price } = data;
 
-    // 1. Ищем ингредиент, чтобы убедиться в его существовании
     const ingredient = await this.ingredientRepository.findOne({
       where: { ingrId: id },
     });
@@ -70,12 +62,10 @@ export class IngredientService {
       });
     }
 
-    // 2. Проверяем, не занято ли новое имя другим ингредиентом
     const duplicateName = await this.ingredientRepository.findOne({
       where: { name },
     });
 
-    // Если ингредиент с таким именем есть, и это НЕ тот ингредиент, который мы сейчас редактируем
     if (duplicateName && duplicateName.ingrId !== id) {
       throw new RpcException({
         statusCode: 409,
@@ -83,7 +73,6 @@ export class IngredientService {
       });
     }
 
-    // Объединяем измененные поля и сохраняем обновленную сущность
     const updatedIngredient = this.ingredientRepository.merge(ingredient, {
       name,
       price,
@@ -95,7 +84,6 @@ export class IngredientService {
   // 4. УДАЛИТЬ ИНГРЕДИЕНТ ПО ID
   // ==========================================
   async delete(id: number): Promise<{ success: boolean }> {
-    // Проверяем наличие перед удалением
     const ingredient = await this.ingredientRepository.findOne({
       where: { ingrId: id },
     });
@@ -106,8 +94,7 @@ export class IngredientService {
         message: `Ingredient with ID ${id} not found, deletion is not possible.`,
       });
     }
-
-    // Выполняем физическое удаление строки из PostgreSQL
+    
     await this.ingredientRepository.delete(id);
     return { success: true };
   }

@@ -71,6 +71,19 @@ import { OrdersGatewayController } from './controllers/orders-gateway.controller
         }),
       },
       {
+        name: 'INGREDIENTS_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('RABBITMQ_URL', 'amqp://localhost:5672')],
+            queue: 'ingredients_queue',
+            queueOptions: { durable: true },
+          },
+        }),
+      },
+      {
         name: 'CART_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],

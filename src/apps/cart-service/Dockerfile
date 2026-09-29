@@ -30,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/cart-service ./dist/apps/cart-service
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/cart-service/main.js"]
+CMD ["node", "dist/apps/cart-service/main.ts"]

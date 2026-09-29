@@ -38,7 +38,7 @@ import { IngredientResponseDto } from '../dto/ingredients/ingredient-response.dt
 @UseFilters(RpcExceptionFilter)
 export class IngredientsGatewayController {
   constructor(
-    @Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy,
+    @Inject('INGREDIENTS_SERVICE') private readonly ingredientsClient: ClientProxy,
   ) {}
 
   // * Получить все ингредиенты пиццы (GET /ingredients)
@@ -57,7 +57,7 @@ export class IngredientsGatewayController {
     description: 'Access denied (admin role required).',
   })
   getAllIngredients() {
-    return this.pizzaClient.send('get_all_ingredients', {});
+    return this.ingredientsClient.send('get_all_ingredients', {});
   }
 
   // * Получить конкретный ингредиент пиццы по его id (GET /ingredients/:id)
@@ -80,7 +80,7 @@ export class IngredientsGatewayController {
   @ApiResponse({ status: 404, description: 'Ingredient with the specified ID not found.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getIngredientById(@Param('id', ParseIntPipe) id: number) {
-    return this.pizzaClient.send('get_ingredient_by_id', { id });
+    return this.ingredientsClient.send('get_ingredient_by_id', { id });
   }
 
   // * Добавить ингредиент пиццы (создать ингредиент) (POST /ingredients)
@@ -103,7 +103,7 @@ export class IngredientsGatewayController {
     description: 'Ingredient with this name already exists.',
   })
   createIngredient(@Body() body: CreateIngredientDto) {
-    return this.pizzaClient.send('create_ingredient', body);
+    return this.ingredientsClient.send('create_ingredient', body);
   }
 
   // * Изменить ингредиент пиццы по его id (PUT /ingredients/:id)
@@ -132,7 +132,7 @@ export class IngredientsGatewayController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   updateIngredient(@Param('id', ParseIntPipe) id: number, @Body() body: CreateIngredientDto) {
-    return this.pizzaClient.send('update_ingredient', { id, ...body });
+    return this.ingredientsClient.send('update_ingredient', { id, ...body });
   }
 
   // * Удалить ингредиент пиццы по его id (DELETE /ingredients/:id)
@@ -159,6 +159,6 @@ export class IngredientsGatewayController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   deleteIngredient(@Param('id', ParseIntPipe) id: number) {
-    return this.pizzaClient.send('delete_ingredient', { id });
+    return this.ingredientsClient.send('delete_ingredient', { id });
   }
 }
