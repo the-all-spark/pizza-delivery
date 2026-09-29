@@ -1,31 +1,24 @@
-// * Главный корневой модуль микросервиса pizza-service
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule'; // Импорт планировщика для Cron задач
+import { ScheduleModule } from '@nestjs/schedule'; // планировщик для Cron задач
 import { createDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
 
-// Импорт компонентов текущего модуля пицц
 import { PizzaController } from './pizza.controller';
 import { PizzaService } from './pizza.service';
 import { Pizza } from './pizza.entity';
 
-// Импорт сущностей для генерации связанных таблиц
-import { User } from '../../auth-service/src/modules/users/user.entity';
-
-// Импорт модуля автозаполнения (Seed)
+import { Ingredient } from '../../ingredients-service/src/ingredient.entity';
 import { SeedModule } from '../../../core/seeds/seed.module';
 
 @Module({
   imports: [
-    // 1. Конфигурация окружения (.env)
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
-    // 2. Настройка подключения к СУБД PostgreSQL
+    // Настройка подключения к СУБД PostgreSQL
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -37,7 +30,7 @@ import { SeedModule } from '../../../core/seeds/seed.module';
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME', 'pizza_delivery'),
-          entities: [User, Pizza],
+          entities: [Ingredient, Pizza],
           synchronize: true,
           logging: ['error', 'schema', 'warn'],
         };
@@ -53,13 +46,13 @@ import { SeedModule } from '../../../core/seeds/seed.module';
       },
     }),
 
-    // 3. Регистрируем локальную сущность Pizza для репозиториев текущего модуля
-    TypeOrmModule.forFeature([Pizza]),
+    // Регистрируем локальные сущности для репозиториев текущего модуля
+    TypeOrmModule.forFeature([Ingredient, Pizza]),
 
-    // 4. Инициализируем планировщик задач для автоматической очистки пицц по Cron
+    // Инициализируем планировщик задач
     ScheduleModule.forRoot(),
 
-    // 5. Подключаем сопутствующие модули
+    // Подключаем сопутствующие модули
     SeedModule,
   ],
   controllers: [PizzaController],

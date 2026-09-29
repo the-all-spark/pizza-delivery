@@ -35,12 +35,12 @@ export class Pizza {
     onDelete: 'CASCADE',
   })
 
-  // создание таблицы в БД
+  // Создание промежуточной таблицы pizza_ingredients
   @JoinTable({
-    name: 'pizza_ingredients', // Имя промежуточной таблицы
-    joinColumn: { name: 'pizza_id', referencedColumnName: 'pId' }, // Связь с текущей сущностью (Pizza)
+    name: 'pizza_ingredients', 
+    joinColumn: { name: 'pizza_id', referencedColumnName: 'pId' },
     inverseJoinColumn: {
-      name: 'ingredient_id', // Связь с противоположной сущностью (Ingredient)
+      name: 'ingredient_id',
       referencedColumnName: 'ingrId',
     },
   })

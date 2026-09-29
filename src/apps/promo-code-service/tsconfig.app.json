@@ -4,7 +4,7 @@
     "composite": true,
     "declaration": true,
     "rootDir": "../../",
-    "outDir": "../../dist/apps/promo-codes-service",
+    "outDir": "../../dist/apps/promo-code-service",
     "types": ["node", "jest"]
   },
   "include": [

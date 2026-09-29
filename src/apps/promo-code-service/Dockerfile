@@ -13,7 +13,7 @@ COPY . .
 
 ARG BUILD_DIST=true
 
-RUN if [ "$BUILD_DIST" = "true" ]; then npx nest build pizza-service; else echo "Skipping build for dev"; fi
+RUN if [ "$BUILD_DIST" = "true" ]; then npx nest build promo-code-service; else echo "Skipping build for dev"; fi
 
 # ==========================================
 # 2: Production stage
@@ -26,8 +26,8 @@ COPY package*.json ./
 
 RUN npm ci --omit=dev
 
-COPY --from=builder /usr/src/app/dist/apps/pizza-service ./dist/apps/pizza-service
+COPY --from=builder /usr/src/app/dist/apps/promo-code-service ./dist/apps/promo-code-service
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/pizza-service/main.js"]
+CMD ["node", "dist/apps/promo-code-service/main.js"]

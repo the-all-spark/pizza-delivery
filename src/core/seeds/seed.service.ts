@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from '../../apps/auth-service/src/modules/users/user.entity';
 import { Pizza } from '../../apps/pizza-service/src/pizza.entity';
-import { PromoCode } from '../../apps/promo-codes-service/src/promo-code.entity';
+import { PromoCode } from '../../apps/promo-code-service/src/promo-code.entity';
 import { Ingredient } from '../../apps/ingredients-service/src/ingredient.entity';
 import { UserRole } from '../../shared/enums';
 
@@ -20,7 +20,6 @@ export class SeedService implements OnApplicationBootstrap {
   private promoCodeRepository: Repository<PromoCode>;
   private ingredientRepository: Repository<Ingredient>;
 
-  // Внедряем только DataSource — для него декораторы в конструкторе NestJS не требуются!
   constructor(private readonly dataSource: DataSource) {
     // Инициализируем репозитории напрямую через подключение к БД
     this.userRepository = this.dataSource.getRepository(User);

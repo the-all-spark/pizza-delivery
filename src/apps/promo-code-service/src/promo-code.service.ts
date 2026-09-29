@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 
 import { PromoCode } from './promo-code.entity';
-import { CreatePromoCodePayload, UpdatePromoCodePayload } from './promo-codes-interfaces';
+import { CreatePromoCodePayload, UpdatePromoCodePayload } from './promo-code-interfaces';
 
 @Injectable()
 export class PromoCodeService {
@@ -46,7 +46,6 @@ export class PromoCodeService {
   async create(payload: CreatePromoCodePayload): Promise<PromoCode> {
     const { code, discountPercent, expiresAt, isActive } = payload;
 
-    // Проверяем уникальность текстового кода
     const existing = await this.promoCodeRepository.findOne({
       where: { code: code.toUpperCase() },
     });
@@ -61,7 +60,7 @@ export class PromoCodeService {
     const newPromo = this.promoCodeRepository.create({
       code: code.toUpperCase(),
       discountPercent,
-      expiresAt: new Date(expiresAt), // Преобразуем строку ISO в объект Date для Postgres
+      expiresAt: new Date(expiresAt),
       isActive: isActive ?? true,
     });
 

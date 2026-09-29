@@ -49,7 +49,7 @@
       "path": "./src/apps/order-service/tsconfig.app.json"
     },
     {
-      "path": "./src/apps/promo-codes-service/tsconfig.app.json"
+      "path": "./src/apps/promo-code-service/tsconfig.app.json"
     }
   ]
 }

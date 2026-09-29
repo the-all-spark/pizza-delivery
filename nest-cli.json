@@ -1,67 +1,93 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/pizza-delivery/src",
+  "sourceRoot": "src/apps/api-gateway/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "builder": "rspack",
-    "tsConfigPath": "apps/pizza-delivery/tsconfig.app.json"
+    "builder": "rspack"
   },
   "monorepo": true,
-  "root": "apps/pizza-delivery",
+  "root": "src/apps/api-gateway",
   "projects": {
     "api-gateway": {
       "type": "application",
-      "root": "apps/api-gateway",
+      "root": "src/apps/api-gateway",
       "entryFile": "main",
-      "sourceRoot": "apps/api-gateway/src",
+      "sourceRoot": "src/apps/api-gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+        "tsConfigPath": "src/apps/api-gateway/tsconfig.app.json"
       }
     },
     "auth-service": {
       "type": "application",
-      "root": "apps/auth-service",
+      "root": "src/apps/auth-service",
       "entryFile": "main",
-      "sourceRoot": "apps/auth-service/src",
+      "sourceRoot": "src/apps/auth-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/auth-service/tsconfig.app.json"
-      }
-    },
-    "logger-service": {
-      "type": "application",
-      "root": "apps/logger-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/logger-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/logger-service/tsconfig.app.json"
-      }
-    },
-    "notification-service": {
-      "type": "application",
-      "root": "apps/notification-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/notification-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/notification-service/tsconfig.app.json"
-      }
-    },
-    "pizza-delivery": {
-      "type": "application",
-      "root": "apps/pizza-delivery",
-      "entryFile": "main",
-      "sourceRoot": "apps/pizza-delivery/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/pizza-delivery/tsconfig.app.json"
+        "tsConfigPath": "src/apps/auth-service/tsconfig.app.json"
       }
     },
     "pizza-service": {
       "type": "application",
-      "root": "apps/pizza-service",
+      "root": "src/apps/pizza-service",
       "entryFile": "main",
-      "sourceRoot": "apps/pizza-service/src",
+      "sourceRoot": "src/apps/pizza-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/pizza-service/tsconfig.app.json"
+        "tsConfigPath": "src/apps/pizza-service/tsconfig.app.json"
+      }
+    },
+    "promo-code-service": {
+      "type": "application",
+      "root": "src/apps/promo-code-service",
+      "entryFile": "main",
+      "sourceRoot": "src/apps/promo-code-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "src/apps/promo-code-service/tsconfig.app.json"
+      }
+    },
+    "ingredients-service": {
+      "type": "application",
+      "root": "src/apps/ingredients-service",
+      "entryFile": "main",
+      "sourceRoot": "src/apps/ingredients-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "src/apps/ingredients-service/tsconfig.app.json"
+      }
+    },
+    "cart-service": {
+      "type": "application",
+      "root": "src/apps/cart-service",
+      "entryFile": "main",
+      "sourceRoot": "src/apps/cart-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "src/apps/cart-service/tsconfig.app.json"
+      }
+    },
+    "order-service": {
+      "type": "application",
+      "root": "src/apps/order-service",
+      "entryFile": "main",
+      "sourceRoot": "src/apps/order-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "src/apps/order-service/tsconfig.app.json"
+      }
+    },
+    "notification-service": {
+      "type": "application",
+      "root": "src/apps/notification-service",
+      "entryFile": "main",
+      "sourceRoot": "src/apps/notification-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "src/apps/notification-service/tsconfig.app.json"
+      }
+    },
+    "logger-service": {
+      "type": "application",
+      "root": "src/apps/logger-service",
+      "entryFile": "main",
+      "sourceRoot": "src/apps/logger-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "src/apps/logger-service/tsconfig.app.json"
       }
     }
   }
