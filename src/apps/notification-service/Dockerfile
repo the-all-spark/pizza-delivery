@@ -11,10 +11,8 @@ RUN npm ci
 
 COPY . .
 
-# Принимаем аргумент. По умолчанию он равен true (для продакшна)
 ARG BUILD_DIST=true
 
-# Запускаем сборку ТОЛЬКО если аргумент равен true.
 RUN if [ "$BUILD_DIST" = "true" ]; then npx nest build notification-service; else echo "Skipping build for dev"; fi
 
 # ==========================================
@@ -32,4 +30,4 @@ COPY --from=builder /usr/src/app/dist/apps/notification-service ./dist/apps/noti
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/notification-service/main.js"]
+CMD ["node", "dist/apps/notification-service/main.ts"]

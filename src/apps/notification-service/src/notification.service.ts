@@ -23,9 +23,8 @@ export class NotificationService implements OnModuleInit {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('SMTP_HOST'),
       port: Number(this.configService.get<number>('SMTP_PORT', 1025)),
-      secure: false, // Для локального тестирования (Mailpit/Mailtrap) SSL/TLS не нужен
+      secure: false,
       auth: {
-        // Если логин и пароль не заданы (как в Mailpit), nodemailer пропустит авторизацию
         user: this.configService.get<string>('SMTP_USER') || undefined,
         pass: this.configService.get<string>('SMTP_PASS') || undefined,
       },
@@ -34,7 +33,6 @@ export class NotificationService implements OnModuleInit {
 
   // Универсальный внутренний метод для отправки любого email
   private async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    // this.configService.get('ИМЯ', 'значение_по_умолчанию') - защита от падения
     const from = this.configService.get<string>('SMTP_FROM', 'no-reply@pizza.com');
 
     try {
@@ -74,7 +72,6 @@ export class NotificationService implements OnModuleInit {
   // 3. ОТПРАВКА КРИТИЧЕСКОЙ ОШИБКИ АДМИНИСТРАТОРУ
   // ==========================================
   async sendCriticalErrorEmail(serviceName: string, errorMessage: string): Promise<void> {
-    // Считываем email администратора из .env
     const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@pizza.com');
     const subject = `⚠️ CRITICAL ERROR REPORT: ${serviceName}`;
     const htmlContent = getCriticalErrorTemplate(serviceName, errorMessage);
