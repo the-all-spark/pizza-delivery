@@ -61,7 +61,7 @@ jobs:
       # (используется флаг -t вместо -it)
       - name: Run Cart Service Tests inside Docker Container
         run: |
-          docker exec -t pizza_pizza_service npx jest --config apps/pizza-service/jest-pizza.config.json
+          docker exec -t pizza_cart_service npx jest --config src/apps/cart-service/jest-pizza.config.json
 
       # Шаг 8: Безопасно тушим и очищаем Docker-ресурсы, освобождая агент сборщика
       - name: Stop Containers

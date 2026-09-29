@@ -7,7 +7,6 @@ export class CartItem {
   @PrimaryGeneratedColumn({ name: 'cart_id' })
   cartId: number;
 
-  // Храним ID пользователя, полученный из JWT/микросервиса Auth
   @Column({ name: 'user_id', type: 'int' })
   userId: number;
 

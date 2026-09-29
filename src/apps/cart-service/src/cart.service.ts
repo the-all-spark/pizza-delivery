@@ -32,7 +32,7 @@ export class CartService {
     return await this.cartItemRepository.find({
       where: { userId },
       relations: {
-        pizza: true, // Подтягиваем данные пиццы (название, цену, картинку) для фронтенда
+        pizza: true,
       },
       order: { cartId: 'ASC' },
     });
@@ -44,7 +44,6 @@ export class CartService {
   async addToCart(payload: AddToCartPayload): Promise<CartItem> {
     const { userId, pizzaId, quantity } = payload;
 
-    // 1. Проверяем, существует ли вообще такая пицца в каталоге меню
     const pizzaExists = await this.pizzaRepository.findOne({
       where: { pId: pizzaId },
     });
@@ -55,7 +54,6 @@ export class CartService {
       });
     }
 
-    // 2. Ищем, есть ли уже эта пицца в корзине конкретного пользователя
     const existingItem = await this.cartItemRepository.findOne({
       where: { userId, pizzaId },
     });
@@ -66,7 +64,6 @@ export class CartService {
       return await this.cartItemRepository.save(existingItem);
     }
 
-    // 3. Если пиццы в корзине еще нет — создаем новую запись
     const newCartItem = this.cartItemRepository.create({
       userId,
       pizzaId,
@@ -82,7 +79,6 @@ export class CartService {
   async updateCartItem(payload: UpdateCartItemPayload): Promise<CartItem> {
     const { userId, cartItemId, quantity } = payload;
 
-    // Ищем элемент корзины строго с привязкой к cartItemId и userId (защита от кражи)
     const cartItem = await this.cartItemRepository.findOne({
       where: { cartId: cartItemId, userId },
     });
@@ -94,7 +90,6 @@ export class CartService {
       });
     }
 
-    // Обновляем количество и сохраняем
     cartItem.quantity = quantity;
     return await this.cartItemRepository.save(cartItem);
   }
@@ -105,7 +100,6 @@ export class CartService {
   async removeFromCart(payload: RemoveFromCartPayload): Promise<{ success: boolean }> {
     const { userId, cartItemId } = payload;
 
-    // Проверяем существование и принадлежность элемента пользователю
     const cartItem = await this.cartItemRepository.findOne({
       where: { cartId: cartItemId, userId },
     });
@@ -117,7 +111,6 @@ export class CartService {
       });
     }
 
-    // Физически удаляем строку из PostgreSQL
     await this.cartItemRepository.delete(cartItemId);
     return { success: true };
   }

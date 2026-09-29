@@ -48,7 +48,7 @@ import { ForbiddenErrorResponseDto } from '../dto/forbidden-error-response.dto';
   type: ForbiddenErrorResponseDto,
 })
 export class CartGatewayController {
-  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
+  constructor(@Inject('CART_SERVICE') private readonly cartClient: ClientProxy) {}
 
   // * Просмотр содержимого собственной корзины (GET /cart)
   @Get()
@@ -62,7 +62,7 @@ export class CartGatewayController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getCart(@Req() req: AuthenticatedRequest) {
-    return this.pizzaClient.send('get_user_cart', { userId: req.user.userId });
+    return this.cartClient.send('get_user_cart', { userId: req.user.userId });
   }
 
   // * Добавить пиццу в собственную корзину (POST /cart)
@@ -81,7 +81,7 @@ export class CartGatewayController {
     description: 'The specified pizza was not found in the catalog.',
   })
   addToCart(@Req() req: AuthenticatedRequest, @Body() body: AddToCartDto) {
-    return this.pizzaClient.send('add_to_cart', {
+    return this.cartClient.send('add_to_cart', {
       userId: req.user.userId,
       ...body,
     });
@@ -113,7 +113,7 @@ export class CartGatewayController {
     @Param('cartItemId', ParseIntPipe) cartItemId: number,
     @Body() body: UpdateCartItemDto,
   ) {
-    return this.pizzaClient.send('update_cart_item', {
+    return this.cartClient.send('update_cart_item', {
       userId: req.user.userId,
       cartItemId,
       quantity: body.quantity,
@@ -142,7 +142,7 @@ export class CartGatewayController {
     @Req() req: AuthenticatedRequest,
     @Param('cartItemId', ParseIntPipe) cartItemId: number,
   ) {
-    return this.pizzaClient.send('remove_from_cart', {
+    return this.cartClient.send('remove_from_cart', {
       userId: req.user.userId,
       cartItemId,
     });

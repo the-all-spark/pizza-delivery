@@ -37,7 +37,7 @@ import { PromoCodeResponseDto } from '../dto/promo-codes/promo-code-response.dto
 @Controller('promo-codes')
 @UseFilters(RpcExceptionFilter)
 export class PromoCodesGatewayController {
-  constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
+  constructor(@Inject('PROMO_CODE_SERVICE') private readonly promoCodeClient: ClientProxy) {}
 
   // ========================
   // ОБЩИЕ МАРШРУТЫ И МАРШРУТЫ КОЛЛЕКЦИЙ (ВВЕРХУ)
@@ -56,7 +56,7 @@ export class PromoCodesGatewayController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getAllPromoCodes() {
-    return this.pizzaClient.send('get_all_promo_codes', {});
+    return this.promoCodeClient.send('get_all_promo_codes', {});
   }
 
   // * Создать промокод (POST /promo-codes)
@@ -75,7 +75,7 @@ export class PromoCodesGatewayController {
   @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
   @ApiResponse({ status: 409, description: 'Promo code with this text (code) already exists.' })
   createPromoCode(@Body() body: CreatePromoCodeDto) {
-    return this.pizzaClient.send('admin_create_promo_code', body);
+    return this.promoCodeClient.send('admin_create_promo_code', body);
   }
 
   // ========================
@@ -100,7 +100,7 @@ export class PromoCodesGatewayController {
   @ApiResponse({ status: 404, description: 'Promo code with the specified ID not found.' })
   @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
   updatePromoCode(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePromoCodeDto) {
-    return this.pizzaClient.send('admin_update_promo_code', { promoId: id, ...body });
+    return this.promoCodeClient.send('admin_update_promo_code', { promoId: id, ...body });
   }
 
   // * Получить конкретный промокод по его id (GET /promo-codes/:id)
@@ -119,7 +119,7 @@ export class PromoCodesGatewayController {
   @ApiResponse({ status: 404, description: 'Promo code not found.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   getPromoCodeById(@Param('id', ParseIntPipe) id: number) {
-    return this.pizzaClient.send('get_promo_code_by_id', { id });
+    return this.promoCodeClient.send('get_promo_code_by_id', { id });
   }
 
   // * Удалить промо-код по id (DELETE /promo-codes/:id)
@@ -135,6 +135,6 @@ export class PromoCodesGatewayController {
   @ApiResponse({ status: 404, description: 'Promo code not found.' })
   @ApiResponse({ status: 403, description: 'Access denied (admin role required).' })
   deletePromoCode(@Param('id', ParseIntPipe) id: number) {
-    return this.pizzaClient.send('admin_delete_promo_code', { promoId: id });
+    return this.promoCodeClient.send('admin_delete_promo_code', { promoId: id });
   }
 }

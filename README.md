@@ -58,5 +58,5 @@ Unit tests are written using the Jest framework in combination with `@swc/jest` 
 Execute microservice tests directly inside the stable Linux container environment:
 ```bash
 # Run Cart Management Service unit tests
-docker exec -it pizza_pizza_service npx jest --config apps/pizza-service/jest-pizza.config.json
+docker exec -t pizza_cart_service npx jest --config src/apps/cart-service/jest-pizza.config.json
 ```

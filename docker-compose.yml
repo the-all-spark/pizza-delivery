@@ -190,7 +190,7 @@ services:
     networks:
       - pizza_network
 
-    # Promo codes microservice (internal; talks via RabbitMQ)
+  # Promo codes microservice (internal; talks via RabbitMQ)
   promo-code-service:
     build:
       context: .
@@ -215,6 +215,37 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run start:dev -- promo-code-service
+    depends_on:
+      - postgres_db
+      - rabbitmq
+    networks:
+      - pizza_network
+
+  # Cart microservice (internal; talks via RabbitMQ)
+  cart-service:
+    build:
+      context: .
+      dockerfile: src/apps/cart-service/Dockerfile
+      target: builder
+      args:
+        BUILD_DIST: 'false'
+    container_name: pizza_cart_service
+    restart: always
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres_db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+      WATCHPACK_POLLING: 'true'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev -- cart-service
     depends_on:
       - postgres_db
       - rabbitmq
