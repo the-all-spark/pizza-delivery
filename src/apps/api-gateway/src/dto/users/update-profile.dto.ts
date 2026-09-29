@@ -38,4 +38,12 @@ export class UpdateProfileDto {
   @MinLength(6, { message: 'Password must be at least 6 characters' })
   @MaxLength(255, { message: 'Password must not exceed 255 characters' })
   password?: string;
+
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+    description: 'User profile avatar image',
+  })
+  @IsOptional()
+  file?: any;
 }

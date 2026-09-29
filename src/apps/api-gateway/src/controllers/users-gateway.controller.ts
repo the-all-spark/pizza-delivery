@@ -12,6 +12,8 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseInterceptors, // <-- Добавить
+  UploadedFile, // <-- Добавить
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
@@ -23,6 +25,9 @@ import {
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express'; // <-- Добавить
+import { ApiConsumes } from '@nestjs/swagger'; // <-- Добавить
+
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
 
@@ -106,27 +111,41 @@ export class UsersGatewayController {
   // * Редактирование профиля пользователя (First Name, Last Name) и смена пароля (PUT /users/profile)
   @Put('profile')
   @Roles('user', 'admin')
+  @UseInterceptors(FileInterceptor('file')) // <-- Перехватываем файл из поля 'file'
+  @ApiConsumes('multipart/form-data') // <-- Говорим Swagger, что это форма с файлом
   @ApiOperation({
     summary: 'Update personal profile',
     description:
-      'Available to authorized users. Allows updating first name, last name, or password.',
+      'Available to authorized users. Allows updating first name, last name, password, or profile avatar.',
   })
   @ApiOkResponse({
     description: 'Profile successfully updated. Returns updated data.',
     type: RegisterResponseDto,
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Validation error of the submitted fields.',
-  })
+  @ApiResponse({ status: 400, description: 'Validation error of the submitted fields.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  editProfile(@Req() req: AuthenticatedRequest, @Body() body: UpdateProfileDto) {
-    return this.authClient.send('user_edit_profile', {
+  editProfile(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: UpdateProfileDto,
+    @UploadedFile() file?: Express.Multer.File, // <-- Получаем файл
+  ) {
+    // Формируем payload для отправки в RabbitMQ
+    const payload: any = {
       userId: req.user.userId,
       firstName: body.firstName,
       lastName: body.lastName,
       password: body.password,
-    });
+    };
+
+    // Если файл прикреплен, упаковываем его метаданные и буфер в сериализуемый формат
+    if (file) {
+      payload.file = {
+        originalname: file.originalname,
+        buffer: file.buffer, // NestJS автоматически сериализует Buffer в формат { type: 'Buffer', data: [...] } при отправке в RMQ
+      };
+    }
+
+    return this.authClient.send('user_edit_profile', payload);
   }
 
   // * Удаление аккаунта пользователя (DELETE /users/profile)

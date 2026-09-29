@@ -19,6 +19,9 @@ export class User {
   @Column({ name: 'last_name', type: 'varchar', length: 100 })
   lastName: string;
 
+  @Column({ name: 'avatar_path', type: 'varchar', nullable: true })
+  avatarPath: string;
+
   @Column({
     type: 'enum',
     enum: UserRole,
