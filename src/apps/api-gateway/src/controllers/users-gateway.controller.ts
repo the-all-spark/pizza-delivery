@@ -12,8 +12,8 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
-  UseInterceptors, // <-- Добавить
-  UploadedFile, // <-- Добавить
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
@@ -25,8 +25,8 @@ import {
   ApiOkResponse,
   ApiQuery,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express'; // <-- Добавить
-import { ApiConsumes } from '@nestjs/swagger'; // <-- Добавить
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes } from '@nestjs/swagger';
 
 import { Roles } from '../decorators/roles.decorator';
 import { RpcExceptionFilter } from '../rpc-exception.filter';
@@ -108,11 +108,11 @@ export class UsersGatewayController {
     });
   }
 
-  // * Редактирование профиля пользователя (First Name, Last Name) и смена пароля (PUT /users/profile)
+  // * Редактирование профиля пользователя (First Name, Last Name), смена пароля, добавление аватара (PUT /users/profile)
   @Put('profile')
   @Roles('user', 'admin')
-  @UseInterceptors(FileInterceptor('file')) // <-- Перехватываем файл из поля 'file'
-  @ApiConsumes('multipart/form-data') // <-- Говорим Swagger, что это форма с файлом
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
     summary: 'Update personal profile',
     description:
@@ -127,7 +127,7 @@ export class UsersGatewayController {
   editProfile(
     @Req() req: AuthenticatedRequest,
     @Body() body: UpdateProfileDto,
-    @UploadedFile() file?: Express.Multer.File, // <-- Получаем файл
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     // Формируем payload для отправки в RabbitMQ
     const payload: any = {
@@ -137,11 +137,16 @@ export class UsersGatewayController {
       password: body.password,
     };
 
+    if (body.firstName) payload.firstName = body.firstName;
+    if (body.lastName) payload.lastName = body.lastName;
+    if (body.password) payload.password = body.password;
+
     // Если файл прикреплен, упаковываем его метаданные и буфер в сериализуемый формат
+    // NestJS автоматически сериализует Buffer в формат { type: 'Buffer', data: [...] } при отправке в RMQ
     if (file) {
       payload.file = {
         originalname: file.originalname,
-        buffer: file.buffer, // NestJS автоматически сериализует Buffer в формат { type: 'Buffer', data: [...] } при отправке в RMQ
+        buffer: file.buffer, 
       };
     }
 

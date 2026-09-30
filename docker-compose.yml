@@ -15,7 +15,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - '5432:5432' # Host access for local development only
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
@@ -33,13 +33,13 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DB}
     ports:
-      - '27017:27017' # Host access for local development only
+      - '27017:27017'
     volumes:
       - mongo_data:/data/db
     networks:
       - pizza_network
 
-  # Message broker between microservices
+  # Message broker (RabbitMQ) between microservices
   rabbitmq:
     image: rabbitmq:4.3-management-alpine
     container_name: pizza_rabbitmq
@@ -58,18 +58,18 @@ services:
     networks:
       - pizza_network
 
-  # Локальный почтовый сервер для тестирования отправки писем
+  # Local email server for testing email sending
   mailpit:
     image: axllent/mailpit
     container_name: pizza_mailpit
     restart: always
     ports:
-      - '1025:1025' # Порт SMTP (туда наш код будет отправлять письма)
-      - '8025:8025' # Веб-панель (туда мы будем заходить через браузер, чтобы читать письма)
+      - '1025:1025' # SMTP port
+      - '8025:8025' # web-panel
     networks:
       - pizza_network
 
-  # Веб-интерфейс Mongo Express
+  # Mongo Express web-interface
   mongo-express:
     image: mongo-express:latest
     container_name: pizza_mongo_express
@@ -77,13 +77,11 @@ services:
     env_file:
       - .env
     environment:
-      # Настройки авторизации для входа в саму веб-панель в браузере
+      # Web panel authorization
       ME_CONFIG_OPTIONS_EDITORTHEME: 'ambiance'
       ME_CONFIG_BASICAUTH_USERNAME: 'admin'
       ME_CONFIG_BASICAUTH_PASSWORD: 'logpass'
-      # Cтрока подключения
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
-      # Явно фиксируем внутренний порт для скрипта инициализации
       VCAP_APP_PORT: 3000
       ME_CONFIG_OPTIONS_DOCUMENTSPERPAGE: 1000
     ports:
@@ -102,9 +100,9 @@ services:
     build:
       context: .
       dockerfile: src/apps/api-gateway/Dockerfile
-      target: builder # останавливаем сборку на этапе builder, где есть Nest CLI
+      target: builder
       args:
-        BUILD_DIST: 'false' # Говорим Dockerfile: "Не собирай dist на диске F"
+        BUILD_DIST: 'false'
     container_name: pizza_api_gateway
     restart: always
     env_file:
@@ -116,8 +114,8 @@ services:
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
       WATCHPACK_POLLING: 'true'
     volumes:
-      - .:/usr/src/app # 1. Пробрасываем ВЕСЬ корень
-      - /usr/src/app/node_modules # 2. Изолируем корневые node_modules
+      - .:/usr/src/app 
+      - /usr/src/app/node_modules
     command: npm run start:dev -- api-gateway --config nest-cli.json
     depends_on:
       - rabbitmq
@@ -213,7 +211,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - ./uploads:/usr/src/app/uploads #! проверить пути
+      - ./uploads:/usr/src/app/uploads
     command: npm run start:dev -- pizza-service --config nest-cli.json
     depends_on:
       - postgres_db

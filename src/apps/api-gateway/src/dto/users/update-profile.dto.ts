@@ -2,6 +2,7 @@
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, MinLength, MaxLength, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({
@@ -13,6 +14,7 @@ export class UpdateProfileDto {
   @IsString({ message: 'First name must be a string' })
   @IsNotEmpty({ message: 'First name cannot be empty' })
   @MaxLength(100, { message: 'First name must not exceed 100 characters' })
+  @Transform(({ value }) => (typeof value === 'string' && value.trim() === '' ? undefined : value))
   firstName?: string;
 
   @ApiPropertyOptional({
@@ -24,6 +26,7 @@ export class UpdateProfileDto {
   @IsString({ message: 'Last name must be a string' })
   @IsNotEmpty({ message: 'Last name cannot be empty' })
   @MaxLength(100, { message: 'Last name must not exceed 100 characters' })
+  @Transform(({ value }) => (typeof value === 'string' && value.trim() === '' ? undefined : value))
   lastName?: string;
 
   @ApiPropertyOptional({
@@ -37,6 +40,7 @@ export class UpdateProfileDto {
   @IsNotEmpty({ message: 'Password cannot be empty' })
   @MinLength(6, { message: 'Password must be at least 6 characters' })
   @MaxLength(255, { message: 'Password must not exceed 255 characters' })
+  @Transform(({ value }) => (typeof value === 'string' && value.trim() === '' ? undefined : value))
   password?: string;
 
   @ApiPropertyOptional({

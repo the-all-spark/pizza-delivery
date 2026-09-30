@@ -60,7 +60,7 @@ export class UsersService {
       firstName?: string;
       lastName?: string;
       password?: string;
-      file?: { originalname: string; buffer: { data: number[] } | Buffer | string }; // Принимаем файл из шлюза
+      file?: { originalname: string; buffer: { data: number[] } | Buffer | string };
     },
   ): Promise<Partial<User>> {
     const user = await this.userRepository.findById(userId);
@@ -79,31 +79,27 @@ export class UsersService {
       fieldsToUpdate.passwordHash = await bcrypt.hash(password, saltRounds);
     }
 
-    // --- ЛОГИКА СХРАНЕНИЯ ИЗОБРАЖЕНИЯ ---
+    // Сохранение изображения
     if (file) {
-      // 1. Если у пользователя уже был аватар, удаляем старый файл
       if (user.avatarPath) {
         const oldFilePath = path.join(process.cwd(), user.avatarPath);
-        await fs.unlink(oldFilePath).catch(() => {}); // Игнорируем ошибку, если файла физически не было
+        await fs.unlink(oldFilePath).catch(() => {});
       }
 
-      // 2. Создаем подпапку uploads/users, если её нет
       await fs.mkdir(this.uploadDir, { recursive: true });
 
-      // 3. Генерируем уникальное имя файла: id_время.расширение
       const ext = path.extname(file.originalname) || '.jpg';
       const fileName = `${userId}_${Date.now()}${ext}`;
       const fullPath = path.join(this.uploadDir, fileName);
 
-      // 4. Переводим буфер обратно в бинарный вид и сохраняем
+      // Переводим буфер обратно в бинарный вид и сохраняем
       const bufferData = Buffer.isBuffer(file.buffer)
         ? file.buffer
         : Buffer.from((file.buffer as any).data || file.buffer);
 
       await fs.writeFile(fullPath, bufferData);
 
-      // 5. Записываем относительный путь в БД для раздачи шлюзом (например, "uploads/users/1_12345.jpg")
-      fieldsToUpdate.avatarPath = `uploads/users/${fileName}`; // Убедитесь, что у вас есть поле avatarPath в User Entity
+      fieldsToUpdate.avatarPath = `uploads/users/${fileName}`;
     }
 
     const updatedUser = await this.userRepository.update(userId, fieldsToUpdate);
@@ -124,10 +120,10 @@ export class UsersService {
       });
     }
 
-    // --- ЛОГИКА УДАЛЕНИЯ ИЗОБРАЖЕНИЯ ---
+    // Удаление изображения
     if (user.avatarPath) {
       const filePath = path.join(process.cwd(), user.avatarPath);
-      await fs.unlink(filePath).catch(() => {}); // Удаляем файл аватара с диска
+      await fs.unlink(filePath).catch(() => {}); 
     }
 
     const isDeleted = await this.userRepository.delete(userId);
