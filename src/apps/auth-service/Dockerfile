@@ -28,8 +28,8 @@ COPY package*.json ./
 
 RUN npm ci --omit=dev
 
-COPY --from=builder /usr/src/app/dist/apps/auth-service ./dist/apps/auth-service
+COPY --from=builder /usr/src/app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/auth-service/main.js"]
+CMD ["node", "dist/src/apps/auth-service/main.js"]

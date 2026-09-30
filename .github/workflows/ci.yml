@@ -2,7 +2,7 @@ name: CI Pipeline (Pizza Delivery)
 
 on:
   push:
-    branches: ['main', 'feature/ci-setup']
+    branches: ['main']
   pull_request:
     branches: ['main']
 
@@ -34,7 +34,6 @@ jobs:
         run: npm run lint
 
       # Шаг 5: Автоматически создаем тестовый .env для Docker Compose
-      # Все переменные, которые запрашивают сервисы, теперь будут заполнены
       - name: Create Test .env File
         run: |
           echo "DB_USERNAME=test_user" >> .env

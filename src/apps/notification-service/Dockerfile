@@ -26,8 +26,8 @@ COPY package*.json ./
 
 RUN npm ci --omit=dev
 
-COPY --from=builder /usr/src/app/dist/apps/notification-service ./dist/apps/notification-service
+COPY --from=builder /usr/src/app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/notification-service/main.js"]
+CMD ["node", "dist/src/apps/notification-service/main.js"]

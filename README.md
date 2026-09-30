@@ -9,8 +9,12 @@ A scalable **Microservices Application** for pizza ordering and delivery managem
 The application is built inside a unified **monorepository** containing the following independent nodes:
 
 *   **`api-gateway` (Port 3000):** The single public entry point. Handles HTTP routing, Swagger documentation layout, global DTO validation, static image distribution (`/uploads`), and JWT-based role authorization (`admin` / `user`).
-*   **`auth-service`:** Manages user registration/login, secure password hashing, and session authentication tokens.
-*   **`pizza-service`:** The core business-logic service handling the product catalog (**Pizzas**, **Ingredients**), shopping **Cart** workflows, **Promo Code** validation, and transaction-safe **Orders** logging (with price-snapshots to prevent historical data mutation).
+*   **`auth-service`:** Manages user registration/login, secure password hashing, and session authentication tokens; also manage user profile editing.
+*   **`pizza-service`**: The core catalog service responsible for managing products (Pizzas). Allow to add image to pizza while creating.
+*   **`ingredients-service`**: Catalog of pizzas' ingredients and their managing.
+*   **`cart-service`**: A standalone service dedicated entirely to shopping cart workflows, item management, and user basket persistence.
+*   **`promo-code-service`**: An independent service that handles promotional campaigns, code validation rules, and discount logic.
+*   **`order-service`**: A transaction-safe service responsible for processing orders. It automatically captures immutable pricing snapshots at the moment of purchase to prevent historical data mutation if a product's price changes in the future.
 *   **`logger-service`:** An event-driven, centralized telemetry system that listens to RabbitMQ logs asynchronously and records system metrics (`INFO`), alerts (`WARN`), and exceptions (`ERROR`).
 *   **`notification-service`:** Listens for registration events and critical system crashes or transaction milestones to send emails.
 
@@ -44,7 +48,7 @@ docker compose up -d --build
 ```
 
 ### 3. Verify Application Access
-*   **Swagger API Docs:** [http://localhost:3000/api](http://localhost:3000/api)
+*   **Swagger API Docs:** [http://localhost:3000/docs](http://localhost:3000/docs)
 *   **RabbitMQ UI:** [http://localhost:15672](http://localhost:15672) *(Credentials: `pizza_rabbit` / `pizza_rabbit_5578`)*
 *   **Centralized Logs View (Mongo Express):** [http://localhost:8081](http://localhost:8081) *(Credentials: `admin` / `logpass`)*
 *   **Mailpit UI:** [http://localhost:8025](http://localhost:8025)

@@ -26,8 +26,8 @@ COPY package*.json ./
 
 RUN npm ci --omit=dev
 
-COPY --from=builder /usr/src/app/dist/apps/api-gateway ./dist/apps/api-gateway
+COPY --from=builder /usr/src/app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/api-gateway/main.js"]
+CMD ["node", "dist/src/apps/api-gateway/main.js"]

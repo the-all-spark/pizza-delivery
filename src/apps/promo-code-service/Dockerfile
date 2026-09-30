@@ -26,8 +26,8 @@ COPY package*.json ./
 
 RUN npm ci --omit=dev
 
-COPY --from=builder /usr/src/app/dist/apps/promo-code-service ./dist/apps/promo-code-service
+COPY --from=builder /usr/src/app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "dist/apps/promo-code-service/main.js"]
+CMD ["node", "dist/src/apps/promo-code-service/main.js"]
