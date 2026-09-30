@@ -29,7 +29,7 @@ async function bootstrap() {
   const loggerClient = app.get<ClientProxy>('LOGGER_SERVICE');
   app.useGlobalInterceptors(new LoggerInterceptor(loggerClient));
 
-  // Раздача картинок из папки uploads //! проверить пути
+  // Раздача картинок из папки uploads
   const uploadsPath = join(process.cwd(), 'uploads');
   app.use('/uploads', express.static(uploadsPath));
   console.log(`[API Gateway] Папка статических файлов подключена по пути: ${uploadsPath}`);
@@ -41,6 +41,10 @@ async function bootstrap() {
     .setVersion('1.0')
 
     .addServer('http://localhost:3000', 'v1.0 (Local Development)')
+
+    .addTag('Health')
+    .addTag('Auth')
+    .addTag('Users')
 
     .addBearerAuth(
       {

@@ -12,7 +12,6 @@ import * as Entities from '@shared/entities';
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([Entities.User]),
 
     ClientsModule.registerAsync([

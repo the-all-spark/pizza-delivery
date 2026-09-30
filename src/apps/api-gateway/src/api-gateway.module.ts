@@ -16,9 +16,13 @@ import { CartGatewayController } from './controllers/cart-gateway.controller';
 import { PromoCodesGatewayController } from './controllers/promo-codes-gateway.controller';
 import { OrdersGatewayController } from './controllers/orders-gateway.controller';
 
+import { HealthModule } from '@core/health/health.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+    HealthModule,
 
     // Настройка JWT модуля для проверки подписей токенов на шлюзе
     JwtModule.registerAsync({

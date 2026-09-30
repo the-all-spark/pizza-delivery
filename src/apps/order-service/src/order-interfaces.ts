@@ -20,14 +20,14 @@ export interface CreateOrderPayload {
   deliveryMethod: DeliveryMethod;
   paymentMethod: PaymentMethod;
   comment?: string;
-  promoCode?: string; // Текстовый код купона, например 'PIZZA2026'
+  promoCode?: string;
 }
 
 // Получение статуса конкретного заказа (GET /orders/:id)
 export interface GetOrderStatusPayload {
   userId: string;
   orderId: number;
-  role: string; // роль, чтобы контролировать права доступа на уровне сервиса
+  role: string;
 }
 
 // Изменение статуса заказа администратором (PATCH /orders/:id)

@@ -214,9 +214,7 @@ export class PizzaService {
       // Пытаемся физически удалить файл изображения с диска
       if (pizza.imageUrl) {
         const filename = path.basename(pizza.imageUrl);
-
-        // const absolutePath = path.join('/usr/src/app', 'uploads', filename);
-        const absolutePath = path.join(process.cwd(), 'uploads', 'pizzas', filename); //! проверить путь
+        const absolutePath = path.join(process.cwd(), 'uploads', 'pizzas', filename);
 
         try {
           await fs.access(absolutePath);

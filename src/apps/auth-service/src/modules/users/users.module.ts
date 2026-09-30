@@ -18,7 +18,6 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([Entities.User]),
 
     // Для перехода на MongoDB - регистрируем схему для MongoDB

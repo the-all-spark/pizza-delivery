@@ -2,6 +2,8 @@
 
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { HealthCheckService, TypeOrmHealthIndicator } from '@nestjs/terminus';
+
 import { PizzaService } from './pizza.service';
 
 import type {
@@ -14,7 +16,11 @@ import type {
 
 @Controller()
 export class PizzaController {
-  constructor(private readonly pizzaService: PizzaService) {}
+  constructor(
+    private readonly pizzaService: PizzaService,
+    private health: HealthCheckService,
+    private db: TypeOrmHealthIndicator,
+  ) {}
 
   // * Получить постраничный список всех пицц
   // Слушает команду 'get_pizzas_list' от API Gateway
@@ -57,5 +63,18 @@ export class PizzaController {
   @MessagePattern('admin_delete_pizza')
   async deletePizza(@Payload() data: { pizzaId: number }) {
     return await this.pizzaService.deletePizza(data.pizzaId);
+  }
+
+  // Проверка доступности базы данных (Health Check)
+  @MessagePattern('pizza_service_ping_db')
+  async checkDatabaseStatus() {
+    try {
+      const result = await this.health.check([
+        () => this.db.pingCheck('database'),
+      ]);
+      return { status: 'up', details: result.info };
+    } catch (error: any) {
+      return { status: 'down', message: error.message };
+    }
   }
 }

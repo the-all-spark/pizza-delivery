@@ -109,7 +109,7 @@ export class PizzasGatewayController {
     FileInterceptor('image', {
       storage: diskStorage({
         destination: (req, file, callback) => {
-          const uploadPath = path.join(process.cwd(), 'uploads', 'pizzas'); //! проверить
+          const uploadPath = path.join(process.cwd(), 'uploads', 'pizzas');
           callback(null, uploadPath);
         },
         filename: (req, file, callback) => {
@@ -125,9 +125,7 @@ export class PizzasGatewayController {
       throw new Error('Pizza image is a required field.');
     }
 
-    const imageUrl = `/uploads/pizzas/${file.filename}`; //! проверить
-
-    //! проверить
+    const imageUrl = `/uploads/pizzas/${file.filename}`;
     const absoluteFilePath = path.join(process.cwd(), 'uploads', 'pizzas', file.filename);
 
     // Пансинг ингредиентов для multipart/form-data (из строки в массив чисел)

@@ -7,6 +7,6 @@
     "outDir": "../../../dist/src/apps/api-gateway",
     "types": ["node", "jest"]
   },
-  "include": ["./src/**/*", "../../../src/shared/**/*"],
+  "include": ["./src/**/*", "../../../src/shared/**/*", "../../../src/core/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }
