@@ -19,15 +19,13 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    
     private readonly jwtService: JwtService,
 
     @Inject('NOTIFICATION_SERVICE')
     private readonly notificationClient: ClientProxy,
   ) {}
 
-  // ==========================================
-  // ЛОГИКА РЕГИСТРАЦИИ ПОЛЬЗОВАТЕЛЯ
-  // ==========================================
   async register(payload: RegisterPayload): Promise<RegisterResponse> {
     const { email, password, firstName, lastName } = payload;
 
@@ -43,7 +41,6 @@ export class AuthService {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Создаем объект сущности, сохраняем в БД
     const newUser = this.userRepository.create({
       email,
       passwordHash,
@@ -53,7 +50,6 @@ export class AuthService {
 
     const savedUser = await this.userRepository.save(newUser);
 
-    // Отправляем событие о регистрации нового пользователя в RabbitMQ
     this.notificationClient.emit('user_registered_event', {
       email: savedUser.email,
       firstName: savedUser.firstName,
@@ -64,9 +60,6 @@ export class AuthService {
     return result as RegisterResponse;
   }
 
-  // ==========================================
-  // ЛОГИКА АВТОРИЗАЦИИ И ГЕНЕРАЦИИ JWT
-  // ==========================================
   async login(payload: LoginPayload): Promise<LoginResponse> {
     const { email, password } = payload;
 
@@ -87,7 +80,6 @@ export class AuthService {
       });
     }
 
-    // Формируем полезную нагрузку (payload) для JWT токена
     const jwtPayload = {
       sub: user.uId,
       email: user.email,

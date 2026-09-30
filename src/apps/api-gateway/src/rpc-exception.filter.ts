@@ -13,7 +13,6 @@ import { Response } from 'express';
 
 @Catch()
 export class RpcExceptionFilter implements ExceptionFilter {
-  // Конструктор для внедрения служб уведомлений и централизованного логирования через прокси-клиент RabbitMQ
   constructor(
     @Inject('NOTIFICATION_SERVICE')
     private readonly notificationClient: ClientProxy,
@@ -26,7 +25,6 @@ export class RpcExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    // Если это стандартное HTTP исключение самого шлюза, логируем его перед отправкой ответа клиенту
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const resObj = exception.getResponse();
@@ -59,7 +57,6 @@ export class RpcExceptionFilter implements ExceptionFilter {
 
     const message = exception?.message || 'Внутренняя ошибка микросервиса';
 
-    // Асинхронно отправляем лог сбоя в logger-service
     this.loggerClient.emit('log_event', {
       context: 'api-gateway',
       level: status >= 500 ? 'error' : 'warn',
@@ -75,14 +72,12 @@ export class RpcExceptionFilter implements ExceptionFilter {
       const errorDetails =
         exception?.stack || (typeof message === 'object' ? JSON.stringify(message) : message);
 
-      // Отправляем асинхронное событие в notification_queue для notification-service
       this.notificationClient.emit('critical_error_event', {
         service: 'api-gateway_rpc_filter',
         message: `Microservice crashed with error: ${errorDetails}`,
       });
     }
 
-    // Возвращаем структурированный JSON-ответ клиенту в Swagger/фронтенд, чтобы запрос не зависал
     return response.status(status).json({
       statusCode: status,
       message: message,

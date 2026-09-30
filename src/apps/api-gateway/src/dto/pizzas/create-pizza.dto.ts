@@ -1,5 +1,3 @@
-// DTO для создания пиццы (используется формат multipart/form-data)
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength, IsNumberString } from 'class-validator';
 

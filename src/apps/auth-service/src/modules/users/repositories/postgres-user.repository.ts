@@ -1,5 +1,3 @@
-// Реализация для PostgreSQL
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
@@ -14,12 +12,10 @@ import { User } from '@shared/entities';
 @Injectable()
 export class PostgresUserRepository implements IUserRepository {
   constructor(
-    // Внедряем стандартный репозиторий TypeORM для работы с таблицей PostgreSQL
     @InjectRepository(User)
     private readonly ormRepository: Repository<User>,
   ) {}
 
-  // * Получение всех пользователей с пагинацией
   async findAll(options: PaginationOptions): Promise<User[]> {
     const { page, limit } = options;
 
@@ -32,7 +28,6 @@ export class PostgresUserRepository implements IUserRepository {
     });
   }
 
-  // * Поиск пользователей по имени и/или фамилии
   async findByNames(options: SearchOptions): Promise<User[]> {
     const { firstName, lastName } = options;
 
@@ -50,12 +45,10 @@ export class PostgresUserRepository implements IUserRepository {
     });
   }
 
-  // * Поиск одного пользователя по его id
   async findById(id: number): Promise<User | null> {
     return await this.ormRepository.findOne({ where: { uId: id } });
   }
 
-  // * Обновление данных пользователя
   async update(id: number, data: Partial<User>): Promise<User> {
     const user = await this.findById(id);
     if (!user) {
@@ -67,7 +60,6 @@ export class PostgresUserRepository implements IUserRepository {
     return await this.ormRepository.save(updatedUser);
   }
 
-  // * Удаление пользователя из базы
   async delete(id: number): Promise<boolean> {
     const result = await this.ormRepository.delete(id);
     return result.affected ? result.affected > 0 : false;

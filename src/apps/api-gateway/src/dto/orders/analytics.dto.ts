@@ -1,5 +1,3 @@
-// Схемы дя отображения аналитики в Swagger
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PopularPizzaResponseDto {

@@ -39,10 +39,6 @@ import { PromoCodeResponseDto } from '../dto/promo-codes/promo-code-response.dto
 export class PromoCodesGatewayController {
   constructor(@Inject('PROMO_CODE_SERVICE') private readonly promoCodeClient: ClientProxy) {}
 
-  // ========================
-  // ОБЩИЕ МАРШРУТЫ И МАРШРУТЫ КОЛЛЕКЦИЙ (ВВЕРХУ)
-  // ========================
-
   // * Получить список всех промо-кодов (GET /promo-codes)
   @Get()
   @Roles('user', 'admin')
@@ -77,10 +73,6 @@ export class PromoCodesGatewayController {
   createPromoCode(@Body() body: CreatePromoCodeDto) {
     return this.promoCodeClient.send('admin_create_promo_code', body);
   }
-
-  // ========================
-  // МАРШРУТЫ ДЛЯ КОНКРЕТНЫХ СУЩНОСТЕЙ ПО ID
-  // ========================
 
   // * Изменить существующий промо-код по его id (PUT /promo-codes/:id)
   @Put(':id')

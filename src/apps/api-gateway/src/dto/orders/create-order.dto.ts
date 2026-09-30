@@ -1,5 +1,3 @@
-// DTO для создания заказа
-
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsEnum, IsOptional, MaxLength } from 'class-validator';
 

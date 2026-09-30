@@ -1,5 +1,3 @@
-// DTO ответа (промокод)
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PromoCodeResponseDto {

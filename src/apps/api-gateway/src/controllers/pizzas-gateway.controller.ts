@@ -50,10 +50,6 @@ import { PizzaListResponseDto } from '../dto/pizzas/pizza-list-response.dto';
 export class PizzasGatewayController {
   constructor(@Inject('PIZZA_SERVICE') private readonly pizzaClient: ClientProxy) {}
 
-  // ==========================================
-  // ОБЩИЕ МАРШРУТЫ И МАРШРУТЫ АДМИНИСТРАТОРА
-  // ==========================================
-
   // * Получить список всех пицц (GET /pizzas)
   @Get()
   @Roles('user', 'admin')
@@ -166,10 +162,6 @@ export class PizzasGatewayController {
       throw microserviceError;
     }
   }
-
-  // ==========================================
-  // МАРШРУТЫ ДЛЯ КОНКРЕТНЫХ СУЩНОСТЕЙ ПО ID
-  // ==========================================
 
   // * Получить детали конкретной пиццы по ее id (GET /pizzas/:id)
   @Get(':id')

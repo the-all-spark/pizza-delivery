@@ -17,6 +17,8 @@ import { ClientProxy } from '@nestjs/microservices';
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
 
+  app.setGlobalPrefix('api')
+
   // Серверная валидация DTO для входящих запросов шлюза
   app.useGlobalPipes(
     new ValidationPipe({
@@ -40,7 +42,7 @@ async function bootstrap() {
     .setDescription('A single entry point for a pizza delivery microservice application')
     .setVersion('1.0')
 
-    .addServer('http://localhost:3000', 'v1.0 (Local Development)')
+    .addServer('http://localhost:3000/api', 'v1.0 (Local Development)')
 
     .addTag('Health')
     .addTag('Auth')
@@ -59,7 +61,7 @@ async function bootstrap() {
     )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: true });
 
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {

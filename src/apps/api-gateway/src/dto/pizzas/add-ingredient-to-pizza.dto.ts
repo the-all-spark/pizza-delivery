@@ -1,5 +1,3 @@
-// DTO для добавления одного ингредиента
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty } from 'class-validator';
 

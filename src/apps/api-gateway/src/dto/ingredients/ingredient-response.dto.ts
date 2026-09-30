@@ -1,5 +1,3 @@
-// DTO для исходящих данных
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class IngredientResponseDto {

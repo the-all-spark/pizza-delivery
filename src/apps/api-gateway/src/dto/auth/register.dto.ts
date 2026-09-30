@@ -1,16 +1,12 @@
-// * DTO для валидации входящих данных при регистрации (/auth/register)
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class RegisterDto {
-  // декоратор @ApiProperty для автоматической генерации документации в Swagger
   @ApiProperty({
     example: 'user@example.com',
     description: 'User email (must be unique)',
     maxLength: 255,
   })
-  // декораторы class-validator для защиты сервера
   @IsEmail({}, { message: 'Invalid email format' })
   @IsNotEmpty({ message: 'Email cannot be empty' })
   @MaxLength(255, { message: 'Email must not exceed 255 characters' })

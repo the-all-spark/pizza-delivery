@@ -44,11 +44,7 @@ import type { AuthenticatedRequest } from '../interfaces/authenticated-request.i
 export class OrdersGatewayController {
   constructor(@Inject('ORDER_SERVICE') private readonly orderClient: ClientProxy) {}
 
-  // ==========================================
-  // ЭНДПОИНТЫ АНАЛИТИКИ (ДОСТУПНО ТОЛЬКО ADMIN)
-  // ==========================================
-
-  // * Найти самую популярную пиццу за выбранный месяц (GET /orders/analytics/popular-pizza)
+  // * Аналитика: Найти самую популярную пиццу за выбранный месяц (GET /orders/analytics/popular-pizza)
   @Get('analytics/popular-pizza')
   @Roles('admin')
   @ApiOperation({
@@ -86,7 +82,7 @@ export class OrdersGatewayController {
     });
   }
 
-  // * Найти премиум-пользователей со средним чеком выше среднего (GET /orders/analytics/premium-users)
+  // * Аналитика: Найти премиум-пользователей со средним чеком выше среднего (GET /orders/analytics/premium-users)
   @Get('analytics/premium-users')
   @Roles('admin')
   @ApiOperation({
@@ -105,10 +101,6 @@ export class OrdersGatewayController {
   getPremiumUsers() {
     return this.orderClient.send('get_premium_users_analytics', {});
   }
-
-  // ==========================================
-  // СТАНДАРТНЫЕ МАРШРУТЫ ЗАКАЗОВ
-  // ==========================================
 
   // * Получить список заказов (Пользователь: своя история заказов | Админ: все заказы в системе)
   // GET /orders?page=1&limit=10

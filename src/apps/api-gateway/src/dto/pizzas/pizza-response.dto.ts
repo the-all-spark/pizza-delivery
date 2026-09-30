@@ -1,5 +1,3 @@
-// DTO успешного ответа
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IngredientResponseDto } from '../ingredients/ingredient-response.dto';
 

@@ -1,5 +1,3 @@
-// DTO ответа позиции (строки чека) заказа 
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OrderItemResponseDto {

@@ -1,5 +1,3 @@
-// DTO для обновления промокода
-
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,

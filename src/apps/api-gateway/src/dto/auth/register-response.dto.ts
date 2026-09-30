@@ -1,5 +1,3 @@
-// * DTO успешного ответа
-
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '@shared/enums';
 

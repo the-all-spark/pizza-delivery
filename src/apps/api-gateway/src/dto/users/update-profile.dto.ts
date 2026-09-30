@@ -1,5 +1,3 @@
-// DTO валидации редактирования профиля
-
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, MinLength, MaxLength, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';

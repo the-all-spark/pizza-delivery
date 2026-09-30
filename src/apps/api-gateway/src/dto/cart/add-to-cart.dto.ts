@@ -1,5 +1,3 @@
-// DTO добавления пиццы в корзину
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsPositive, IsOptional } from 'class-validator';
 

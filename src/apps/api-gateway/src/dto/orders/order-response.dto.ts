@@ -1,5 +1,3 @@
-// DTO ответа заказа
-
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderItemResponseDto } from './order-item-response.dto';
 import { OrderStatus } from '@shared/enums';

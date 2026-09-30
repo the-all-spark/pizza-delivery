@@ -1,5 +1,3 @@
-// DTO ответа
-
 import { ApiProperty } from '@nestjs/swagger';
 import { PizzaResponseDto } from '../pizzas/pizza-response.dto';
 

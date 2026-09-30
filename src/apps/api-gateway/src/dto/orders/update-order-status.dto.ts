@@ -1,5 +1,3 @@
-// DTO обновления статуса (для админа)
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { OrderStatus } from '@shared/enums';

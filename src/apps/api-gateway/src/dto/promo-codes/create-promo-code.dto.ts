@@ -1,5 +1,3 @@
-// DTO для создания промокода
-
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,

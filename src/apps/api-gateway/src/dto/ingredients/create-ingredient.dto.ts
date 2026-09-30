@@ -1,5 +1,3 @@
-// DTO создания и обновления ингредиента
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber, Min, MaxLength } from 'class-validator';
 

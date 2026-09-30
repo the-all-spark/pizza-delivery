@@ -129,7 +129,6 @@ export class UsersGatewayController {
     @Body() body: UpdateProfileDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    // Формируем payload для отправки в RabbitMQ
     const payload: any = {
       userId: req.user.userId,
       firstName: body.firstName,
@@ -141,7 +140,6 @@ export class UsersGatewayController {
     if (body.lastName) payload.lastName = body.lastName;
     if (body.password) payload.password = body.password;
 
-    // Если файл прикреплен, упаковываем его метаданные и буфер в сериализуемый формат
     // NestJS автоматически сериализует Buffer в формат { type: 'Buffer', data: [...] } при отправке в RMQ
     if (file) {
       payload.file = {

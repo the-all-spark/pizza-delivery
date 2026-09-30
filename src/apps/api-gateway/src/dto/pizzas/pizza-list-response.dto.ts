@@ -1,5 +1,3 @@
-// DTO для возврата списка пицц с пагинацией и метаданными
-
 import { ApiProperty } from '@nestjs/swagger';
 import { PizzaResponseDto } from './pizza-response.dto';
 
