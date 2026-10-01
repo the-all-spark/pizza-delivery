@@ -1,6 +1,5 @@
-# ==========================================
-# 1: Build stage
-# ==========================================
+# 1 Build stage
+
 FROM node:24-alpine AS builder
 
 WORKDIR /usr/src/app
@@ -15,9 +14,8 @@ ARG BUILD_DIST=true
 
 RUN if [ "$BUILD_DIST" = "true" ]; then npx nest build pizza-service; else echo "Skipping build for dev"; fi
 
-# ==========================================
-# 2: Production stage
-# ==========================================
+# 2 Production stage
+
 FROM node:24-alpine AS runner
 
 WORKDIR /usr/src/app

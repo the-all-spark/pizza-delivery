@@ -144,7 +144,7 @@ export class UsersGatewayController {
     if (file) {
       payload.file = {
         originalname: file.originalname,
-        buffer: file.buffer, 
+        buffer: file.buffer,
       };
     }
 

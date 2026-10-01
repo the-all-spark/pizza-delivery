@@ -13,18 +13,12 @@ export class PromoCodeService {
     private readonly promoCodeRepository: Repository<PromoCode>,
   ) {}
 
-  // ==========================================
-  // 1. ПОЛУЧИТЬ ВСЕ ПРОМОКОДЫ
-  // ==========================================
   async findAll(): Promise<PromoCode[]> {
     return await this.promoCodeRepository.find({
       order: { expiresAt: 'DESC' },
     });
   }
 
-  // ==========================================
-  // 2. ПОЛУЧИТЬ ПРОМОКОД ПО ID
-  // ==========================================
   async findById(id: number): Promise<PromoCode> {
     const promo = await this.promoCodeRepository.findOne({
       where: { promoId: id },
@@ -40,9 +34,6 @@ export class PromoCodeService {
     return promo;
   }
 
-  // ==========================================
-  // 3. СОЗДАТЬ ПРОМОКОД
-  // ==========================================
   async create(payload: CreatePromoCodePayload): Promise<PromoCode> {
     const { code, discountPercent, expiresAt, isActive } = payload;
 
@@ -67,9 +58,6 @@ export class PromoCodeService {
     return await this.promoCodeRepository.save(newPromo);
   }
 
-  // ==========================================
-  // 4. ИЗМЕНИТЬ ПРОМОКОД ПО ID
-  // ==========================================
   async update(payload: UpdatePromoCodePayload): Promise<PromoCode> {
     const { promoId, code, discountPercent, expiresAt, isActive } = payload;
     const promo = await this.findById(promoId);
@@ -96,9 +84,6 @@ export class PromoCodeService {
     return await this.promoCodeRepository.save(updated);
   }
 
-  // ==========================================
-  // 5. УДАЛЕНИЕ ПРОМОКОДА ПО ID
-  // ==========================================
   async delete(id: number): Promise<{ success: boolean }> {
     const promo = await this.findById(id);
 

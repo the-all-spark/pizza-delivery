@@ -7,8 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format:check": "prettier --check \"apps/**/*.ts\"",
-    "format:fix": "prettier --write \"apps/**/*.ts\"",
+    "format:check": "prettier --check \"src/apps/**/*.ts\"",
+    "format:fix": "prettier --write \"src/apps/**/*.ts\"",
     "start:dev": "nest start --watch",
     "lint": "oxlint .",
     "test": "jest",

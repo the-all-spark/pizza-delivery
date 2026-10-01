@@ -1,4 +1,4 @@
-// *  Главная точка схода сервиса
+// *  Главная точка входа сервиса
 
 /**
  * Поднимает шлюз на порту 3000, включает глобальные Pipes для DTO-валидации
@@ -17,7 +17,7 @@ import { ClientProxy } from '@nestjs/microservices';
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
 
-  app.setGlobalPrefix('api')
+  app.setGlobalPrefix('api');
 
   // Серверная валидация DTO для входящих запросов шлюза
   app.useGlobalPipes(

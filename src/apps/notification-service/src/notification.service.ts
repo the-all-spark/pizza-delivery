@@ -48,9 +48,6 @@ export class NotificationService implements OnModuleInit {
     }
   }
 
-  // ==========================================
-  // 1. ОТПРАВКА ПРИВЕТСТВЕННОГО ПИСЬМА
-  // ==========================================
   async sendWelcomeEmail(email: string, firstName: string): Promise<void> {
     const subject = 'Welcome to Pizza Delivery! 🍕';
     const htmlContent = getWelcomeTemplate(firstName);
@@ -58,9 +55,6 @@ export class NotificationService implements OnModuleInit {
     await this.sendEmail(email, subject, htmlContent);
   }
 
-  // ==========================================
-  // 2. ОТПРАВКА ПРОЩАЛЬНОГО ПИСЬМА
-  // ==========================================
   async sendGoodbyeEmail(email: string, firstName: string): Promise<void> {
     const subject = "We're sad to see you go... 😢";
     const htmlContent = getGoodbyeTemplate(firstName);
@@ -68,9 +62,6 @@ export class NotificationService implements OnModuleInit {
     await this.sendEmail(email, subject, htmlContent);
   }
 
-  // ==========================================
-  // 3. ОТПРАВКА КРИТИЧЕСКОЙ ОШИБКИ АДМИНИСТРАТОРУ
-  // ==========================================
   async sendCriticalErrorEmail(serviceName: string, errorMessage: string): Promise<void> {
     const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@pizza.com');
     const subject = `⚠️ CRITICAL ERROR REPORT: ${serviceName}`;

@@ -37,9 +37,7 @@ import { IngredientResponseDto } from '../dto/ingredients/ingredient-response.dt
 @Controller('ingredients')
 @UseFilters(RpcExceptionFilter)
 export class IngredientsGatewayController {
-  constructor(
-    @Inject('INGREDIENTS_SERVICE') private readonly ingredientsClient: ClientProxy,
-  ) {}
+  constructor(@Inject('INGREDIENTS_SERVICE') private readonly ingredientsClient: ClientProxy) {}
 
   // * Получить все ингредиенты пиццы (GET /ingredients)
   @Get()

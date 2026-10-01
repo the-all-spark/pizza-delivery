@@ -49,7 +49,8 @@ import { PostgresUserRepository } from './repositories/postgres-user.repository'
     {
       provide: IUserRepository,
       useClass: PostgresUserRepository,
-      // useClass: MongoUserRepository // Для перехода на MongoDB
+      // Для перехода на MongoDB
+      // useClass: MongoUserRepository
     },
   ],
   exports: [UsersService, IUserRepository, TypeOrmModule],

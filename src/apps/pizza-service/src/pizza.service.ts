@@ -23,9 +23,6 @@ export class PizzaService {
     private readonly ingredientRepository: Repository<Ingredient>,
   ) {}
 
-  // ==========================================
-  // 1. ПОЛУЧИТЬ ПОСТРАНИЧНЫЙ СПИСОК ПИЦЦ
-  // ==========================================
   async findPaginated(payload: PizzaPaginationPayload): Promise<any> {
     const { page, limit } = payload;
     const skip = (page - 1) * limit;
@@ -59,9 +56,6 @@ export class PizzaService {
     };
   }
 
-  // ==========================================
-  // 2. ПОЛУЧИТЬ ДЕТАЛИ ПИЦЦЫ ПО ID С ИНГРЕДИЕНТАМИ
-  // ==========================================
   async findDetailById(id: number): Promise<Pizza> {
     const pizza = await this.pizzaRepository.findOne({
       where: { pId: id },
@@ -80,9 +74,6 @@ export class PizzaService {
     return pizza;
   }
 
-  // ==========================================
-  // 3. СОЗДАТЬ ПИЦЦУ (С МАССИВОМ ИНГРЕДИЕНТОВ)
-  // ==========================================
   async create(payload: CreatePizzaPayload): Promise<Pizza> {
     const { title, description, price, imageUrl, ingredients } = payload;
 
@@ -124,9 +115,6 @@ export class PizzaService {
     return await this.pizzaRepository.save(newPizza);
   }
 
-  // ==========================================
-  // 4. РЕДАКТИРОВАТЬ ПАРАМЕТРЫ ПИЦЦЫ
-  // ==========================================
   async update(payload: UpdatePizzaPayload): Promise<Pizza> {
     const { pizzaId, title, description, price, imageUrl } = payload;
 
@@ -153,9 +141,6 @@ export class PizzaService {
     return await this.pizzaRepository.save(updated);
   }
 
-  // ==========================================
-  // 5. ДОБАВИТЬ ИНГРЕДИЕНТ К ПИЦЦЕ (ManyToMany)
-  // ==========================================
   async addIngredient(pizzaId: number, ingredientId: number): Promise<Pizza> {
     const pizza = await this.findDetailById(pizzaId);
 
@@ -179,9 +164,6 @@ export class PizzaService {
     return await this.pizzaRepository.save(pizza);
   }
 
-  // ==========================================
-  // 6. УДАЛИТЬ ИНГРЕДИЕНТ ИЗ ПИЦЦЫ (ManyToMany)
-  // ==========================================
   async removeIngredient(pizzaId: number, ingredientId: number): Promise<Pizza> {
     const pizza = await this.findDetailById(pizzaId);
 
@@ -197,9 +179,6 @@ export class PizzaService {
     return await this.pizzaRepository.save(pizza);
   }
 
-  // ==========================================
-  // 7. МЕХАНИЗМ ТРАНЗАКЦИЙ: УДАЛЕНИЕ ПИЦЦЫ И ФАЙЛА КАРТИНКИ
-  // ==========================================
   async deletePizza(pizzaId: number): Promise<{ success: boolean }> {
     const pizza = await this.findDetailById(pizzaId);
 
@@ -249,11 +228,7 @@ export class PizzaService {
     }
   }
 
-  // ==========================================
-  // 8. КРОН-ЗАДАЧА: АВТОМАТИЧЕСКАЯ ОЧИСТКА СТАРЫХ ПИЦЦ
-  // ==========================================
-
-  // Крон запускается каждый день в полночь
+  // * Крон-задача: автоматическое удаление старых пицц (запускается каждый день в полночь)
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleAutomaticPizzaCleanup() {
     this.logger.log('⏰ Запущен плановый Крон-аудит каталога меню пицц...');

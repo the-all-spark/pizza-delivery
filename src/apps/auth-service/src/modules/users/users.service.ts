@@ -1,5 +1,5 @@
 // * Сервис управления пользователями (бизнес-логика)
-// применяем паттерн Dependency Injection, внедрив абстрактный класс IUserRepository
+// Применяем паттерн Dependency Injection, внедрив абстрактный класс IUserRepository
 
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
@@ -27,9 +27,6 @@ export class UsersService {
   // Базовый путь к аватарам внутри контейнера
   private readonly uploadDir = path.join(process.cwd(), 'uploads', 'users');
 
-  // ==========================================
-  // 1. ПОЛУЧЕНИЕ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ С ПАГИНАЦИЕЙ
-  // ==========================================
   async getAllUsers(options: PaginationOptions): Promise<Partial<User>[]> {
     const users = await this.userRepository.findAll(options);
 
@@ -39,9 +36,6 @@ export class UsersService {
     });
   }
 
-  // ==========================================
-  // 2. ПОИСК ПОЛЬЗОВАТЕЛЕЙ ПО ИМЕНИ / ФАМИЛИИ
-  // ==========================================
   async searchUsers(options: SearchOptions): Promise<Partial<User>[]> {
     const users = await this.userRepository.findByNames(options);
 
@@ -51,9 +45,6 @@ export class UsersService {
     });
   }
 
-  // ==========================================
-  // 3. РЕДАКТИРОВАНИЕ ПРОФИЛЯ И СМЕНА ПАРОЛЯ
-  // ==========================================
   async editProfile(
     userId: number,
     updateData: {
@@ -103,14 +94,10 @@ export class UsersService {
     }
 
     const updatedUser = await this.userRepository.update(userId, fieldsToUpdate);
-
     const { passwordHash: _, ...result } = updatedUser;
     return result;
   }
 
-  // ==========================================
-  // 4. УДАЛЕНИЕ СОБСТВЕННОГО АККАУНТА
-  // ==========================================
   async deleteAccount(userId: number): Promise<{ success: boolean }> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
@@ -120,10 +107,9 @@ export class UsersService {
       });
     }
 
-    // Удаление изображения
     if (user.avatarPath) {
       const filePath = path.join(process.cwd(), user.avatarPath);
-      await fs.unlink(filePath).catch(() => {}); 
+      await fs.unlink(filePath).catch(() => {});
     }
 
     const isDeleted = await this.userRepository.delete(userId);

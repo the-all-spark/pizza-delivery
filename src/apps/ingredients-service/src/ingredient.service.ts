@@ -15,18 +15,12 @@ export class IngredientService {
     private readonly ingredientRepository: Repository<Ingredient>,
   ) {}
 
-  // ==========================================
-  // 1. ПОЛУЧИТЬ ВСЕ ИНГРЕДИЕНТЫ ПИЦЦЫ
-  // ==========================================
   async findAll(): Promise<Ingredient[]> {
     return await this.ingredientRepository.find({
       order: { name: 'ASC' },
     });
   }
 
-  // ==========================================
-  // 2. ДОБАВИТЬ НОВЫЙ ИНГРЕДИЕНТ
-  // ==========================================
   async create(data: CreateIngredientPayload): Promise<Ingredient> {
     const { name, price } = data;
 
@@ -45,9 +39,6 @@ export class IngredientService {
     return await this.ingredientRepository.save(newIngredient);
   }
 
-  // ==========================================
-  // 3. ИЗМЕНИТЬ ИНГРЕДИЕНТ ПО ID
-  // ==========================================
   async update(id: number, data: CreateIngredientPayload): Promise<Ingredient> {
     const { name, price } = data;
 
@@ -80,9 +71,6 @@ export class IngredientService {
     return await this.ingredientRepository.save(updatedIngredient);
   }
 
-  // ==========================================
-  // 4. УДАЛИТЬ ИНГРЕДИЕНТ ПО ID
-  // ==========================================
   async delete(id: number): Promise<{ success: boolean }> {
     const ingredient = await this.ingredientRepository.findOne({
       where: { ingrId: id },
@@ -99,9 +87,6 @@ export class IngredientService {
     return { success: true };
   }
 
-  // ==========================================
-  // 5. ПОЛУЧИТЬ ИНГРЕДИЕНТ ПО ID
-  // ==========================================
   async findById(id: number): Promise<Ingredient> {
     const ingredient = await this.ingredientRepository.findOne({
       where: { ingrId: id },

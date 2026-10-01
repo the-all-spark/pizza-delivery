@@ -2,16 +2,21 @@
 
 import { User } from '@shared/entities';
 
-// Структура параметров для пагинации
 export interface PaginationOptions {
   page: number;
   limit: number;
 }
 
-// Структура параметров для поиска по имени/фамилии
 export interface SearchOptions {
   firstName?: string;
   lastName?: string;
+}
+
+export interface EditProfilePayload {
+  userId: number;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
 }
 
 export abstract class IUserRepository {
@@ -45,10 +50,4 @@ export abstract class IUserRepository {
    * @param id ID пользователя
    */
   abstract delete(id: number): Promise<boolean>;
-
-  /**
-   * Метод создания пользователя (опционально, на случай переноса регистрации в этот модуль)
-   * @param data Поля для создания новой сущности
-   */
-  // abstract create(data: Partial<User>): Promise<User>;
 }

@@ -1,5 +1,4 @@
 /** @jest-config-loader ts-node */
-// Указывает Jest правильно парсить типы в среде ESM
 
 import type { Config } from 'jest';
 import { pathsToModuleNameMapper } from 'ts-jest';
@@ -16,7 +15,6 @@ const config: Config = {
   rootDir: '.',
   testRegex: '.*\\.spec\\.ts$',
   
-  // догблок сверху заставит ts-node корректно подгрузить модуль без падения
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },

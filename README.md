@@ -63,4 +63,6 @@ Execute microservice tests directly inside the stable Linux container environmen
 ```bash
 # Run Cart Management Service unit tests
 docker exec -t pizza_cart_service npx jest --config src/apps/cart-service/jest-pizza.config.json
+# or
+npm run test:cart
 ```

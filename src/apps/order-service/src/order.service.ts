@@ -36,9 +36,6 @@ export class OrdersService {
     private readonly dataSource: DataSource,
   ) {}
 
-  // ==========================================
-  // 1. ОФОРМЛЕНИЕ ЗАКАЗА ИЗ КОРЗИНЫ
-  // ==========================================
   async createOrder(payload: CreateOrderPayload): Promise<Order> {
     const userIdNum = Number(payload.userId);
 
@@ -118,9 +115,6 @@ export class OrdersService {
     return savedOrder;
   }
 
-  // ==========================================
-  // 2. ИСТОРИЯ ЗАКАЗОВ ПОЛЬЗОВАТЕЛЯ (С ПАГИНАЦИЕЙ)
-  // ==========================================
   async getUserOrdersHistory(payload: GetUserOrdersPayload): Promise<any> {
     const { page, limit } = payload;
     const skip = (page - 1) * limit;
@@ -155,9 +149,6 @@ export class OrdersService {
     };
   }
 
-  // ==========================================
-  // 3. ВСЕ ЗАКАЗЫ В СИСТЕМЕ (ДЛЯ АДМИНА С ПАГИНАЦИЕЙ)
-  // ==========================================
   async adminGetAllOrders(payload: AdminGetAllOrdersPayload): Promise<any> {
     const { page, limit } = payload;
     const skip = (page - 1) * limit;
@@ -191,9 +182,6 @@ export class OrdersService {
     };
   }
 
-  // ==========================================
-  // 4. ПОЛУЧИТЬ СТАТУС/ИНФОРМАЦИЮ КОНКРЕТНОГО ЗАКАЗА ПО ID
-  // ==========================================
   async getOrderStatus(payload: GetOrderStatusPayload): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { orderId: payload.orderId },
@@ -229,9 +217,6 @@ export class OrdersService {
     return order;
   }
 
-  // ==========================================
-  // 5. ИЗМЕНЕНИЕ СТАТУСА ЗАКАЗА (ДЛЯ АДМИНА)
-  // ==========================================
   async adminUpdateOrderStatus(payload: AdminUpdateStatusPayload): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { orderId: payload.orderId },
@@ -248,9 +233,7 @@ export class OrdersService {
     return await this.orderRepository.save(order);
   }
 
-  // ==========================================
-  // 6. АНАЛИТИКА 1: САМАЯ ПОПУЛЯРНАЯ ПИЦЦА МЕСЯЦА (RAW SQL)
-  // ==========================================
+  // * Аналитика
 
   /**
    * Найти пиццу, которая за выбранный месяц и год чаще всего фигурировала в уже оформленных заказах,
@@ -283,15 +266,10 @@ export class OrdersService {
     return result[0];
   }
 
-  // ==========================================
-  // 7. АНАЛИТИКА 2: ПОЛЬЗОВАТЕЛИ С ВЫСОКИМ СРЕДНИМ ЧЕКОМ (RAW SQL)
-  // ==========================================
-
   /**
    * Найти пользователей, у которых:
    * - Оформлено не менее 3 заказов (то есть COUNT(order_id) >= 3).
-   * - Личный средний чек выше или равен среднему значению среднего чека по всем
-   * пользователям в системе.
+   * - Личный средний чек выше или равен среднему значению среднего чека по всем пользователям в системе.
    */
 
   async getPremiumUsersWithHighAverageCheck(): Promise<any[]> {

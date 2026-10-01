@@ -29,7 +29,6 @@ export class SeedService implements OnApplicationBootstrap {
   }
 
   private async seed() {
-    // Проверяем, есть ли уже пользователи в базе данных
     const userCount = await this.userRepository.count();
     if (userCount > 0) {
       console.log('База данных уже содержит данные. Сиддинг пропущен.');

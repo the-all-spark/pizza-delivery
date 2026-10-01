@@ -1,10 +1,10 @@
-// Схемы данных (Аналог Entity для Mongo) - описание структуры пользователя для MongoDB
+// Описание структуры пользователя для MongoDB
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserRole } from '@shared/enums';
 
-@Schema({ collection: 'users', timestamps: true }) 
+@Schema({ collection: 'users', timestamps: true })
 export class MongoUser extends Document {
   @Prop({ required: true, unique: true, type: Number })
   uId: number;

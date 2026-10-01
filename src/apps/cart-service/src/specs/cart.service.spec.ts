@@ -47,13 +47,10 @@ describe('CartService', () => {
     pizzaRepo = module.get<Repository<Pizza>>(getRepositoryToken(Pizza));
   });
 
-  // ==========================================
-  // ТЕСТЫ ДЛЯ МЕТОДА: ПОЛУЧЕНИЕ КОРЗИНЫ (getCart)
-  // ==========================================
   describe('getCart', () => {
     it('должен успешно вернуть список элементов корзины пользователя', async () => {
       const mockCartItems = [{ cartId: 1, userId: 1, pizzaId: 10, quantity: 2 }];
-      // при вызове find() вернуть наш заготовленный массив
+      // при вызове find() вернуть заготовленный массив mockCartItems
       jest.spyOn(cartItemRepo, 'find').mockResolvedValue(mockCartItems as any);
 
       const result = await service.getCart({ userId: 1 });
@@ -63,15 +60,10 @@ describe('CartService', () => {
     });
   });
 
-  // ==========================================
-  // ТЕСТЫ ДЛЯ МЕТОДА: ДОБАВИТЬ В КОРЗИНУ (addToCart)
-  // ==========================================
   describe('addToCart', () => {
     it('должен выбросить 404 ошибку, если добавляемой пиццы нет в меню', async () => {
-      // пицца не найдена (вернулся null)
       jest.spyOn(pizzaRepo, 'findOne').mockResolvedValue(null);
 
-      // проверяем, что вызов сервиса падает с ошибкой RpcException (404)
       await expect(service.addToCart({ userId: 1, pizzaId: 999, quantity: 1 })).rejects.toThrow(
         RpcException,
       );
@@ -105,9 +97,6 @@ describe('CartService', () => {
     });
   });
 
-  // ==========================================
-  // ТЕСТЫ ДЛЯ МЕТОДА: ИЗМЕНИТЬ КОЛИЧЕСТВО (updateCartItem)
-  // ==========================================
   describe('updateCartItem', () => {
     it('должен выбросить 404 ошибку, если элемент корзины не найден или чужой', async () => {
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(null);
@@ -129,9 +118,6 @@ describe('CartService', () => {
     });
   });
 
-  // ==========================================
-  // ТЕСТЫ ДЛЯ МЕТОДА: УДАЛИТЬ ИЗ КОРЗИНЫ (removeFromCart)
-  // ==========================================
   describe('removeFromCart', () => {
     it('должен выбросить 404, если пользователь пытается удалить не существующий или чужой элемент', async () => {
       jest.spyOn(cartItemRepo, 'findOne').mockResolvedValue(null);

@@ -9,9 +9,7 @@ import type { AuthenticatedRequest } from '../interfaces/authenticated-request.i
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  constructor(
-    @Inject('LOGGER_SERVICE') private readonly loggerClient: ClientProxy,
-  ) {}
+  constructor(@Inject('LOGGER_SERVICE') private readonly loggerClient: ClientProxy) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const httpContext = context.switchToHttp();

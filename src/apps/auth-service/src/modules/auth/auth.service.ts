@@ -19,7 +19,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    
+
     private readonly jwtService: JwtService,
 
     @Inject('NOTIFICATION_SERVICE')

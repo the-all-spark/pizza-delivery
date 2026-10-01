@@ -22,9 +22,6 @@ export class CartService {
     private readonly pizzaRepository: Repository<Pizza>,
   ) {}
 
-  // ==========================================
-  // 1. ПРОСМОТР СОДЕРЖИМОГО СОБСТВЕННОЙ КОРЗИНЫ
-  // ==========================================
   async getCart(payload: GetCartPayload): Promise<CartItem[]> {
     const { userId } = payload;
 
@@ -37,9 +34,6 @@ export class CartService {
     });
   }
 
-  // ==========================================
-  // 2. ДОБАВИТЬ ПИЦЦУ В КОРЗИНУ
-  // ==========================================
   async addToCart(payload: AddToCartPayload): Promise<CartItem> {
     const { userId, pizzaId, quantity } = payload;
 
@@ -58,7 +52,6 @@ export class CartService {
     });
 
     if (existingItem) {
-      // Если пицца уже добавлена — просто суммируем количество
       existingItem.quantity += quantity;
       return await this.cartItemRepository.save(existingItem);
     }
@@ -72,9 +65,6 @@ export class CartService {
     return await this.cartItemRepository.save(newCartItem);
   }
 
-  // ==========================================
-  // 3. ИЗМЕНИТЬ КОЛИЧЕСТВО ПИЦЦЫ В КОРЗИНЕ
-  // ==========================================
   async updateCartItem(payload: UpdateCartItemPayload): Promise<CartItem> {
     const { userId, cartItemId, quantity } = payload;
 
@@ -93,9 +83,6 @@ export class CartService {
     return await this.cartItemRepository.save(cartItem);
   }
 
-  // ==========================================
-  // 4. УДАЛИТЬ ПОЗИЦИЮ ИЗ КОРЗИНЫ
-  // ==========================================
   async removeFromCart(payload: RemoveFromCartPayload): Promise<{ success: boolean }> {
     const { userId, cartItemId } = payload;
 

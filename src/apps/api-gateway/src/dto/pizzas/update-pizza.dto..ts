@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger'; 
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNumber, Min, IsOptional, MaxLength } from 'class-validator';
 
 export class UpdatePizzaDto {

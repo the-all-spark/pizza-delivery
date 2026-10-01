@@ -1,4 +1,4 @@
-// Корневой модуль auth-service: здесь Nest подключает .env, PostgreSQL и остальные модули.
+// Корневой модуль auth-service: здесь Nestjs подключает .env, PostgreSQL и остальные модули.
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';

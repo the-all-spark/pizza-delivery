@@ -9,7 +9,6 @@ import { ILog } from './schemas/log.interface';
 export class LoggerConsumer {
   constructor(private readonly loggerService: LoggerService) {}
 
-  // Слушаем входящие события логирования от всех микросервисов системы
   @MessagePattern('log_event')
   async handleLogEvent(@Payload() data: Omit<ILog, 'timestamp'>) {
     await this.loggerService.createLog(data);

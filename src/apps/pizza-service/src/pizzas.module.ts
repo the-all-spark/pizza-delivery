@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule'; // планировщик для Cron задач
 import { createDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
-import { TerminusModule } from '@nestjs/terminus'; 
+import { TerminusModule } from '@nestjs/terminus';
 
 import { PizzaController } from './pizza.controller';
 import { PizzaService } from './pizza.service';

@@ -13,9 +13,7 @@ import { ILog } from './schemas/log.interface';
 
 @Injectable()
 export class LoggerService {
-  constructor(
-    @InjectModel(Log.name) private readonly logModel: Model<Log>,
-  ) {}
+  constructor(@InjectModel(Log.name) private readonly logModel: Model<Log>) {}
 
   // * Метод для записи лога в MongoDB и дублирования в консоль
   async createLog(logData: Omit<ILog, 'timestamp'>): Promise<Log> {
